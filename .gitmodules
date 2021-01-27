@@ -1,0 +1,12 @@
+[submodule "lib/googletest"]
+	path = lib/googletest
+	url = git@github.com:google/googletest
+[submodule "lib/sol2"]
+	path = lib/sol2
+	url = git@github.com:ThePhD/sol2
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = git@github.com:glfw/glfw
+[submodule "lib/lua-cmake"]
+	path = lib/lua-cmake
+	url = git@github.com:lubgr/lua-cmake
