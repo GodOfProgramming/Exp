@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(SimpleScript VERSION 0.0.1)
+project(Exp VERSION 0.0.1)
 
 # set compiler options
 

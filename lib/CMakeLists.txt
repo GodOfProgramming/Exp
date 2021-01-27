@@ -1,6 +1,7 @@
 add_subdirectory(googletest)
 add_subdirectory(glfw)
-add_subdirectory(lua-cmake)
+add_subdirectory(lua)
+add_subdirectory(imgui)
 
 set(INCLUDES
   "${CMAKE_BINARY_DIR}/lib/lua-prefix/src/lua/src"
@@ -11,8 +12,9 @@ set(INCLUDES
 )
 
 set(LIBS
-  lua::lib
+  lua
   glfw
+  imgui
 )
 
 set(TEST_LIBS
