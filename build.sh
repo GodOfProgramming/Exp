@@ -62,11 +62,6 @@ if [ $build -eq 1 ]; then
 	cd "${cur_dir}"
 fi
 
-if [ $run -eq 1 ]; then
-	cmd=${build_dir}/Exp
-  ${cmd} $@ || exit $?
-fi
-
 if [ $run_tests -eq 1 ]; then
 	cmd=${build_dir}/ExpTest
 	if [ ! -z "$1" ]; then
@@ -85,4 +80,9 @@ fi
 
 if [ $setup -eq 1 ]; then
   git submodule update --init --recursive
+fi
+
+if [ $run -eq 1 ]; then
+	cmd=${build_dir}/Exp
+  ${cmd} $@ || exit $?
 fi
