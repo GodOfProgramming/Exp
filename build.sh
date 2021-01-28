@@ -1,6 +1,7 @@
 #!/bin/bash
 
 build=0
+slow_build=0
 run=0
 run_tests=0
 gen_coverage=0
@@ -10,28 +11,11 @@ clean=0
 proj_root="$(dirname "$0")"
 build_dir="${proj_root}/build"
 
-while getopts 'habrtgic' flag; do
+while getopts 'hicbstgra' flag; do
 	case "$flag" in
 		h)
 			echo 'build.sh [flags]'
 			exit 0
-			;;
-		a)
-			build=1
-			run_tests=1
-			gen_coverage=1
-			;;
-		b)
-			build=1
-			;;
-    r)
-      run=1
-      ;;
-		t)
-			run_tests=1
-			;;
-		g)
-			gen_coverage=1
 			;;
     i)
       setup=1
@@ -39,6 +23,26 @@ while getopts 'habrtgic' flag; do
     c)
       clean=1
       ;;
+		b)
+			build=1
+			;;
+		s)
+			slow_build=1
+			;;
+		t)
+			run_tests=1
+			;;
+		g)
+			gen_coverage=1
+			;;
+    r)
+      run=1
+      ;;
+		a)
+			build=1
+			run_tests=1
+			gen_coverage=1
+			;;
 		*)
 			echo 'invalid argument given'
 			exit 1
@@ -58,7 +62,11 @@ fi
 if [ $build -eq 1 ]; then
 	cur_dir=$(pwd)
 	cd "${build_dir}"
-	make -j$(($(nproc) - 1)) || exit $?
+	if [ $slow_build -eq 0 ]; then
+		make -j$(($(nproc) - 1)) || exit $?
+	else
+		make || exit $?
+	fi
 	cd "${cur_dir}"
 fi
 

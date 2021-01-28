@@ -1,0 +1,3 @@
+file(GLOB SRC_FILES CONFIGURE_DEPENDS "*.cpp")
+
+target_sources(${EXE_TEST} PUBLIC ${SRC_FILES})

@@ -1,4 +1,9 @@
+#include "exp/settings.hpp"
+#include "exp/window.hpp"
+
 int main(int, char*[])
 {
-  return 0;
+  ExpGame::SettingsManager settings;
+
+  settings.load(R"({ "name": "value" })");
 }

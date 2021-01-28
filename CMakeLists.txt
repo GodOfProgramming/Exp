@@ -20,6 +20,9 @@ set(SRC src)
 add_executable(${EXE} "${SRC}/main.cpp")
 add_executable(${EXE_TEST} "${SRC}/main.test.cpp")
 
+add_subdirectory(lib)
+add_subdirectory(src)
+
 target_link_libraries(${EXE} pthread)
 target_link_libraries(${EXE_TEST} gcov pthread)
 
@@ -28,6 +31,3 @@ target_compile_options(${EXE_TEST} PUBLIC ${SHARED_COMPILE_OPTS} -g -O0 --covera
 
 target_include_directories(${EXE} PUBLIC "${CMAKE_SOURCE_DIR}/src")
 target_include_directories(${EXE_TEST} PUBLIC "${CMAKE_SOURCE_DIR}/src")
-
-add_subdirectory(src)
-add_subdirectory(lib)
