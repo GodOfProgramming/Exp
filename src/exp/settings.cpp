@@ -17,6 +17,6 @@ namespace ExpGame
       return LoadResult::err(ss.str());
     }
 
-    return LoadResult::ok();
+    return LoadResult::ok(SettingsManager());
   }
 }  // namespace ExpGame

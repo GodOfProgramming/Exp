@@ -1,40 +1,63 @@
+#pragma once
+
 #include <optional>
 
 namespace ExpGame
 {
-  template <typename T>
+  template <typename tOk, typename tErr>
   class Result
   {
    public:
     ~Result() = default;
 
-    static auto ok() -> Result<T>
+    constexpr static auto ok() -> Result<tOk, tErr>
     {
-      return Result<T>();
+      return Result<tOk, tErr>();
     }
 
-    static auto err(T&& arg) -> Result<T>
+    constexpr static auto ok(tOk arg) -> Result<tOk, tErr>
     {
-      return Result(std::move(arg));
+      Result<tOk, tErr> res;
+      res.val_ok = arg;
+      return res;
     }
 
-    auto is_err() -> bool
+    constexpr static auto err(tErr arg) -> Result<tOk, tErr>
     {
-      return static_cast<bool>(this->contents);
+      Result<tOk, tErr> res;
+      res.val_err = arg;
+      return res;
     }
 
-    auto err() -> T
+    auto ok_val() const noexcept -> tOk
     {
-      return this->contents.value_or(T());
+      return this->val_ok.value_or(tOk());
+    }
+
+    auto err_val() const noexcept -> tErr
+    {
+      return this->val_err.value_or(tErr());
+    }
+
+    auto is_err() const noexcept -> bool
+    {
+      return static_cast<bool>(this->val_err);
+    }
+
+    auto is_ok() const noexcept -> bool
+    {
+      return !this->is_err();
+    }
+
+    operator bool()
+    {
+      return this->is_ok();
     }
 
    private:
+    std::optional<tOk> val_ok;
+    std::optional<tErr> val_err;
+
     Result() = default;
-
-    Result(T&& arg)
-     : contents(std::move(arg))
-    {}
-
-    const std::optional<T> contents;
   };
 }  // namespace ExpGame

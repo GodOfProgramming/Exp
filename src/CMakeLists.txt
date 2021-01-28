@@ -15,11 +15,14 @@ set(PCH_HEADERS
   "<assimp/Importer.hpp>"
   "<assimp/scene.h>"
   "<assimp/postprocess.h>"
+  "<filesystem>"
+  "<fstream>"
+  "<fstream>"
+  "<iostream>"
+  "<sstream>"
   "<string>"
   "<string_view>"
-  "<sstream>"
-  "<fstream>"
-  "<fstream>"
+  "<variant>"
 )
 
 target_precompile_headers(${EXE} PUBLIC ${PCH_HEADERS})
