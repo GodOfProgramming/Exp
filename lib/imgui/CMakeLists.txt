@@ -13,12 +13,16 @@ set(SRC_FILES
 )
 
 add_library(imgui-lib ${SRC_FILES})
-
 add_library(imgui-include INTERFACE)
 
-target_include_directories(imgui-include INTERFACE ${SRC_DIR})
+target_compile_definitions(imgui-include INTERFACE IMGUI_IMPL_OPENGL_LOADER_GLAD)
+target_compile_definitions(imgui-lib PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
 
-target_link_libraries(imgui-lib INTERFACE imgui-include)
+target_include_directories(imgui-include INTERFACE ${SRC_DIR})
+target_include_directories(imgui-lib PUBLIC ${SRC_DIR})
+
+target_link_libraries(imgui-include INTERFACE glad glfw)
+target_link_libraries(imgui-lib PUBLIC imgui-include)
 
 add_library(imgui::lib ALIAS imgui-lib)
 

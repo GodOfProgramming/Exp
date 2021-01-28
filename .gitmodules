@@ -7,3 +7,12 @@
 [submodule "lib/sol/upstream"]
 	path = lib/sol/upstream
 	url = git@github.com:ThePhD/sol2
+[submodule "lib/gtest/upstream"]
+	path = lib/gtest/upstream
+	url = git@github.com:google/googletest
+[submodule "lib/glfw/upstream"]
+	path = lib/glfw/upstream
+	url = git@github.com:glfw/glfw
+[submodule "lib/glad/upstream"]
+	path = lib/glad/upstream
+	url = git@github.com:Dav1dde/glad

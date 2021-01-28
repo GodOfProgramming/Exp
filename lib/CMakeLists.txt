@@ -1,14 +1,16 @@
-add_subdirectory(googletest)
+add_subdirectory(glad)
 add_subdirectory(glfw)
+add_subdirectory(imgui)
 add_subdirectory(lua)
 add_subdirectory(sol)
-add_subdirectory(imgui)
+add_subdirectory(gtest)
 
 set(LIBS
+  glad
   glfw
+  imgui::lib
   lua::lib
   sol2::sol2
-  imgui::lib
 )
 
 set(TEST_LIBS
