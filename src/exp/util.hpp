@@ -32,10 +32,9 @@ namespace ExpGame
     Result() = default;
 
     Result(T&& arg)
-    {
-      this->contents = std::move(arg);
-    }
+     : contents(std::move(arg))
+    {}
 
-    std::optional<T> contents;
+    const std::optional<T> contents;
   };
 }  // namespace ExpGame
