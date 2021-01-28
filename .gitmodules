@@ -16,3 +16,15 @@
 [submodule "lib/glad/upstream"]
 	path = lib/glad/upstream
 	url = git@github.com:Dav1dde/glad
+[submodule "lib/glm/upstream"]
+	path = lib/glm/upstream
+	url = git@github.com:g-truc/glm
+[submodule "lib/assimp/upstream"]
+	path = lib/assimp/upstream
+	url = git@github.com:assimp/assimp
+[submodule "lib/gli/upstream"]
+	path = lib/gli/upstream
+	url = git@github.com:g-truc/gli
+[submodule "lib/json/upstream"]
+	path = lib/json/upstream
+	url = git@github.com:nlohmann/json
