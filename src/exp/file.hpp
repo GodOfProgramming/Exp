@@ -12,6 +12,8 @@ namespace ExpGame
     File() = default;
     File(std::string data);
 
+    auto save(std::filesystem::path p) -> bool;
+
     static auto load(std::filesystem::path filename) -> LoadResult;
 
     std::string data;

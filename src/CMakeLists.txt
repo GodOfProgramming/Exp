@@ -2,6 +2,7 @@ add_subdirectory(exp)
 add_subdirectory(test)
 
 set(PCH_HEADERS
+  "<fmt/format.h>"
   "<glog/logging.h>"
   "<gflags/gflags.h>"
   "<glad/glad.h>"
@@ -17,14 +18,17 @@ set(PCH_HEADERS
   "<assimp/Importer.hpp>"
   "<assimp/scene.h>"
   "<assimp/postprocess.h>"
+  "<chrono>"
   "<filesystem>"
   "<fstream>"
   "<fstream>"
+  "<functional>"
   "<iostream>"
   "<memory>"
   "<sstream>"
   "<string>"
   "<string_view>"
+  "<thread>"
   "<type_traits>"
   "<variant>"
 )

@@ -8,7 +8,6 @@ namespace ExpGame
   class Window
   {
     using WindowHandle = GLFWwindow*;
-    using CreateResult = Result<Void, std::string>;
 
     Window();
 
@@ -22,9 +21,19 @@ namespace ExpGame
 
     static auto instance() -> Window&;
 
-    auto create() -> CreateResult;
+    /**
+     * @brief Creates a window. If it cannot be crated the program terminates.
+     */
+    void create();
+
+    void swap_buffers();
+
+    void poll_events();
+
+    void on_close(std::function<void(void)> f);
 
    private:
     WindowHandle window;
+    std::function<void(void)> on_close_callback;
   };
 }  // namespace ExpGame

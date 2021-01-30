@@ -64,11 +64,17 @@ namespace ExpGame
     Result() = default;
   };
 
-  template <typename... Args>
-  static auto to_string(Args&&... args) noexcept -> std::string
+  /**
+   * @brief Class used to execute a lambda every interval specified by I & U
+   *
+   * @tparam U Unit of time
+   * @tparam I Interval to tick
+   */
+  class Ticker
   {
-    std::stringstream ss;
-    (((ss) << std::forward<Args>(args)), ...);
-    return ss.str();
-  }
+   public:
+    void on_tick(auto f) {}
+
+   private:
+  };
 }  // namespace ExpGame

@@ -6,6 +6,11 @@ namespace ExpGame
    : data(d)
   {}
 
+  auto File::save(std::filesystem::path path) -> bool
+  {
+    std::ofstream ostr(path);
+  }
+
   auto File::load(std::filesystem::path path) -> LoadResult
   {
     if (!std::filesystem::exists(path)) {

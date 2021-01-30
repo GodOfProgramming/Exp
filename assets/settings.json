@@ -1,3 +1,10 @@
 {
-  "window": {}
+  "window": {
+    "title": "Exp",
+    "height": 720,
+    "width": 1280
+  },
+  "game": {
+    "target_fps": 60
+  }
 }
