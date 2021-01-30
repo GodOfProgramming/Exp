@@ -1,12 +1,15 @@
 #!/bin/bash
 
-build=0
-slow_build=0
-run=0
-run_tests=0
-gen_coverage=0
+EXE='Exp'
+EXE_TEST='ExpTest'
+
 setup=0
 clean=0
+build=0
+slow_build=0
+run_tests=0
+gen_coverage=0
+run=0
 
 proj_root="$(dirname "$0")"
 build_dir="${proj_root}/build"
@@ -52,6 +55,10 @@ done
 
 shift $((OPTIND-1))
 
+if [ $setup -eq 1 ]; then
+  git submodule update --init --recursive
+fi
+
 if [ $clean -eq 1 ]; then
 	cur_dir=$(pwd)
 	cd "${build_dir}"
@@ -71,7 +78,7 @@ if [ $build -eq 1 ]; then
 fi
 
 if [ $run_tests -eq 1 ]; then
-	cmd=${build_dir}/ExpTest
+	cmd="${build_dir}/${EXE_TEST}"
 	if [ ! -z "$1" ]; then
 		${cmd} --gtest_filter="$1" || exit $?
 	else
@@ -86,11 +93,7 @@ if [ $gen_coverage -eq 1 ]; then
 	cd "${cur_dir}"
 fi
 
-if [ $setup -eq 1 ]; then
-  git submodule update --init --recursive
-fi
-
 if [ $run -eq 1 ]; then
-	cmd=${build_dir}/Exp
+	cmd="${build_dir}/${EXE_TEST}"
   ${cmd} $@ || exit $?
 fi

@@ -378,6 +378,54 @@ COVERAGE_COMMAND:FILEPATH=/usr/bin/gcov
 //Extra command line flags to pass to the coverage tool
 COVERAGE_EXTRA_FLAGS:STRING=-l
 
+//Enable to build Debian packages
+CPACK_BINARY_DEB:BOOL=OFF
+
+//Enable to build FreeBSD packages
+CPACK_BINARY_FREEBSD:BOOL=OFF
+
+//Enable to build IFW packages
+CPACK_BINARY_IFW:BOOL=OFF
+
+//Enable to build NSIS packages
+CPACK_BINARY_NSIS:BOOL=OFF
+
+//Enable to build RPM packages
+CPACK_BINARY_RPM:BOOL=OFF
+
+//Enable to build STGZ packages
+CPACK_BINARY_STGZ:BOOL=ON
+
+//Enable to build TBZ2 packages
+CPACK_BINARY_TBZ2:BOOL=OFF
+
+//Enable to build TGZ packages
+CPACK_BINARY_TGZ:BOOL=ON
+
+//Enable to build TXZ packages
+CPACK_BINARY_TXZ:BOOL=OFF
+
+//Enable to build TZ packages
+CPACK_BINARY_TZ:BOOL=ON
+
+//Enable to build RPM source packages
+CPACK_SOURCE_RPM:BOOL=OFF
+
+//Enable to build TBZ2 source packages
+CPACK_SOURCE_TBZ2:BOOL=ON
+
+//Enable to build TGZ source packages
+CPACK_SOURCE_TGZ:BOOL=ON
+
+//Enable to build TXZ source packages
+CPACK_SOURCE_TXZ:BOOL=ON
+
+//Enable to build TZ source packages
+CPACK_SOURCE_TZ:BOOL=ON
+
+//Enable to build ZIP source packages
+CPACK_SOURCE_ZIP:BOOL=OFF
+
 //How many times to retry timed-out CTest submissions.
 CTEST_SUBMIT_RETRY_COUNT:STRING=3
 
@@ -595,6 +643,9 @@ PKGCONFIG_INSTALL_DIR:PATH=share/pkgconfig
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//Print raw pc values on symbolization failure
+PRINT_UNSYMBOLIZED_STACK_TRACES:BOOL=OFF
+
 //Path to a program.
 PYTHON_EXECUTABLE:FILEPATH=/home/jdizzle/.asdf/shims/python
 
@@ -657,8 +708,20 @@ SYSTEM_IRRXML:BOOL=FALSE
 //Path to a program.
 UNAME_COMMAND:FILEPATH=/usr/bin/uname
 
+//unwind library
+UNWIND_LIBRARY:FILEPATH=UNWIND_LIBRARY-NOTFOUND
+
 //Path to a program.
 VER_COMMAND:FILEPATH=VER_COMMAND-NOTFOUND
+
+//Use gflags
+WITH_GFLAGS:BOOL=ON
+
+//Enable multithreading support
+WITH_THREADS:BOOL=ON
+
+//Enable Thread Local Storage (TLS) support
+WITH_TLS:BOOL=ON
 
 //Path to a file.
 X11_ICE_INCLUDE_PATH:PATH=/usr/include
@@ -855,6 +918,9 @@ _Python_EXECUTABLE:FILEPATH=/home/jdizzle/.asdf/shims/python3.9
 //Dependencies for the target
 assimp_LIB_DEPENDS:STATIC=optimized;/usr/lib/x86_64-linux-gnu/libz.so;debug;/usr/lib/x86_64-linux-gnu/libz.so;general;IrrXML;general;/usr/lib/x86_64-linux-gnu/librt.so;
 
+//The directory containing a CMake configuration file for gflags.
+gflags_DIR:PATH=gflags_DIR-NOTFOUND
+
 //Dependencies for the target
 glfw_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/librt.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;dl;general;/usr/lib/x86_64-linux-gnu/libX11.so;general;-lpthread;
 
@@ -869,6 +935,15 @@ glm_BINARY_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/build/lib/glm/upstre
 
 //Value Computed by CMake
 glm_SOURCE_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/lib/glm/upstream
+
+//Value Computed by CMake
+glog_BINARY_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/build/lib/glog/upstream
+
+//Dependencies for the target
+glog_LIB_DEPENDS:STATIC=general;-lpthread;
+
+//Value Computed by CMake
+glog_SOURCE_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/lib/glog/upstream
 
 //Value Computed by CMake
 gmock_BINARY_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/build/lib/gtest/upstream/googlemock
@@ -1105,7 +1180,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=37
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=39
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1152,6 +1227,38 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 COVERAGE_COMMAND-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: COVERAGE_EXTRA_FLAGS
 COVERAGE_EXTRA_FLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_DEB
+CPACK_BINARY_DEB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_FREEBSD
+CPACK_BINARY_FREEBSD-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_IFW
+CPACK_BINARY_IFW-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_NSIS
+CPACK_BINARY_NSIS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_RPM
+CPACK_BINARY_RPM-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_STGZ
+CPACK_BINARY_STGZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_TBZ2
+CPACK_BINARY_TBZ2-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_TGZ
+CPACK_BINARY_TGZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_TXZ
+CPACK_BINARY_TXZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_BINARY_TZ
+CPACK_BINARY_TZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_RPM
+CPACK_SOURCE_RPM-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TBZ2
+CPACK_SOURCE_TBZ2-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TGZ
+CPACK_SOURCE_TGZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TXZ
+CPACK_SOURCE_TXZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_TZ
+CPACK_SOURCE_TZ-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CPACK_SOURCE_ZIP
+CPACK_SOURCE_ZIP-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CTEST_SUBMIT_RETRY_COUNT
 CTEST_SUBMIT_RETRY_COUNT-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CTEST_SUBMIT_RETRY_DELAY
@@ -1184,8 +1291,130 @@ FMT_HAS_VARIANT:INTERNAL=1
 GITCOMMAND-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GIT_EXECUTABLE
 GIT_EXECUTABLE-ADVANCED:INTERNAL=1
+//Test HAVE_ALIGNED_STORAGE
+HAVE_ALIGNED_STORAGE:INTERNAL=1
+//Test HAVE_CXX11_TLS
+HAVE_CXX11_TLS:INTERNAL=1
+//Have library dbghelp
+HAVE_DBGHELP:INTERNAL=
+//Have function dladdr
+HAVE_DLADDR:INTERNAL=
+//Have include dlfcn.h
+HAVE_DLFCN_H:INTERNAL=1
+//Have include execinfo.h
+HAVE_EXECINFO_H:INTERNAL=1
+//Have include ext/hash_map
+HAVE_EXT_HASH_MAP:INTERNAL=1
+//Have include ext/hash_set
+HAVE_EXT_HASH_SET:INTERNAL=1
+//Have include ext/slist
+HAVE_EXT_SLIST:INTERNAL=1
+//Have function fcntl
+HAVE_FCNTL:INTERNAL=1
+//Test HAVE_GCC_TLS
+HAVE_GCC_TLS:INTERNAL=1
+//Have include glob.h
+HAVE_GLOB_H:INTERNAL=1
+//Result of TRY_COMPILE
+HAVE_HAVE_UINT16_T:INTERNAL=TRUE
+//Result of TRY_COMPILE
+HAVE_HAVE_U_INT16_T:INTERNAL=TRUE
+//Result of TRY_COMPILE
+HAVE_HAVE___UINT16:INTERNAL=FALSE
+//Have include inttypes.h
+HAVE_INTTYPES_H:INTERNAL=1
+//Have include libunwind.h
+HAVE_LIBUNWIND_H:INTERNAL=
+//Have library unwind
+HAVE_LIB_UNWIND:INTERNAL=
+//Test HAVE_LOCALTIME_R
+HAVE_LOCALTIME_R:INTERNAL=1
+//Have include memory.h
+HAVE_MEMORY_H:INTERNAL=1
+//Test HAVE_MSVC_TLS
+HAVE_MSVC_TLS:INTERNAL=
+//Test HAVE_NAMESPACES
+HAVE_NAMESPACES:INTERNAL=1
+//Test HAVE_NO_DEPRECATED
+HAVE_NO_DEPRECATED:INTERNAL=1
+//Test HAVE_NO_UNNAMED_TYPE_TEMPLATE_ARGS
+HAVE_NO_UNNAMED_TYPE_TEMPLATE_ARGS:INTERNAL=
+//Result of TRY_COMPILE
+HAVE_PC_FROM_UCONTEXT:INTERNAL=FALSE
+//Have function pread
+HAVE_PREAD:INTERNAL=1
+//Have include pwd.h
+HAVE_PWD_H:INTERNAL=1
+//Have function pwrite
+HAVE_PWRITE:INTERNAL=1
+//Test HAVE_RWLOCK
+HAVE_RWLOCK:INTERNAL=
+//Have function sigaction
+HAVE_SIGACTION:INTERNAL=1
+//Have function sigaltstack
+HAVE_SIGALSTACK:INTERNAL=1
+//Have symbol snprintf
+HAVE_SNPRINTF:INTERNAL=1
+//Have include stddef.h
+HAVE_STDDEF_H:INTERNAL=1
+//Have include stdint.h
+HAVE_STDINT_H:INTERNAL=1
+//Have include stdlib.h
+HAVE_STDLIB_H:INTERNAL=1
+//Have include strings.h
+HAVE_STRINGS_H:INTERNAL=1
+//Have include string.h
+HAVE_STRING_H:INTERNAL=1
 //Have symbol strtod_l
 HAVE_STRTOD_L:INTERNAL=
+//Have include syscall.h
+HAVE_SYSCALL_H:INTERNAL=1
+//Have include syslog.h
+HAVE_SYSLOG_H:INTERNAL=1
+//Have include sys/stat.h
+HAVE_SYS_STAT_H:INTERNAL=1
+//Have include sys/syscall.h
+HAVE_SYS_SYSCALL_H:INTERNAL=1
+//Have include sys/time.h
+HAVE_SYS_TIME_H:INTERNAL=1
+//Have include sys/types.h
+HAVE_SYS_TYPES_H:INTERNAL=1
+//Have include sys/utsname.h
+HAVE_SYS_UTSNAME_H:INTERNAL=1
+//Have include tr1/unordered_map
+HAVE_TR1_UNORDERED_MAP:INTERNAL=1
+//Have include tr1/unordered_set
+HAVE_TR1_UNORDERED_SET:INTERNAL=1
+//Have include ucontext.h
+HAVE_UCONTEXT_H:INTERNAL=1
+//CHECK_TYPE_SIZE: sizeof(uint16_t)
+HAVE_UINT16_T:INTERNAL=2
+//Have include unistd.h
+HAVE_UNISTD_H:INTERNAL=1
+//Have include unordered_map
+HAVE_UNORDERED_MAP:INTERNAL=1
+//Have include unordered_set
+HAVE_UNORDERED_SET:INTERNAL=1
+//Have include unwind.h
+HAVE_UNWIND_H:INTERNAL=1
+//Test HAVE_USING_OPERATOR
+HAVE_USING_OPERATOR:INTERNAL=1
+//CHECK_TYPE_SIZE: sizeof(u_int16_t)
+HAVE_U_INT16_T:INTERNAL=2
+//Test HAVE___ATTRIBUTE__
+HAVE___ATTRIBUTE__:INTERNAL=1
+//Test HAVE___ATTRIBUTE__VISIBILITY_DEFAULT
+HAVE___ATTRIBUTE__VISIBILITY_DEFAULT:INTERNAL=1
+//Test HAVE___ATTRIBUTE__VISIBILITY_HIDDEN
+HAVE___ATTRIBUTE__VISIBILITY_HIDDEN:INTERNAL=1
+//Test HAVE___BUILTIN_EXPECT
+HAVE___BUILTIN_EXPECT:INTERNAL=1
+//Test HAVE___DECLSPEC
+HAVE___DECLSPEC:INTERNAL=
+//Test HAVE___SYNC_VAL_COMPARE_AND_SWAP
+HAVE___SYNC_VAL_COMPARE_AND_SWAP:INTERNAL=1
+//CHECK_TYPE_SIZE: unsigned __int16 unknown
+HAVE___UINT16:INTERNAL=
 //ADVANCED property for variable: HGCOMMAND
 HGCOMMAND-ADVANCED:INTERNAL=1
 //IrrXML_Include
@@ -1215,10 +1444,16 @@ SITE-ADVANCED:INTERNAL=1
 SLURM_SBATCH_COMMAND-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: SLURM_SRUN_COMMAND
 SLURM_SRUN_COMMAND-ADVANCED:INTERNAL=1
+//Test STL_NO_NAMESPACE
+STL_NO_NAMESPACE:INTERNAL=
+//Test STL_STD_NAMESPACE
+STL_STD_NAMESPACE:INTERNAL=1
 //Test SUPPORTS_USER_DEFINED_LITERALS
 SUPPORTS_USER_DEFINED_LITERALS:INTERNAL=1
 //ADVANCED property for variable: SVNCOMMAND
 SVNCOMMAND-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: UNWIND_LIBRARY
+UNWIND_LIBRARY-ADVANCED:INTERNAL=1
 UNZIP_CFLAGS:INTERNAL=
 UNZIP_CFLAGS_I:INTERNAL=
 UNZIP_CFLAGS_OTHER:INTERNAL=

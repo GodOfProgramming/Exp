@@ -31,3 +31,6 @@
 [submodule "lib/fmt/upstream"]
 	path = lib/fmt/upstream
 	url = git@github.com:fmtlib/fmt
+[submodule "lib/glog/upstream"]
+	path = lib/glog/upstream
+	url = git@github.com:google/glog
