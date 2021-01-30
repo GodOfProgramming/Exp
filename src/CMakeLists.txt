@@ -2,6 +2,8 @@ add_subdirectory(exp)
 add_subdirectory(test)
 
 set(PCH_HEADERS
+  "<glog/logging.h>"
+  "<gflags/gflags.h>"
   "<glad/glad.h>"
   "<GLFW/glfw3.h>"
   "<imgui.h>"

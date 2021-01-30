@@ -1,4 +1,5 @@
 add_subdirectory(fmt)
+add_subdirectory(gflags)
 add_subdirectory(glog)
 add_subdirectory(glad)
 add_subdirectory(glm)
@@ -13,6 +14,7 @@ add_subdirectory(gtest)
 
 set(LIBS
   fmt
+  gflags
   glog
   glad
   glm

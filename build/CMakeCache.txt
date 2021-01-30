@@ -918,8 +918,14 @@ _Python_EXECUTABLE:FILEPATH=/home/jdizzle/.asdf/shims/python3.9
 //Dependencies for the target
 assimp_LIB_DEPENDS:STATIC=optimized;/usr/lib/x86_64-linux-gnu/libz.so;debug;/usr/lib/x86_64-linux-gnu/libz.so;general;IrrXML;general;/usr/lib/x86_64-linux-gnu/librt.so;
 
+//Value Computed by CMake
+gflags_BINARY_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/build/lib/gflags/upstream
+
 //The directory containing a CMake configuration file for gflags.
 gflags_DIR:PATH=gflags_DIR-NOTFOUND
+
+//Value Computed by CMake
+gflags_SOURCE_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/lib/gflags/upstream
 
 //Dependencies for the target
 glfw_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/librt.so;general;/usr/lib/x86_64-linux-gnu/libm.so;general;dl;general;/usr/lib/x86_64-linux-gnu/libX11.so;general;-lpthread;
@@ -1180,7 +1186,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=39
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=41
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1311,6 +1317,8 @@ HAVE_EXT_HASH_SET:INTERNAL=1
 HAVE_EXT_SLIST:INTERNAL=1
 //Have function fcntl
 HAVE_FCNTL:INTERNAL=1
+//Have include fnmatch.h
+HAVE_FNMATCH_H:INTERNAL=1
 //Test HAVE_GCC_TLS
 HAVE_GCC_TLS:INTERNAL=1
 //Have include glob.h
@@ -1367,6 +1375,8 @@ HAVE_STRINGS_H:INTERNAL=1
 HAVE_STRING_H:INTERNAL=1
 //Have symbol strtod_l
 HAVE_STRTOD_L:INTERNAL=
+//Have symbol strtoll
+HAVE_STRTOLL:INTERNAL=1
 //Have include syscall.h
 HAVE_SYSCALL_H:INTERNAL=1
 //Have include syslog.h
@@ -1415,6 +1425,8 @@ HAVE___DECLSPEC:INTERNAL=
 HAVE___SYNC_VAL_COMPARE_AND_SWAP:INTERNAL=1
 //CHECK_TYPE_SIZE: unsigned __int16 unknown
 HAVE___UINT16:INTERNAL=
+//Result of TRY_COMPILE
+HAVE_uint32_t:INTERNAL=TRUE
 //ADVANCED property for variable: HGCOMMAND
 HGCOMMAND-ADVANCED:INTERNAL=1
 //IrrXML_Include
@@ -1661,4 +1673,6 @@ has_std_20_flag:INTERNAL=1
 //Test has_std_2a_flag
 has_std_2a_flag:INTERNAL=1
 targets_export_name:INTERNAL=GTestTargets
+//CHECK_TYPE_SIZE: sizeof(uint32_t)
+uint32_t:INTERNAL=4
 

@@ -2,8 +2,11 @@
 #include "exp/settings.hpp"
 #include "exp/window.hpp"
 
-int main(int, char*[])
+int main(int, char* argv[])
 {
+  google::InitGoogleLogging(argv[0]);
+
+  LOG(INFO) << "starting app";
   auto file_res = ExpGame::File::load("assets/settings.json");
   if (!file_res) {
     std::cout << "unable to load game settings: " << file_res.err_val() << '\n';

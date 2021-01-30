@@ -34,3 +34,6 @@
 [submodule "lib/glog/upstream"]
 	path = lib/glog/upstream
 	url = git@github.com:google/glog
+[submodule "lib/gflags/upstream"]
+	path = lib/gflags/upstream
+	url = git@github.com:gflags/gflags

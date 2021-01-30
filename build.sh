@@ -94,6 +94,6 @@ if [ $gen_coverage -eq 1 ]; then
 fi
 
 if [ $run -eq 1 ]; then
-	cmd="${build_dir}/${EXE_TEST}"
-  ${cmd} $@ || exit $?
+	cmd="${build_dir}/${EXE}"
+  GLOG_logtostderr=1 ${cmd} $@ || exit $?
 fi
