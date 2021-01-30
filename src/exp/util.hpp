@@ -4,6 +4,9 @@
 
 namespace ExpGame
 {
+  struct Void
+  {};
+
   template <typename tOk, typename tErr>
   class Result
   {
@@ -60,4 +63,12 @@ namespace ExpGame
 
     Result() = default;
   };
+
+  template <typename... Args>
+  static auto to_string(Args&&... args) noexcept -> std::string
+  {
+    std::stringstream ss;
+    (((ss) << std::forward<Args>(args)), ...);
+    return ss.str();
+  }
 }  // namespace ExpGame

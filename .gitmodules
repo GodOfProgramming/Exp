@@ -28,3 +28,6 @@
 [submodule "lib/json/upstream"]
 	path = lib/json/upstream
 	url = git@github.com:nlohmann/json
+[submodule "lib/fmt/upstream"]
+	path = lib/fmt/upstream
+	url = git@github.com:fmtlib/fmt

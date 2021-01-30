@@ -4,6 +4,12 @@ namespace ExpGame
 {
   using nlohmann::json;
 
+  auto SettingsManager::instance() -> SettingsManager&
+  {
+    static SettingsManager manager;
+    return manager;
+  }
+
   SettingsManager::SettingsManager() {}
   SettingsManager::~SettingsManager() {}
 
@@ -17,6 +23,6 @@ namespace ExpGame
       return LoadResult::err(ss.str());
     }
 
-    return LoadResult::ok(SettingsManager());
+    return LoadResult::ok();
   }
 }  // namespace ExpGame

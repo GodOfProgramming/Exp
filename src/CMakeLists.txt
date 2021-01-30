@@ -19,9 +19,11 @@ set(PCH_HEADERS
   "<fstream>"
   "<fstream>"
   "<iostream>"
+  "<memory>"
   "<sstream>"
   "<string>"
   "<string_view>"
+  "<type_traits>"
   "<variant>"
 )
 

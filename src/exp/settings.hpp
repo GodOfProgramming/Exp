@@ -6,13 +6,21 @@ namespace ExpGame
 {
   class SettingsManager
   {
-    using LoadResult = Result<SettingsManager, std::string>;
+    using LoadResult = Result<Void, std::string>;
+
+    SettingsManager();
 
    public:
-    SettingsManager();
+    SettingsManager(const SettingsManager&) = delete;
+    SettingsManager(SettingsManager&&)      = delete;
+    SettingsManager& operator=(const SettingsManager&) = delete;
+    SettingsManager& operator=(SettingsManager&&) = delete;
+
     ~SettingsManager();
 
-    static auto load(std::string_view raw) -> LoadResult;
+    static auto instance() -> SettingsManager&;
+
+    auto load(std::string_view raw) -> LoadResult;
 
    private:
   };

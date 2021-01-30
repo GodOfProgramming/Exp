@@ -53,6 +53,10 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "typeinfo": "cpp",
-    "filesystem": "cpp"
-  }
+    "filesystem": "cpp",
+    "*.ipp": "cpp",
+    "future": "cpp",
+    "thread": "cpp"
+  },
+  "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map,**/lib/**/upstream/**}"
 }

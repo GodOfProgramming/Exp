@@ -12,12 +12,18 @@ int main(int, char*[])
 
   auto file = file_res.ok_val();
 
-  ExpGame::SettingsManager settings;
+  auto& settings = ExpGame::SettingsManager::instance();
 
   auto settings_res = settings.load(file.data);
 
   if (!settings_res) {
-    std::cout << "unable to parse game settings: " << settings_res.err_val() << '\n';
+    std::cout << ExpGame::to_string("unable to parse game settings: ", settings_res.err_val(), '\n');
     return 1;
   }
+
+  auto& window = ExpGame::Window::instance();
+
+  window.create();
+
+  return 0;
 }
