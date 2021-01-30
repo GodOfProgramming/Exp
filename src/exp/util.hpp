@@ -63,18 +63,4 @@ namespace ExpGame
 
     Result() = default;
   };
-
-  /**
-   * @brief Class used to execute a lambda every interval specified by I & U
-   *
-   * @tparam U Unit of time
-   * @tparam I Interval to tick
-   */
-  class Ticker
-  {
-   public:
-    void on_tick(auto f) {}
-
-   private:
-  };
 }  // namespace ExpGame

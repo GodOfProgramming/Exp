@@ -41,6 +41,10 @@ int main(int, char* argv[])
 
   LOG(INFO) << "Running main loop with fps target " << settings.game.target_fps;
 
+  auto& input = ExpGame::Input::instance();
+
+  input.set_root_handler(&window);
+
   while (!exit) {
     std::uint16_t fps = settings.game.target_fps;
 

@@ -66,8 +66,8 @@ namespace ExpGame
    public:
     SettingsManager(const SettingsManager&) = delete;
     SettingsManager(SettingsManager&&)      = delete;
-    SettingsManager& operator=(const SettingsManager&) = delete;
-    SettingsManager& operator=(SettingsManager&&) = delete;
+    auto operator=(const SettingsManager&) -> SettingsManager& = delete;
+    auto operator=(SettingsManager&&) -> SettingsManager& = delete;
 
     ~SettingsManager();
 

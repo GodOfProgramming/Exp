@@ -1,11 +1,12 @@
 #pragma once
 
+#include "input.hpp"
 #include "settings.hpp"
 #include "util.hpp"
 
 namespace ExpGame
 {
-  class Window
+  class Window: public Input::IHandler
   {
     using WindowHandle = GLFWwindow*;
 
@@ -14,10 +15,10 @@ namespace ExpGame
    public:
     Window(const Window&) = delete;
     Window(Window&&)      = delete;
-    Window& operator=(const Window&) = delete;
-    Window& operator=(Window&&) = delete;
+    auto operator=(const Window&) -> Window& = delete;
+    auto operator=(Window&&) -> Window& = delete;
 
-    ~Window();
+    virtual ~Window();
 
     static auto instance() -> Window&;
 
@@ -30,7 +31,13 @@ namespace ExpGame
 
     void poll_events();
 
+    void close();
+
     void on_close(std::function<void(void)> f);
+
+    auto handle(Input::KeyEvent e) -> Input::IHandler* override;
+    auto handle(Input::MouseButtonEvent e) -> Input::IHandler* override;
+    auto handle(Input::MouseMoveEvent e) -> Input::IHandler* override;
 
    private:
     WindowHandle window;
