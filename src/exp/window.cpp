@@ -17,7 +17,11 @@ namespace ExpGame
     }
   }
 
-  Window::~Window() {}
+  Window::~Window()
+  {
+    glfwDestroyWindow(this->window);
+    glfwTerminate();
+  }
 
   void Window::create()
   {
