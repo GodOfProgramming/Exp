@@ -1,6 +1,7 @@
 #include "ui.hpp"
 
 #include "constants.hpp"
+#include "gl.hpp"
 #include "io.hpp"
 #include "window.hpp"
 
@@ -140,6 +141,10 @@ namespace ExpGame
       ImGui::Begin(this->title.c_str(), nullptr, flags);
 
       for (const auto& element : elements) { element->render(); }
+
+      auto& errors = GL::ErrorMap::instance();
+
+      for (const auto& pair : errors) {}
 
       ImGui::End();
     }

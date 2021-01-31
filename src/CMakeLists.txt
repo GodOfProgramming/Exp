@@ -27,6 +27,7 @@ set(PCH_HEADERS
   "<fstream>"
   "<functional>"
   "<iostream>"
+  "<map>"
   "<memory>"
   "<sstream>"
   "<string>"

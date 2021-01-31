@@ -1,5 +1,7 @@
 #include "render.hpp"
 
+#include "game.hpp"
+
 namespace ExpGame
 {
   namespace Render
