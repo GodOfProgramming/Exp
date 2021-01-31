@@ -17,12 +17,6 @@ namespace ExpGame
     }
   }
 
-  Window::~Window()
-  {
-    glfwDestroyWindow(this->window);
-    glfwTerminate();
-  }
-
   void Window::create()
   {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -65,7 +59,7 @@ namespace ExpGame
 
     glfwSetWindowCloseCallback(this->window, [](GLFWwindow*) {
       auto& window = Window::instance();
-      window.on_close_callback();
+      window.close();
     });
 
     glfwSetKeyCallback(this->window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
@@ -91,8 +85,13 @@ namespace ExpGame
 
   void Window::close()
   {
-    glfwSetWindowShouldClose(this->window, GLFW_TRUE);
-    this->on_close_callback();
+    if (this->window != nullptr) {
+      this->on_close_callback();
+      glfwSetWindowShouldClose(this->window, GLFW_TRUE);
+      glfwDestroyWindow(this->window);
+      this->window = nullptr;
+      glfwTerminate();
+    }
   }
 
   void Window::on_close(std::function<void(void)> f)
@@ -124,5 +123,10 @@ namespace ExpGame
   auto Window::handle(Input::MouseMoveEvent e) -> Input::IHandler*
   {
     return this->get_next();
+  }
+
+  auto Window::operator*() -> WindowHandle
+  {
+    return this->window;
   }
 }  // namespace ExpGame

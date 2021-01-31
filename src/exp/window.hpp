@@ -18,7 +18,7 @@ namespace ExpGame
     auto operator=(const Window&) -> Window& = delete;
     auto operator=(Window&&) -> Window& = delete;
 
-    virtual ~Window();
+    virtual ~Window() = default;
 
     static auto instance() -> Window&;
 
@@ -38,6 +38,8 @@ namespace ExpGame
     auto handle(Input::KeyEvent e) -> Input::IHandler* override;
     auto handle(Input::MouseButtonEvent e) -> Input::IHandler* override;
     auto handle(Input::MouseMoveEvent e) -> Input::IHandler* override;
+
+    auto operator*() -> WindowHandle;
 
    private:
     WindowHandle window;

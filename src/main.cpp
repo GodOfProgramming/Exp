@@ -2,6 +2,7 @@
 #include "exp/file.hpp"
 #include "exp/render.hpp"
 #include "exp/settings.hpp"
+#include "exp/ui.hpp"
 #include "exp/window.hpp"
 
 int main(int, char* argv[])
@@ -30,8 +31,6 @@ int main(int, char* argv[])
 
   window.on_close([&] { exit = true; });
 
-  ExpGame::Renderer renderer;
-
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
 
@@ -44,6 +43,12 @@ int main(int, char* argv[])
   auto& input = ExpGame::Input::instance();
 
   input.set_root_handler(&window);
+
+  auto& ui = ExpGame::UiManager::instance();
+
+  ui.load_all();
+
+  ExpGame::Renderer renderer{ui};
 
   while (!exit) {
     std::uint16_t fps = settings.game.target_fps;
@@ -68,6 +73,10 @@ int main(int, char* argv[])
 
     std::this_thread::sleep_until(resume);
   }
+
+  ui.shutdown();
+
+  window.close();
 
   return 0;
 }
