@@ -10,8 +10,6 @@ namespace ExpGame
     virtual ~Ui() = default;
 
     virtual void render() = 0;
-
-   private:
   };
 
   class UiManager
@@ -34,9 +32,11 @@ namespace ExpGame
 
     void shutdown();
 
+    auto parse(std::string&& xml) -> bool;
+
    private:
     ImGuiContext* context;
-    std::vector<std::shared_ptr<Ui>> elements;
+    std::vector<std::unique_ptr<Ui>> elements;
   };
 
   class DebugUi: public Ui
@@ -48,5 +48,23 @@ namespace ExpGame
 
    private:
     bool show_demo_window = false;
+  };
+
+  class WindowUi: public Ui
+  {
+   public:
+    WindowUi() = default;
+    WindowUi(std::string title);
+
+    void render() final;
+
+    auto parse(tinyxml2::XMLNode* self) -> bool;
+
+   private:
+    std::string title;
+    glm::ivec2 pos;
+    glm::ivec2 dim;
+    bool initial_render = false;
+    std::vector<std::unique_ptr<Ui>> elements;
   };
 }  // namespace ExpGame

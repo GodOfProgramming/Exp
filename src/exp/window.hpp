@@ -43,6 +43,8 @@ namespace ExpGame
 
     void on_close(std::function<void(void)> f);
 
+    auto get_size() -> glm::ivec2;
+
     auto handle(Input::KeyEvent e) -> Input::IHandler* override;
     auto handle(Input::MouseButtonEvent e) -> Input::IHandler* override;
     auto handle(Input::MouseMoveEvent e) -> Input::IHandler* override;

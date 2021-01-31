@@ -114,6 +114,13 @@ namespace ExpGame
     this->on_close_callback = f;
   }
 
+  auto Window::get_size() -> glm::ivec2
+  {
+    glm::ivec2 dim;
+    glfwGetWindowSize(this->window, &dim.x, &dim.y);
+    return dim;
+  }
+
   auto Window::handle(Input::KeyEvent e) -> Input::IHandler*
   {
     switch (e.key) {
