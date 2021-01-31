@@ -6,53 +6,56 @@
 
 namespace ExpGame
 {
-  class Window: public Input::IHandler
+  namespace Window
   {
-    using WindowHandle = GLFWwindow*;
+    class Window: public Input::IHandler
+    {
+      using WindowHandle = GLFWwindow*;
 
-    Window();
+      Window();
 
-   public:
-    Window(const Window&) = delete;
-    Window(Window&&)      = delete;
-    auto operator=(const Window&) -> Window& = delete;
-    auto operator=(Window&&) -> Window& = delete;
+     public:
+      Window(const Window&) = delete;
+      Window(Window&&)      = delete;
+      auto operator=(const Window&) -> Window& = delete;
+      auto operator=(Window&&) -> Window& = delete;
 
-    virtual ~Window() = default;
+      virtual ~Window() = default;
 
-    static auto instance() -> Window&;
+      static auto instance() -> Window&;
 
-    /**
-     * @brief Creates a window. If it cannot be crated the program terminates.
-     */
-    void create();
+      /**
+       * @brief Creates a window. If it cannot be crated the program terminates.
+       */
+      void create();
 
-    void swap_buffers();
+      void swap_buffers();
 
-    void poll_events();
+      void poll_events();
 
-    /**
-     * @brief Close the window, can be called anytime
-     */
-    void close();
+      /**
+       * @brief Close the window, can be called anytime
+       */
+      void close();
 
-    /**
-     * @brief Destroy the window, must be called after dependency cleanup
-     */
-    void destroy();
+      /**
+       * @brief Destroy the window, must be called after dependency cleanup
+       */
+      void destroy();
 
-    void on_close(std::function<void(void)> f);
+      void on_close(std::function<void(void)> f);
 
-    auto get_size() -> glm::ivec2;
+      auto get_size() -> glm::ivec2;
 
-    auto handle(Input::KeyEvent e) -> Input::IHandler* override;
-    auto handle(Input::MouseButtonEvent e) -> Input::IHandler* override;
-    auto handle(Input::MouseMoveEvent e) -> Input::IHandler* override;
+      auto handle(Input::KeyEvent e) -> Input::IHandler* override;
+      auto handle(Input::MouseButtonEvent e) -> Input::IHandler* override;
+      auto handle(Input::MouseMoveEvent e) -> Input::IHandler* override;
 
-    auto operator*() -> WindowHandle;
+      auto operator*() -> WindowHandle;
 
-   private:
-    WindowHandle window;
-    std::function<void(void)> on_close_callback;
-  };
+     private:
+      WindowHandle window;
+      std::function<void(void)> on_close_callback;
+    };
+  }  // namespace Window
 }  // namespace ExpGame

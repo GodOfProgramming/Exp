@@ -2,18 +2,8 @@
 
 namespace ExpGame
 {
-  class Input
+  namespace Input
   {
-    Input();
-
-   public:
-    Input(const Input&) = delete;
-    Input(Input&&)      = delete;
-    auto operator=(const Input&) -> Input& = delete;
-    auto operator=(Input&&) -> Input& = delete;
-
-    static auto instance() -> Input&;
-
     enum class Key
     {
       ESC = GLFW_KEY_ESCAPE,
@@ -54,13 +44,26 @@ namespace ExpGame
       IHandler* next;
     };
 
-    void set_root_handler(IHandler* handler);
+    class Input
+    {
+      Input();
 
-    void process(KeyEvent event);
-    void process(MouseButtonEvent event);
-    void process(MouseMoveEvent event);
+     public:
+      Input(const Input&) = delete;
+      Input(Input&&)      = delete;
+      auto operator=(const Input&) -> Input& = delete;
+      auto operator=(Input&&) -> Input& = delete;
 
-   private:
-    IHandler* root_handler;
-  };
+      static auto instance() -> Input&;
+
+      void set_root_handler(IHandler* handler);
+
+      void process(KeyEvent event);
+      void process(MouseButtonEvent event);
+      void process(MouseMoveEvent event);
+
+     private:
+      IHandler* root_handler;
+    };
+  }  // namespace Input
 }  // namespace ExpGame

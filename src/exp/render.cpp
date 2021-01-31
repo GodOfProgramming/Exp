@@ -2,17 +2,20 @@
 
 namespace ExpGame
 {
-  Renderer::Renderer(UiManager& u)
-   : ui(u)
-  {}
-
-  void Renderer::render_to(Window& window)
+  namespace Render
   {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    Renderer::Renderer(UiManager& u)
+     : ui(u)
+    {}
 
-    this->ui.render();
+    void Renderer::render_to(Window& window)
+    {
+      glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
 
-    window.swap_buffers();
-  }
+      this->ui.render();
+
+      window.swap_buffers();
+    }
+  }  // namespace Render
 }  // namespace ExpGame

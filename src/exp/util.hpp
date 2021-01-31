@@ -4,63 +4,66 @@
 
 namespace ExpGame
 {
-  struct Void
-  {};
-
-  template <typename tOk, typename tErr>
-  class Result
+  namespace Util
   {
-   public:
-    ~Result() = default;
+    struct Void
+    {};
 
-    constexpr static auto ok() -> Result<tOk, tErr>
+    template <typename tOk, typename tErr>
+    class Result
     {
-      return Result<tOk, tErr>();
-    }
+     public:
+      ~Result() = default;
 
-    constexpr static auto ok(tOk arg) -> Result<tOk, tErr>
-    {
-      Result<tOk, tErr> res;
-      res.val_ok = arg;
-      return res;
-    }
+      constexpr static auto ok() -> Result<tOk, tErr>
+      {
+        return Result<tOk, tErr>();
+      }
 
-    constexpr static auto err(tErr arg) -> Result<tOk, tErr>
-    {
-      Result<tOk, tErr> res;
-      res.val_err = arg;
-      return res;
-    }
+      constexpr static auto ok(tOk arg) -> Result<tOk, tErr>
+      {
+        Result<tOk, tErr> res;
+        res.val_ok = arg;
+        return res;
+      }
 
-    auto ok_val() const noexcept -> tOk
-    {
-      return this->val_ok.value_or(tOk());
-    }
+      constexpr static auto err(tErr arg) -> Result<tOk, tErr>
+      {
+        Result<tOk, tErr> res;
+        res.val_err = arg;
+        return res;
+      }
 
-    auto err_val() const noexcept -> tErr
-    {
-      return this->val_err.value_or(tErr());
-    }
+      auto ok_val() const noexcept -> tOk
+      {
+        return this->val_ok.value_or(tOk());
+      }
 
-    auto is_err() const noexcept -> bool
-    {
-      return static_cast<bool>(this->val_err);
-    }
+      auto err_val() const noexcept -> tErr
+      {
+        return this->val_err.value_or(tErr());
+      }
 
-    auto is_ok() const noexcept -> bool
-    {
-      return !this->is_err();
-    }
+      auto is_err() const noexcept -> bool
+      {
+        return static_cast<bool>(this->val_err);
+      }
 
-    operator bool()
-    {
-      return this->is_ok();
-    }
+      auto is_ok() const noexcept -> bool
+      {
+        return !this->is_err();
+      }
 
-   private:
-    std::optional<tOk> val_ok;
-    std::optional<tErr> val_err;
+      operator bool()
+      {
+        return this->is_ok();
+      }
 
-    Result() = default;
-  };
+     private:
+      std::optional<tOk> val_ok;
+      std::optional<tErr> val_err;
+
+      Result() = default;
+    };
+  }  // namespace Util
 }  // namespace ExpGame

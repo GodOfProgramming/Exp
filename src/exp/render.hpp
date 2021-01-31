@@ -5,13 +5,19 @@
 
 namespace ExpGame
 {
-  class Renderer
+  namespace Render
   {
-   public:
-    Renderer(UiManager& ui);
-    void render_to(Window& window);
+    class Renderer
+    {
+      using UiManager = Ui::UiManager;
+      using Window    = Window::Window;
 
-   private:
-    UiManager& ui;
-  };
+     public:
+      Renderer(UiManager& ui);
+      void render_to(Window& window);
+
+     private:
+      UiManager& ui;
+    };
+  }  // namespace Render
 }  // namespace ExpGame

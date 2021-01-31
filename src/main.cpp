@@ -1,5 +1,5 @@
 #include "exp/constants.hpp"
-#include "exp/file.hpp"
+#include "exp/io.hpp"
 #include "exp/render.hpp"
 #include "exp/settings.hpp"
 #include "exp/ui.hpp"
@@ -7,11 +7,18 @@
 
 int main(int, char* argv[])
 {
+  using ExpGame::Input::Input;
+  using ExpGame::IO::File;
+  using ExpGame::Render::Renderer;
+  using ExpGame::Settings::SettingsManager;
+  using ExpGame::Ui::UiManager;
+  using ExpGame::Window::Window;
+
   google::InitGoogleLogging(argv[0]);
 
   DLOG(INFO) << "Starting app";
 
-  auto file_res = ExpGame::File::load(ExpGame::SETTINGS_FILE);
+  auto file_res = File::load(ExpGame::SETTINGS_FILE);
   if (!file_res) {
     LOG(ERROR) << "unable to load game settings: " << file_res.err_val();
     return 1;
@@ -19,12 +26,12 @@ int main(int, char* argv[])
 
   auto file = file_res.ok_val();
 
-  auto& settings = ExpGame::SettingsManager::instance();
+  auto& settings = SettingsManager::instance();
   settings.deserialize(file.data);
 
   LOG(INFO) << "Creating a window (" << settings.window.width << 'x' << settings.window.height << ")";
 
-  auto& window = ExpGame::Window::instance();
+  auto& window = Window::instance();
   window.create();
 
   bool exit = false;
@@ -40,15 +47,15 @@ int main(int, char* argv[])
 
   LOG(INFO) << "Running main loop with fps target " << settings.game.target_fps;
 
-  auto& input = ExpGame::Input::instance();
+  auto& input = Input::instance();
 
   input.set_root_handler(&window);
 
-  auto& ui = ExpGame::UiManager::instance();
+  auto& ui = UiManager::instance();
 
   ui.load_all();
 
-  ExpGame::Renderer renderer{ui};
+  Renderer renderer{ui};
 
   while (!exit) {
     std::uint16_t fps = settings.game.target_fps;

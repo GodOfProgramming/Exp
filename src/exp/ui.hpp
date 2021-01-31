@@ -4,67 +4,70 @@
 
 namespace ExpGame
 {
-  class Ui
+  namespace Ui
   {
-   public:
-    virtual ~Ui() = default;
+    class Ui
+    {
+     public:
+      virtual ~Ui() = default;
 
-    virtual void render() = 0;
-  };
+      virtual void render() = 0;
+    };
 
-  class UiManager
-  {
-    UiManager();
+    class UiManager
+    {
+      UiManager();
 
-   public:
-    UiManager(const UiManager&) = delete;
-    UiManager(UiManager&&)      = delete;
-    auto operator=(const UiManager&) -> UiManager& = delete;
-    auto operator=(UiManager&&) -> UiManager& = delete;
+     public:
+      UiManager(const UiManager&) = delete;
+      UiManager(UiManager&&)      = delete;
+      auto operator=(const UiManager&) -> UiManager& = delete;
+      auto operator=(UiManager&&) -> UiManager& = delete;
 
-    ~UiManager() = default;
+      ~UiManager() = default;
 
-    static auto instance() -> UiManager&;
+      static auto instance() -> UiManager&;
 
-    void load_all();
+      void load_all();
 
-    void render();
+      void render();
 
-    void shutdown();
+      void shutdown();
 
-    auto parse(std::string&& xml) -> bool;
+      auto parse(std::string&& xml) -> bool;
 
-   private:
-    ImGuiContext* context;
-    std::vector<std::unique_ptr<Ui>> elements;
-  };
+     private:
+      ImGuiContext* context;
+      std::vector<std::unique_ptr<Ui>> elements;
+    };
 
-  class DebugUi: public Ui
-  {
-   public:
-    virtual ~DebugUi() override = default;
+    class DebugUi: public Ui
+    {
+     public:
+      virtual ~DebugUi() override = default;
 
-    void render() final;
+      void render() final;
 
-   private:
-    bool show_demo_window = false;
-  };
+     private:
+      bool show_demo_window = false;
+    };
 
-  class WindowUi: public Ui
-  {
-   public:
-    WindowUi() = default;
-    WindowUi(std::string title);
+    class WindowUi: public Ui
+    {
+     public:
+      WindowUi() = default;
+      WindowUi(std::string title);
 
-    void render() final;
+      void render() final;
 
-    auto parse(tinyxml2::XMLNode* self) -> bool;
+      auto parse(tinyxml2::XMLNode* self) -> bool;
 
-   private:
-    std::string title;
-    glm::ivec2 pos;
-    glm::ivec2 dim;
-    bool initial_render = false;
-    std::vector<std::unique_ptr<Ui>> elements;
-  };
+     private:
+      std::string title;
+      glm::ivec2 pos;
+      glm::ivec2 dim;
+      bool initial_render = false;
+      std::vector<std::unique_ptr<Ui>> elements;
+    };
+  }  // namespace Ui
 }  // namespace ExpGame

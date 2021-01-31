@@ -4,94 +4,97 @@
 
 namespace ExpGame
 {
-  template <typename T>
-  class Setting
+  namespace Settings
   {
-    using ChangeCallback = std::function<void(Setting&, T)>;
-
-   public:
-    using type = T;
-
-    Setting() = default;
-    Setting(std::string n, T v)
-     : name(n)
-     , value(v)
-    {}
-
-    auto display_name() const noexcept -> T
+    template <typename T>
+    class Setting
     {
-      return this->name;
-    }
+      using ChangeCallback = std::function<void(Setting&, T)>;
 
-    auto raw() const noexcept -> T
+     public:
+      using type = T;
+
+      Setting() = default;
+      Setting(std::string n, T v)
+       : name(n)
+       , value(v)
+      {}
+
+      auto display_name() const noexcept -> T
+      {
+        return this->name;
+      }
+
+      auto raw() const noexcept -> T
+      {
+        return this->value;
+      }
+
+      operator T()
+      {
+        return this->value;
+      }
+
+      /**
+       * @brief First calls all callbacks with the current value of the setting and the to soon be.
+       */
+      void update(T& v)
+      {
+        for (const auto& callback : this->callbacks) { callback(*this, v); }
+        this->value = v;
+      }
+
+      auto operator=(T& v) -> Setting&
+      {
+        this->value = v;
+        return *this;
+      }
+
+      auto on_change(ChangeCallback f)
+      {
+        this->callbacks.push_back(f);
+      }
+
+     private:
+      std::string name;
+      T value;
+      std::vector<ChangeCallback> callbacks;
+    };
+
+    class SettingsManager
     {
-      return this->value;
-    }
+      SettingsManager() = default;
 
-    operator T()
-    {
-      return this->value;
-    }
+     public:
+      SettingsManager(const SettingsManager&) = delete;
+      SettingsManager(SettingsManager&&)      = delete;
+      auto operator=(const SettingsManager&) -> SettingsManager& = delete;
+      auto operator=(SettingsManager&&) -> SettingsManager& = delete;
 
-    /**
-     * @brief First calls all callbacks with the current value of the setting and the to soon be.
-     */
-    void update(T& v)
-    {
-      for (const auto& callback : this->callbacks) { callback(*this, v); }
-      this->value = v;
-    }
+      ~SettingsManager();
 
-    auto operator=(T& v) -> Setting&
-    {
-      this->value = v;
-      return *this;
-    }
+      static auto instance() -> SettingsManager&;
 
-    auto on_change(ChangeCallback f)
-    {
-      this->callbacks.push_back(f);
-    }
+      auto serialize() -> std::string;
 
-   private:
-    std::string name;
-    T value;
-    std::vector<ChangeCallback> callbacks;
-  };
+      /**
+       * @brief Deserializes the provided string. If the string is not valid json, the program terminates
+       */
+      void deserialize(std::string_view raw);
 
-  class SettingsManager
-  {
-    SettingsManager() = default;
+      struct
+      {
+        Setting<std::string> title;
+        Setting<int> height;
+        Setting<int> width;
+      } window;
 
-   public:
-    SettingsManager(const SettingsManager&) = delete;
-    SettingsManager(SettingsManager&&)      = delete;
-    auto operator=(const SettingsManager&) -> SettingsManager& = delete;
-    auto operator=(SettingsManager&&) -> SettingsManager& = delete;
+      struct
+      {
+        Setting<std::uint16_t> target_fps;
+      } game;
 
-    ~SettingsManager();
-
-    static auto instance() -> SettingsManager&;
-
-    auto serialize() -> std::string;
-
-    /**
-     * @brief Deserializes the provided string. If the string is not valid json, the program terminates
-     */
-    void deserialize(std::string_view raw);
-
-    struct
-    {
-      Setting<std::string> title;
-      Setting<int> height;
-      Setting<int> width;
-    } window;
-
-    struct
-    {
-      Setting<std::uint16_t> target_fps;
-    } game;
-
-   private:
-  };
+     private:
+    };
+  }  // namespace Settings
 }  // namespace ExpGame

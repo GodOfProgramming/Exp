@@ -15,41 +15,44 @@
 
 namespace ExpGame
 {
-  using nlohmann::json;
-
-  auto SettingsManager::instance() -> SettingsManager&
+  namespace Settings
   {
-    static SettingsManager manager;
-    return manager;
-  }
+    using nlohmann::json;
 
-  SettingsManager::~SettingsManager() {}
-
-  auto SettingsManager::serialize() -> std::string
-  {
-    json j = {
-     {"window",
-      {{"title", this->window.title.raw()}, {"height", this->window.height.raw()}, {"width", this->window.width.raw()}}}};
-
-    return j.dump(2);
-  }
-
-  void SettingsManager::deserialize(std::string_view raw)
-  {
-    json j;
-
-    try {
-      j = json::parse(std::string(raw));
-    } catch (std::exception& e) {
-      LOG(FATAL) << "Could not parse json: " << e.what();
+    auto SettingsManager::instance() -> SettingsManager&
+    {
+      static SettingsManager manager;
+      return manager;
     }
 
-    auto window = j["window"];
-    ASSIGN(window, title, "ExpGame");
-    ASSIGN(window, height, 720);
-    ASSIGN(window, width, 1280);
+    SettingsManager::~SettingsManager() {}
 
-    auto game = j["game"];
-    ASSIGN(game, target_fps, 60);
-  }
+    auto SettingsManager::serialize() -> std::string
+    {
+      json j = {
+       {"window",
+        {{"title", this->window.title.raw()}, {"height", this->window.height.raw()}, {"width", this->window.width.raw()}}}};
+
+      return j.dump(2);
+    }
+
+    void SettingsManager::deserialize(std::string_view raw)
+    {
+      json j;
+
+      try {
+        j = json::parse(std::string(raw));
+      } catch (std::exception& e) {
+        LOG(FATAL) << "Could not parse json: " << e.what();
+      }
+
+      auto window = j["window"];
+      ASSIGN(window, title, "ExpGame");
+      ASSIGN(window, height, 720);
+      ASSIGN(window, width, 1280);
+
+      auto game = j["game"];
+      ASSIGN(game, target_fps, 60);
+    }
+  }  // namespace Settings
 }  // namespace ExpGame
