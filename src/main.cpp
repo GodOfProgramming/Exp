@@ -76,7 +76,7 @@ int main(int, char* argv[])
 
   ui.shutdown();
 
-  window.close();
+  window.destroy();
 
   return 0;
 }

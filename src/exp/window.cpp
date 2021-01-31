@@ -62,7 +62,7 @@ namespace ExpGame
       window.close();
     });
 
-    glfwSetKeyCallback(this->window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(this->window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
       auto& input = Input::instance();
 
       Input::KeyEvent event;
@@ -70,7 +70,18 @@ namespace ExpGame
       event.action = static_cast<Input::Action>(action);
 
       input.process(event);
+
+      ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     });
+
+    glfwSetScrollCallback(
+     this->window, [](GLFWwindow* window, double x, double y) { ImGui_ImplGlfw_ScrollCallback(window, x, y); });
+
+    glfwSetMouseButtonCallback(this->window, [](GLFWwindow* window, int button, int action, int mods) {
+      ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    });
+
+    glfwSetCharCallback(this->window, [](GLFWwindow* window, unsigned int c) { ImGui_ImplGlfw_CharCallback(window, c); });
   }
 
   void Window::swap_buffers()
@@ -85,13 +96,17 @@ namespace ExpGame
 
   void Window::close()
   {
-    if (this->window != nullptr) {
-      this->on_close_callback();
-      glfwSetWindowShouldClose(this->window, GLFW_TRUE);
-      glfwDestroyWindow(this->window);
-      this->window = nullptr;
-      glfwTerminate();
-    }
+    DLOG(INFO) << "Closing window";
+    this->on_close_callback();
+    glfwSetWindowShouldClose(this->window, GLFW_TRUE);
+  }
+
+  void Window::destroy()
+  {
+    DLOG(INFO) << "Destorying window";
+    glfwDestroyWindow(this->window);
+    glfwTerminate();
+    this->window = nullptr;
   }
 
   void Window::on_close(std::function<void(void)> f)

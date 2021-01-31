@@ -31,7 +31,15 @@ namespace ExpGame
 
     void poll_events();
 
+    /**
+     * @brief Close the window, can be called anytime
+     */
     void close();
+
+    /**
+     * @brief Destroy the window, must be called after dependency cleanup
+     */
+    void destroy();
 
     void on_close(std::function<void(void)> f);
 

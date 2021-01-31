@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util.hpp"
+
 namespace ExpGame
 {
   class Ui

@@ -21,6 +21,7 @@ namespace ExpGame
     ImGui_ImplOpenGL3_Init();
     ImGui::StyleColorsDark();
     ImGui::GetIO().MouseDrawCursor = false;
+    ImGui::GetIO().IniFilename     = nullptr;
   }
 
   void UiManager::load_all()
@@ -46,6 +47,7 @@ namespace ExpGame
 
   void UiManager::shutdown()
   {
+    DLOG(INFO) << "Shutting down ui";
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext(this->context);
@@ -54,7 +56,22 @@ namespace ExpGame
   void DebugUi::render()
   {
     if (ImGui::BeginMainMenuBar()) {
+      if (ImGui::BeginMenu("debug")) {
+        if (ImGui::MenuItem("demo window")) {
+          this->show_demo_window = !this->show_demo_window;
+        }
+
+        if (ImGui::MenuItem("exit")) {
+          auto& window = Window::instance();
+          window.close();
+        }
+        ImGui::EndMenu();
+      }
       ImGui::EndMainMenuBar();
+    }
+
+    if (this->show_demo_window) {
+      ImGui::ShowDemoWindow();
     }
   }
 }  // namespace ExpGame
