@@ -107,7 +107,7 @@ namespace ExpGame
         if (e.action == Input::Action::Press) {
           this->close();
         }
-      }
+      } break;
       default: {
         return this->get_next();
       }

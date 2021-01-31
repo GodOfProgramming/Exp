@@ -10,6 +10,7 @@ add_subdirectory(lua)
 add_subdirectory(sol)
 add_subdirectory(assimp)
 add_subdirectory(json)
+add_subdirectory(xml)
 add_subdirectory(gtest)
 
 set(LIBS
@@ -24,6 +25,7 @@ set(LIBS
   lua::lib
   sol2::sol2
   nlohmann_json
+  tinyxml2
   assimp
 )
 

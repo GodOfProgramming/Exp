@@ -37,3 +37,6 @@
 [submodule "lib/gflags/upstream"]
 	path = lib/gflags/upstream
 	url = git@github.com:gflags/gflags
+[submodule "lib/xml/upstream"]
+	path = lib/xml/upstream
+	url = git@github.com:leethomason/tinyxml2
