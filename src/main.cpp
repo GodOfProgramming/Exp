@@ -7,12 +7,12 @@
 
 int main(int, char* argv[])
 {
-  using ExpGame::Input::Input;
+  using ExpGame::Input::Dispatcher;
   using ExpGame::IO::File;
   using ExpGame::Render::Renderer;
   using ExpGame::Settings::SettingsManager;
   using ExpGame::Ui::UiManager;
-  using ExpGame::Window::Window;
+  using ExpGame::Window::AppWindow;
 
   google::InitGoogleLogging(argv[0]);
 
@@ -31,7 +31,7 @@ int main(int, char* argv[])
 
   LOG(INFO) << "Creating a window (" << settings.window.width << 'x' << settings.window.height << ")";
 
-  auto& window = Window::instance();
+  auto& window = AppWindow::instance();
   window.create();
 
   bool exit = false;
@@ -47,7 +47,7 @@ int main(int, char* argv[])
 
   LOG(INFO) << "Running main loop with fps target " << settings.game.target_fps;
 
-  auto& input = Input::instance();
+  auto& input = Dispatcher::instance();
 
   input.set_root_handler(&window);
 

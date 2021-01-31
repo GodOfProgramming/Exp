@@ -44,17 +44,17 @@ namespace ExpGame
       IHandler* next;
     };
 
-    class Input
+    class Dispatcher
     {
-      Input();
+      Dispatcher();
 
      public:
-      Input(const Input&) = delete;
-      Input(Input&&)      = delete;
-      auto operator=(const Input&) -> Input& = delete;
-      auto operator=(Input&&) -> Input& = delete;
+      Dispatcher(const Dispatcher&) = delete;
+      Dispatcher(Dispatcher&&)      = delete;
+      auto operator=(const Dispatcher&) -> Dispatcher& = delete;
+      auto operator=(Dispatcher&&) -> Dispatcher& = delete;
 
-      static auto instance() -> Input&;
+      static auto instance() -> Dispatcher&;
 
       void set_root_handler(IHandler* handler);
 

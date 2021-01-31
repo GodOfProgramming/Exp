@@ -8,8 +8,8 @@ namespace ExpGame
 {
   namespace Ui
   {
-    using File   = IO::File;
-    using Window = Window::Window;
+    using IO::File;
+    using Window::AppWindow;
 
     auto UiManager::instance() -> UiManager&
     {
@@ -22,7 +22,7 @@ namespace ExpGame
       IMGUI_CHECKVERSION();
       this->context = ImGui::CreateContext();
 
-      auto& window = Window::instance();
+      auto& window = AppWindow::instance();
       ImGui_ImplGlfw_InitForOpenGL(*window, false);
       ImGui_ImplOpenGL3_Init();
       ImGui::StyleColorsDark();
@@ -106,7 +106,7 @@ namespace ExpGame
           }
 
           if (ImGui::MenuItem("exit")) {
-            auto& window = Window::instance();
+            auto& window = AppWindow::instance();
             window.close();
           }
           ImGui::EndMenu();
@@ -162,7 +162,7 @@ namespace ExpGame
       this->title = title_attr->Value();
       DLOG(INFO) << "Creating window with title " << this->title;
 
-      auto& window = Window::instance();
+      auto& window = AppWindow::instance();
       auto size    = window.get_size();
 
       {

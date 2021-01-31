@@ -4,17 +4,17 @@ namespace ExpGame
 {
   namespace Input
   {
-    auto Input::instance() -> Input&
+    auto Dispatcher::instance() -> Dispatcher&
     {
-      static Input input;
+      static Dispatcher input;
       return input;
     }
 
-    Input::Input()
+    Dispatcher::Dispatcher()
      : root_handler(nullptr)
     {}
 
-    void Input::process(KeyEvent event)
+    void Dispatcher::process(KeyEvent event)
     {
       auto* curr = this->root_handler;
       do {
@@ -22,7 +22,7 @@ namespace ExpGame
       } while (curr != nullptr);
     }
 
-    void Input::process(MouseButtonEvent event)
+    void Dispatcher::process(MouseButtonEvent event)
     {
       auto* curr = this->root_handler;
       do {
@@ -30,7 +30,7 @@ namespace ExpGame
       } while (curr != nullptr);
     }
 
-    void Input::process(MouseMoveEvent event)
+    void Dispatcher::process(MouseMoveEvent event)
     {
       auto* curr = this->root_handler;
       do {
@@ -38,7 +38,7 @@ namespace ExpGame
       } while (curr != nullptr);
     }
 
-    void Input::set_root_handler(IHandler* handler)
+    void Dispatcher::set_root_handler(IHandler* handler)
     {
       this->root_handler = handler;
     }

@@ -10,7 +10,7 @@ namespace ExpGame
     class Renderer
     {
       using UiManager = Ui::UiManager;
-      using Window    = Window::Window;
+      using Window    = Window::AppWindow;
 
      public:
       Renderer(UiManager& ui);

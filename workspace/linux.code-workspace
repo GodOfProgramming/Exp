@@ -62,7 +62,8 @@
       "filesystem": "cpp",
       "*.ipp": "cpp",
       "future": "cpp",
-      "thread": "cpp"
+      "thread": "cpp",
+      "bitset": "cpp"
     },
     "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map}",
     "files.exclude": {

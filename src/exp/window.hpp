@@ -8,21 +8,21 @@ namespace ExpGame
 {
   namespace Window
   {
-    class Window: public Input::IHandler
+    class AppWindow: public Input::IHandler
     {
       using WindowHandle = GLFWwindow*;
 
-      Window();
+      AppWindow();
 
      public:
-      Window(const Window&) = delete;
-      Window(Window&&)      = delete;
-      auto operator=(const Window&) -> Window& = delete;
-      auto operator=(Window&&) -> Window& = delete;
+      AppWindow(const AppWindow&) = delete;
+      AppWindow(AppWindow&&)      = delete;
+      auto operator=(const AppWindow&) -> AppWindow& = delete;
+      auto operator=(AppWindow&&) -> AppWindow& = delete;
 
-      virtual ~Window() = default;
+      virtual ~AppWindow() = default;
 
-      static auto instance() -> Window&;
+      static auto instance() -> AppWindow&;
 
       /**
        * @brief Creates a window. If it cannot be crated the program terminates.

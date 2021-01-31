@@ -11,20 +11,20 @@ namespace ExpGame
     using Input::MouseMoveEvent;
     using Settings::SettingsManager;
 
-    auto Window::instance() -> Window&
+    auto AppWindow::instance() -> AppWindow&
     {
-      static Window window;
+      static AppWindow window;
       return window;
     }
 
-    Window::Window()
+    AppWindow::AppWindow()
     {
       if (glfwInit() != GLFW_TRUE) {
         LOG(FATAL) << "Could not initialize glfw";
       }
     }
 
-    void Window::create()
+    void AppWindow::create()
     {
       glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -65,12 +65,12 @@ namespace ExpGame
       });
 
       glfwSetWindowCloseCallback(this->window, [](GLFWwindow*) {
-        auto& window = Window::instance();
+        auto& window = AppWindow::instance();
         window.close();
       });
 
       glfwSetKeyCallback(this->window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        auto& input = Input::Input::instance();
+        auto& input = Input::Dispatcher::instance();
 
         Input::KeyEvent event;
         event.key    = static_cast<Input::Key>(key);
@@ -91,24 +91,24 @@ namespace ExpGame
       glfwSetCharCallback(this->window, [](GLFWwindow* window, unsigned int c) { ImGui_ImplGlfw_CharCallback(window, c); });
     }
 
-    void Window::swap_buffers()
+    void AppWindow::swap_buffers()
     {
       glfwSwapBuffers(this->window);
     }
 
-    void Window::poll_events()
+    void AppWindow::poll_events()
     {
       glfwPollEvents();
     }
 
-    void Window::close()
+    void AppWindow::close()
     {
       DLOG(INFO) << "Closing window";
       this->on_close_callback();
       glfwSetWindowShouldClose(this->window, GLFW_TRUE);
     }
 
-    void Window::destroy()
+    void AppWindow::destroy()
     {
       DLOG(INFO) << "Destorying window";
       glfwDestroyWindow(this->window);
@@ -116,19 +116,19 @@ namespace ExpGame
       this->window = nullptr;
     }
 
-    void Window::on_close(std::function<void(void)> f)
+    void AppWindow::on_close(std::function<void(void)> f)
     {
       this->on_close_callback = f;
     }
 
-    auto Window::get_size() -> glm::ivec2
+    auto AppWindow::get_size() -> glm::ivec2
     {
       glm::ivec2 dim;
       glfwGetWindowSize(this->window, &dim.x, &dim.y);
       return dim;
     }
 
-    auto Window::handle(Input::KeyEvent e) -> Input::IHandler*
+    auto AppWindow::handle(Input::KeyEvent e) -> Input::IHandler*
     {
       switch (e.key) {
         case Input::Key::ESC: {
@@ -144,17 +144,17 @@ namespace ExpGame
       return nullptr;
     }
 
-    auto Window::handle(Input::MouseButtonEvent e) -> Input::IHandler*
+    auto AppWindow::handle(Input::MouseButtonEvent e) -> Input::IHandler*
     {
       return this->get_next();
     }
 
-    auto Window::handle(Input::MouseMoveEvent e) -> Input::IHandler*
+    auto AppWindow::handle(Input::MouseMoveEvent e) -> Input::IHandler*
     {
       return this->get_next();
     }
 
-    auto Window::operator*() -> WindowHandle
+    auto AppWindow::operator*() -> WindowHandle
     {
       return this->window;
     }
