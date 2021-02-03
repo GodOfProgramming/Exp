@@ -1,0 +1,6 @@
+{
+  "basic": {
+    "vertex": "basic.vertex.glsl",
+    "fragment": "basic.fragment.glsl"
+  }
+}

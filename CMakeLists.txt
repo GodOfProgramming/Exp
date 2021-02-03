@@ -28,6 +28,8 @@ target_compile_options(${EXE_TEST} PUBLIC ${SHARED_COMPILE_OPTS} -g -O0 --covera
 
 # add sources
 
+add_subdirectory(assets)
+
 add_subdirectory(lib)
 
 add_subdirectory(src)
@@ -39,3 +41,7 @@ target_link_libraries(${EXE_TEST} gcov pthread)
 target_include_directories(${EXE} PUBLIC "${CMAKE_SOURCE_DIR}/src")
 
 target_include_directories(${EXE_TEST} PUBLIC "${CMAKE_SOURCE_DIR}/src")
+
+add_dependencies(${EXE} SHADERS)
+
+add_dependencies(${EXE_TEST} SHADERS)

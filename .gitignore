@@ -1,5 +1,6 @@
 build/*
 !build/CMakeCache.txt
+assets/shaders/out/*
 
 CMakeLists.txt.user
 CMakeFiles
