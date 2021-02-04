@@ -11,13 +11,6 @@ SHADER_CFG = 'shaders.json'
 
 IMPORT_REGEX = /#import\s+"[\-\w.]+"/
 
-cfg = nil
-
-File.open("#{__dir__}/#{SHADER_CFG}") do |f|
-  data = f.read
-  cfg = JSON.parse(data, symbolize_names: true)
-end
-
 def forge_shader(shader, imported_files, successful_imports)
   src = nil
 
@@ -59,12 +52,18 @@ ensure
   imported_files.pop
 end
 
+cfg = nil
+
+File.open("#{__dir__}/#{SHADER_CFG}") do |f|
+  data = f.read
+  cfg = JSON.parse(data, symbolize_names: true)
+end
+
 shaders = Set.new
 
 cfg.each do |shader|
-  pair = shader[1]
-  shaders << pair[:vertex]
-  shaders << pair[:fragment]
+  shaders << shader[:vertex][:file]
+  shaders << shader[:fragment][:file]
 end
 
 shaders.each do |shader|

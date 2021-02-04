@@ -29,11 +29,14 @@ set(PCH_HEADERS
   "<iostream>"
   "<map>"
   "<memory>"
+  "<set>"
   "<sstream>"
   "<string>"
   "<string_view>"
   "<thread>"
   "<type_traits>"
+  "<unordered_map>"
+  "<unordered_set>"
   "<variant>"
 )
 

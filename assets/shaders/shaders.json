@@ -1,6 +1,13 @@
-{
-  "basic": {
-    "vertex": "basic.vertex.glsl",
-    "fragment": "basic.fragment.glsl"
+[
+  {
+    "name": "basic",
+    "vertex": {
+      "name": "basic_vertex",
+      "file": "basic.vertex.glsl"
+    },
+    "fragment": {
+      "name": "basic_fragment",
+      "file": "basic.fragment.glsl"
+    }
   }
-}
+]

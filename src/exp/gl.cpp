@@ -52,6 +52,73 @@ namespace ExpGame
       return GL_CHECK();
     }
 
+    Shader::Shader() noexcept
+     : id(0)
+    {}
+
+    Shader::~Shader() noexcept
+    {
+      if (this->id != 0) {
+        glDeleteShader(this->id);
+      }
+    }
+
+    auto Shader::compile(Type t, const std::string_view src) noexcept -> bool
+    {
+      this->id = glCreateShader(static_cast<GLenum>(t));
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "Unable to create new shader (gl error != GL_NO_ERROR)";
+        return false;
+      }
+
+      if (this->id == 0) {
+        LOG(ERROR) << "Unable to create new shader (shader = 0)";
+        return false;
+      }
+
+      auto data = src.data();
+      GLint len = src.length();
+
+      glShaderSource(this->id, 1, &data, &len);
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "Unable to set shader source";
+        return false;
+      }
+
+      glCompileShader(this->id);
+
+      GLint success;
+      glGetShaderiv(this->id, GL_COMPILE_STATUS, &success);
+
+      if (success == 0) {
+        GLsizei len = 0;
+        std::array<char, 1024> info_log;
+        glGetShaderInfoLog(this->id, info_log.size(), &len, info_log.data());
+        if (!GL_CHECK()) {
+          LOG(ERROR) << "Unable to get compilation errors for shader";
+          return false;
+        }
+        this->compile_error.assign(info_log.data(), len);
+      }
+
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "Unable to compile shader";
+        return false;
+      }
+
+      return true;
+    }
+
+    auto Shader::shader_id() const noexcept -> ShaderID
+    {
+      return this->id;
+    }
+
+    auto Shader::error() const noexcept -> const std::string&
+    {
+      return this->compile_error;
+    }
+
     Program::Program()
     {
       this->id = glCreateProgram();
@@ -65,6 +132,22 @@ namespace ExpGame
       if (this->id != 0) {
         glDeleteProgram(this->id);
       }
+    }
+
+    auto Program::attach(const Shader& shader) -> bool
+    {
+      if (this->id == 0) {
+        LOG(ERROR) << "Unable to link program (program id == 0)";
+        return false;
+      }
+
+      glAttachShader(this->id, shader.shader_id());
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "Unable to attach shader";
+        return false;
+      }
+
+      return true;
     }
 
     auto Program::link() -> bool
