@@ -69,12 +69,24 @@ namespace ExpGame
      private:
       bool show_demo_window  = false;
       bool show_shader_debug = false;
+      bool show_gl_errors    = false;
     };
 
     class ShaderUi: public Ui
     {
      public:
       virtual ~ShaderUi() final = default;
+
+      void render() final;
+
+     private:
+      bool initial_render = false;
+    };
+
+    class GlErrorsUi: public Ui
+    {
+     public:
+      virtual ~GlErrorsUi() = default;
 
       void render() final;
 

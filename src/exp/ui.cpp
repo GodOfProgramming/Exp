@@ -215,16 +215,20 @@ namespace ExpGame
     void DebugUi::render()
     {
       if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginMenu("debug")) {
-          if (ImGui::MenuItem("demo window")) {
+        if (ImGui::BeginMenu("Debug")) {
+          if (ImGui::MenuItem("Demo Window")) {
             this->show_demo_window = !this->show_demo_window;
           }
 
-          if (ImGui::MenuItem("shaders")) {
+          if (ImGui::MenuItem("Shaders")) {
             this->show_shader_debug = !this->show_shader_debug;
           }
 
-          if (ImGui::MenuItem("exit")) {
+          if (ImGui::MenuItem("OpenGL Errors")) {
+            this->show_gl_errors = !this->show_gl_errors;
+          }
+
+          if (ImGui::MenuItem("Exit")) {
             auto& window = AppWindow::instance();
             window.close();
           }
@@ -238,14 +242,19 @@ namespace ExpGame
       }
 
       if (this->show_shader_debug) {
-        ShaderUi ui;
+        static ShaderUi ui;
+        ui.render();
+      }
+
+      if (this->show_gl_errors) {
+        static GlErrorsUi ui;
         ui.render();
       }
     }
 
     void ShaderUi::render()
     {
-      const auto& shaders = Resources::Shaders::instance();
+      auto& shaders = Resources::Shaders::instance();
 
       if (!this->initial_render) {
         auto& window = AppWindow::instance();
@@ -258,7 +267,8 @@ namespace ExpGame
       ImGui::Begin("Shaders");
 
       if (ImGui::CollapsingHeader("Programs")) {
-        for (auto cfg_iter = shaders.cache_begin(); cfg_iter != shaders.cache_end(); cfg_iter++) {
+        std::size_t id = 0;
+        for (auto cfg_iter = shaders.cache_begin(); cfg_iter != shaders.cache_end(); cfg_iter++, id++) {
           auto& program_id  = cfg_iter->first;
           auto& shader_meta = cfg_iter->second;
 
@@ -274,23 +284,30 @@ namespace ExpGame
           if (loaded) {
             const auto& program = program_iter->second;
 
-            for (const auto& shader_file : shader_meta.shaders) {
+            for (const auto& kvp : shader_meta.shaders) {
+              auto& shader_type = kvp.first;
+              auto& shader_file = kvp.second;
               ImGui::Indent(1.0f);
-              ImGui::Text("%s", shader_file.c_str());
+              ImGui::Text("%s (%s)", shader_file.c_str(), shader_type.c_str());
             }
 
             if (!program.is_valid()) {
               ImGui::Text("Link Error: %s", program.error().c_str());
             }
           }
+
+          ImGui::PushID(id);
+          if (ImGui::Button("Reload")) {
+            shaders.reload_program(program_id);
+          }
+          ImGui::PopID();
           ImGui::Separator();
         }
       }
 
       if (ImGui::CollapsingHeader("Shaders")) {
         static bool show_src = false;
-        static std::string current_id;
-        static std::string current_src;
+        static std::string current_shader_id;
         std::size_t id = 0;
         for (auto shader_iter = shaders.shader_begin(); shader_iter != shaders.shader_end(); shader_iter++, id++) {
           auto& shader_id = shader_iter->first;
@@ -301,10 +318,9 @@ namespace ExpGame
           ImGui::PushID(id);
           if (ImGui::Button("Show")) {
             show_src = !show_src;
-            if (current_id != shader_id) {
-              show_src    = true;
-              current_id  = shader_id;
-              current_src = shader.get_source();
+            if (show_src || current_shader_id != shader_id) {
+              show_src          = true;
+              current_shader_id = shader_id;
             }
           }
           ImGui::PopID();
@@ -318,13 +334,49 @@ namespace ExpGame
         }
 
         if (show_src) {
-          ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-          ImGui::BeginChild("Source", ImVec2{ 0, 260 }, true);
-          ImGui::Text("Source of %s", current_id.c_str());
-          ImGui::Text("%s", current_src.c_str());
+          auto shader_iter = shaders.find_shader(current_shader_id);
+          ImGui::Text("Source of %s", current_shader_id.c_str());
+          if (ImGui::BeginChild("Source", { 0, 0 }, true)) {
+            ImGui::Text("%s", shader_iter->second.get_source().c_str());
+          }
           ImGui::EndChild();
-          ImGui::PopStyleVar();
         }
+      }
+
+      ImGui::End();
+    }
+
+    void GlErrorsUi::render()
+    {
+      if (!this->initial_render) {
+        auto& window = AppWindow::instance();
+        auto size    = window.get_size();
+        ImGui::SetNextWindowSize(ImVec2{ size.x * 0.8, size.y * 0.8 });
+        ImGui::SetNextWindowPos(ImVec2{ size.x * 0.1, size.y * 0.1 });
+        this->initial_render = true;
+      }
+
+      auto& errors = GL::ErrorMap::instance();
+
+      ImGui::Begin("OpenGL Errors");
+
+      ImGuiID first = 1;
+      for (const auto& kvp : errors) {
+        auto id     = kvp.first;
+        auto& error = kvp.second;
+
+        ImGui::Text("Code: %u", id);
+        ImGui::Text("Desc: %s", error.desc.c_str());
+        if (ImGui::BeginChild(first++, { 0, 0 }, true)) {
+          for (const auto& file_lines_pair : error.occurrences) {
+            auto& file  = file_lines_pair.first;
+            auto& lines = file_lines_pair.second;
+            ImGui::Text("File %s", file.c_str());
+            ImGui::EndChild();
+          }
+        }
+        ImGui::EndChild();
+        ImGui::Separator();
       }
 
       ImGui::End();

@@ -10,7 +10,17 @@ namespace ExpGame
       return err_map;
     }
 
-    ErrorMap::ErrorMap() {}
+    ErrorMap::ErrorMap()
+    {
+      this->errors[GL_NO_ERROR]                      = { "No error detected" };
+      this->errors[GL_INVALID_ENUM]                  = { "Illegal enumeration" };
+      this->errors[GL_INVALID_VALUE]                 = { "Illegal value parameter" };
+      this->errors[GL_INVALID_OPERATION]             = { "Wrong parameter for state change" };
+      this->errors[GL_STACK_OVERFLOW]                = { "Stack push overflow" };
+      this->errors[GL_STACK_UNDERFLOW]               = { "Stack pop on empty stack" };
+      this->errors[GL_OUT_OF_MEMORY]                 = { "Not enough memory for given operation" };
+      this->errors[GL_INVALID_FRAMEBUFFER_OPERATION] = { "Read/write to framebuffer that is not complete" };
+    }
 
     auto ErrorMap::check(const char* file, int line) -> bool
     {

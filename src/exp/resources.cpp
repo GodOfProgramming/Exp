@@ -67,9 +67,7 @@ namespace ExpGame
 
           std::string filename = filename_value;
 
-          // handle shader types
-          // currently supported: vertex, fragment
-          if (shader_type == "vertex") {
+          if (shader_type == SHADER_VERTEX_KEY) {
             if (cfg.has_vertex) {
               LOG(WARNING) << "program already has vertex shader linked: " << id;
               continue;
@@ -77,9 +75,9 @@ namespace ExpGame
 
             if (this->load_shader<GL::Shader::Type::VERTEX>(filename)) {
               cfg.has_vertex = true;
-              cfg.shaders.push_back(filename);
+              cfg.shaders.push_back({ SHADER_VERTEX_KEY, filename });
             }
-          } else if (shader_type == "fragment") {
+          } else if (shader_type == SHADER_FRAGMENT_KEY) {
             if (cfg.has_fragment) {
               LOG(WARNING) << "program already has fragment shader linked: " << id;
               continue;
@@ -87,7 +85,7 @@ namespace ExpGame
 
             if (this->load_shader<GL::Shader::Type::FRAGMENT>(filename)) {
               cfg.has_fragment = true;
-              cfg.shaders.push_back(filename);
+              cfg.shaders.push_back({ SHADER_FRAGMENT_KEY, filename });
             }
           } else {
             LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
@@ -98,6 +96,46 @@ namespace ExpGame
       }
 
       for (const auto& id : program_ids) { this->load_program(id); }
+    }
+
+    void Shaders::reload_program(std::string id)
+    {
+      auto iter = this->cache.find(id);
+      if (iter == this->cache.end()) {
+        LOG(WARNING) << "unable to reload program, does not exist";
+        return;
+      }
+
+      auto& cfg        = iter->second;
+      cfg.has_vertex   = false;
+      cfg.has_fragment = false;
+
+      for (const auto& kvp : cfg.shaders) {
+        const auto& shader_type = kvp.first;
+        const auto& shader_file = kvp.second;
+        if (shader_type == SHADER_VERTEX_KEY) {
+          if (cfg.has_vertex) {
+            LOG(WARNING) << "program already has vertex shader linked: " << id;
+            continue;
+          }
+
+          if (this->reload_shader<GL::Shader::Type::VERTEX>(shader_file)) {
+            cfg.has_vertex = true;
+          }
+        } else if (shader_type == SHADER_FRAGMENT_KEY) {
+          if (cfg.has_fragment) {
+            LOG(WARNING) << "program already has fragment shader linked: " << id;
+            continue;
+          }
+
+          if (this->reload_shader<GL::Shader::Type::FRAGMENT>(shader_file)) {
+            cfg.has_fragment = true;
+          }
+        } else {
+          // sanity check
+          LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
+        }
+      }
     }
 
     void Shaders::release()
@@ -132,7 +170,7 @@ namespace ExpGame
       }
 
       for (const auto& shader : cfg.shaders) {
-        auto shader_iter = this->shader_map.find(shader);
+        auto shader_iter = this->shader_map.find(shader.second);
         if (shader_iter == this->shader_map.end()) {
           LOG(ERROR) << "unable to attach shader program " << id << ", shader not loaded";
           return false;
@@ -149,7 +187,7 @@ namespace ExpGame
       auto& program = this->program_map[id];
 
       for (const auto& shader : cfg.shaders) {
-        if (!program.attach(this->shader_map[shader])) {
+        if (!program.attach(this->shader_map[shader.second])) {
           LOG(ERROR) << "unable to attach shaders to program";
           return false;
         }
