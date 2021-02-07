@@ -372,11 +372,9 @@ namespace ExpGame
             auto& file  = file_lines_pair.first;
             auto& lines = file_lines_pair.second;
             ImGui::Text("File %s", file.c_str());
-            ImGui::EndChild();
           }
         }
         ImGui::EndChild();
-        ImGui::Separator();
       }
 
       ImGui::End();
