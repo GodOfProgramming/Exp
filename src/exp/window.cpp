@@ -20,7 +20,7 @@ namespace ExpGame
     AppWindow::AppWindow()
     {
       if (glfwInit() != GLFW_TRUE) {
-        LOG(FATAL) << "Could not initialize glfw";
+        LOG(FATAL) << "could not initialize glfw";
       }
     }
 
@@ -30,19 +30,20 @@ namespace ExpGame
       glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+      glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
       auto& settings = SettingsManager::instance();
 
       this->window =
        glfwCreateWindow(settings.window.width, settings.window.height, settings.window.title.raw().c_str(), nullptr, nullptr);
       if (window == nullptr) {
-        LOG(FATAL) << "Failed to create glfw window";
+        LOG(FATAL) << "failed to create glfw window";
       }
 
       glfwMakeContextCurrent(this->window);
 
       if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        LOG(FATAL) << "Failed to initialize GLAD";
+        LOG(FATAL) << "failed to initialize GLAD";
       }
 
       glViewport(0, 0, settings.window.width, settings.window.height);
@@ -91,6 +92,16 @@ namespace ExpGame
       glfwSetCharCallback(this->window, [](GLFWwindow* window, unsigned int c) { ImGui_ImplGlfw_CharCallback(window, c); });
     }
 
+    void AppWindow::show()
+    {
+      glfwShowWindow(this->window);
+    }
+
+    void AppWindow::hide()
+    {
+      glfwHideWindow(this->window);
+    }
+
     void AppWindow::swap_buffers()
     {
       glfwSwapBuffers(this->window);
@@ -103,14 +114,14 @@ namespace ExpGame
 
     void AppWindow::close()
     {
-      DLOG(INFO) << "Closing window";
+      DLOG(INFO) << "closing window";
       this->on_close_callback();
       glfwSetWindowShouldClose(this->window, GLFW_TRUE);
     }
 
     void AppWindow::destroy()
     {
-      DLOG(INFO) << "Destorying window";
+      DLOG(INFO) << "destorying window";
       glfwDestroyWindow(this->window);
       glfwTerminate();
       this->window = nullptr;

@@ -41,17 +41,6 @@ namespace ExpGame
       std::vector<std::unique_ptr<Ui>> elements;
     };
 
-    class DebugUi: public Ui
-    {
-     public:
-      virtual ~DebugUi() override = default;
-
-      void render() final;
-
-     private:
-      bool show_demo_window = false;
-    };
-
     class WindowUi: public Ui
     {
      public:
@@ -68,6 +57,29 @@ namespace ExpGame
       glm::ivec2 dim;
       bool initial_render = false;
       std::vector<std::unique_ptr<Ui>> elements;
+    };
+
+    class DebugUi: public Ui
+    {
+     public:
+      virtual ~DebugUi() final = default;
+
+      void render() final;
+
+     private:
+      bool show_demo_window  = false;
+      bool show_shader_debug = false;
+    };
+
+    class ShaderUi: public Ui
+    {
+     public:
+      virtual ~ShaderUi() final = default;
+
+      void render() final;
+
+     private:
+      bool initial_render = false;
     };
   }  // namespace Ui
 }  // namespace ExpGame

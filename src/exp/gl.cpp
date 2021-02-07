@@ -20,7 +20,7 @@ namespace ExpGame
       } else {
         auto entry = this->errors.find(err);
         if (entry == this->errors.end()) {
-          entry->second.occurrences[std::string(file)].push_back(line);
+          this->errors[err].occurrences[std::string(file)].push_back(line);
         } else {
           auto& entry = this->errors[err];
           entry.desc  = std::to_string(err);
@@ -54,6 +54,7 @@ namespace ExpGame
 
     Shader::Shader() noexcept
      : id(0)
+     , valid(false)
     {}
 
     Shader::~Shader() noexcept
@@ -65,14 +66,16 @@ namespace ExpGame
 
     auto Shader::compile(Type t, const std::string_view src) noexcept -> bool
     {
+      this->source = src;
+
       this->id = glCreateShader(static_cast<GLenum>(t));
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to create new shader (gl error != GL_NO_ERROR)";
+        LOG(ERROR) << "unable to create new shader (gl error != GL_NO_ERROR)";
         return false;
       }
 
       if (this->id == 0) {
-        LOG(ERROR) << "Unable to create new shader (shader = 0)";
+        LOG(ERROR) << "unable to create new shader (shader = 0)";
         return false;
       }
 
@@ -81,7 +84,7 @@ namespace ExpGame
 
       glShaderSource(this->id, 1, &data, &len);
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to set shader source";
+        LOG(ERROR) << "unable to set shader source";
         return false;
       }
 
@@ -95,18 +98,18 @@ namespace ExpGame
         std::array<char, 1024> info_log;
         glGetShaderInfoLog(this->id, info_log.size(), &len, info_log.data());
         if (!GL_CHECK()) {
-          LOG(ERROR) << "Unable to get compilation errors for shader";
+          LOG(ERROR) << "unable to get compilation errors for shader";
           return false;
         }
         this->compile_error.assign(info_log.data(), len);
       }
 
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to compile shader";
+        LOG(ERROR) << "unable to compile shader";
         return false;
       }
 
-      return true;
+      return this->valid = true;
     }
 
     auto Shader::shader_id() const noexcept -> ShaderID
@@ -119,11 +122,22 @@ namespace ExpGame
       return this->compile_error;
     }
 
+    auto Shader::is_valid() const noexcept -> bool
+    {
+      return this->valid;
+    }
+
+    auto Shader::get_source() const noexcept -> const std::string&
+    {
+      return this->source;
+    }
+
     Program::Program()
+     : valid(false)
     {
       this->id = glCreateProgram();
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to create new shader (gl error != GL_NO_ERROR)";
+        LOG(ERROR) << "unable to create new shader (gl error != GL_NO_ERROR)";
       }
     }
 
@@ -137,13 +151,13 @@ namespace ExpGame
     auto Program::attach(const Shader& shader) -> bool
     {
       if (this->id == 0) {
-        LOG(ERROR) << "Unable to link program (program id == 0)";
+        LOG(ERROR) << "unable to link program (program id == 0)";
         return false;
       }
 
       glAttachShader(this->id, shader.shader_id());
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to attach shader";
+        LOG(ERROR) << "unable to attach shader";
         return false;
       }
 
@@ -154,7 +168,7 @@ namespace ExpGame
     {
       glLinkProgram(this->id);
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to link shader program";
+        LOG(ERROR) << "unable to link shader program";
         return false;
       }
 
@@ -166,34 +180,39 @@ namespace ExpGame
         std::array<char, 1024> info_log;
         glGetProgramInfoLog(this->id, info_log.size(), &len, info_log.data());
         if (!GL_CHECK()) {
-          LOG(ERROR) << "Unable to get compilation errors for shader";
+          LOG(ERROR) << "unable to get compilation errors for shader";
           return false;
         }
         this->link_error.assign(info_log.data(), len);
       }
 
-      return true;
+      return this->valid = true;
     }
 
-    auto Program::program_id() -> ProgramID
+    auto Program::program_id() const noexcept -> ProgramID
     {
       return this->id;
+    }
+
+    auto Program::error() const noexcept -> const std::string&
+    {
+      return this->link_error;
+    }
+
+    auto Program::is_valid() const noexcept -> bool
+    {
+      return this->valid;
     }
 
     auto Program::use() -> bool
     {
       glUseProgram(this->id);
       if (!GL_CHECK()) {
-        LOG(ERROR) << "Unable to use program";
+        LOG(ERROR) << "unable to use program";
         return false;
       }
 
       return true;
-    }
-
-    auto Program::error() -> const std::string&
-    {
-      return this->link_error;
     }
   }  // namespace GL
 }  // namespace ExpGame

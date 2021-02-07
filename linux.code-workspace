@@ -1,7 +1,7 @@
 {
   "folders": [
     {
-      "path": ".."
+      "path": "."
     }
   ],
   "settings": {
@@ -63,7 +63,8 @@
       "*.ipp": "cpp",
       "future": "cpp",
       "thread": "cpp",
-      "bitset": "cpp"
+      "bitset": "cpp",
+      "variant": "cpp"
     },
     "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map}",
     "files.exclude": {

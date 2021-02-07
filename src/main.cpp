@@ -1,6 +1,7 @@
 #include "exp/constants.hpp"
 #include "exp/io.hpp"
 #include "exp/render.hpp"
+#include "exp/resources.hpp"
 #include "exp/settings.hpp"
 #include "exp/ui.hpp"
 #include "exp/window.hpp"
@@ -10,26 +11,25 @@ int main(int, char* argv[])
   using ExpGame::Input::Dispatcher;
   using ExpGame::IO::File;
   using ExpGame::Render::Renderer;
+  using ExpGame::Resources::Shaders;
   using ExpGame::Settings::SettingsManager;
   using ExpGame::Ui::UiManager;
   using ExpGame::Window::AppWindow;
 
   google::InitGoogleLogging(argv[0]);
 
-  DLOG(INFO) << "Starting app";
+  DLOG(INFO) << "starting app";
 
-  auto file_res = File::load(ExpGame::SETTINGS_FILE);
-  if (!file_res) {
-    LOG(ERROR) << "unable to load game settings: " << file_res.err_val();
+  auto settings_file_res = File::load(ExpGame::SETTINGS_FILE);
+  if (!settings_file_res) {
+    LOG(ERROR) << "unable to load game settings: " << settings_file_res.err_val();
     return 1;
   }
 
-  auto file = file_res.ok_val();
+  auto settings_file = settings_file_res.ok_val();
 
   auto& settings = SettingsManager::instance();
-  settings.deserialize(file.data);
-
-  LOG(INFO) << "Creating a window (" << settings.window.width << 'x' << settings.window.height << ")";
+  settings.deserialize(settings_file.data);
 
   auto& window = AppWindow::instance();
   window.create();
@@ -38,24 +38,25 @@ int main(int, char* argv[])
 
   window.on_close([&] { exit = true; });
 
-  const std::chrono::duration<long, std::milli> one_milli(1);
-  const std::chrono::duration<long, std::ratio<1>> one_second(1);
-
   std::uint32_t frame_counter = 0;
 
   auto stats_update_timer = std::chrono::system_clock::now();
 
-  LOG(INFO) << "Running main loop with fps target " << settings.game.target_fps;
-
   auto& input = Dispatcher::instance();
-
   input.set_root_handler(&window);
 
-  auto& ui = UiManager::instance();
+  auto& shaders = Shaders::instance();
+  shaders.load_all();
 
+  auto& ui = UiManager::instance();
   ui.load_all();
 
-  Renderer renderer{ui};
+  Renderer renderer{ ui };
+
+  const std::chrono::duration<long, std::milli> one_milli(1);
+  const std::chrono::duration<long, std::ratio<1>> one_second(1);
+
+  window.show();
 
   while (!exit) {
     std::uint16_t fps = settings.game.target_fps;
@@ -82,6 +83,8 @@ int main(int, char* argv[])
   }
 
   ui.shutdown();
+
+  shaders.release();
 
   window.destroy();
 

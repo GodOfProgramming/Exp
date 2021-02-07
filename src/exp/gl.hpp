@@ -91,9 +91,15 @@ namespace ExpGame
 
       auto error() const noexcept -> const std::string&;
 
+      auto is_valid() const noexcept -> bool;
+
+      auto get_source() const noexcept -> const std::string&;
+
      private:
       ShaderID id;
       std::string compile_error;
+      bool valid;
+      std::string source;
     };
 
     class Program
@@ -103,25 +109,22 @@ namespace ExpGame
       Program();
       ~Program();
 
-      auto attach(const Shader& shader) -> bool;
-
-      template <class... S>
-      auto attach(const Shader shader, S&&... shaders) -> bool
-      {
-        return this->attach(shader) && this->attach(shaders...);
-      }
+      auto attach(const Shader& shaders) -> bool;
 
       auto link() -> bool;
 
-      auto program_id() -> ProgramID;
+      auto program_id() const noexcept -> ProgramID;
+
+      auto error() const noexcept -> const std::string&;
+
+      auto is_valid() const noexcept -> bool;
 
       auto use() -> bool;
-
-      auto error() -> const std::string&;
 
      private:
       ProgramID id;
       std::string link_error;
+      bool valid;
     };
   }  // namespace GL
 }  // namespace ExpGame

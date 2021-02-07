@@ -29,7 +29,7 @@ def forge_shader(shader, imported_files, successful_imports)
       import_fn = "#{File.dirname(shader)}/#{line[start...stop]}"
 
       if imported_files.include?(import_fn)
-        puts "Circular dependency detected processing:\n'#{shader}'\nalready imported file:\n'#{import_fn}'"
+        puts "circular dependency detected processing:\n'#{shader}'\nalready imported file:\n'#{import_fn}'"
         return false
       end
 
@@ -61,9 +61,12 @@ end
 
 shaders = Set.new
 
-cfg.each do |shader|
-  shaders << shader[:vertex][:file]
-  shaders << shader[:fragment][:file]
+cfg.each do |entry|
+  files = entry[1]
+  files.each do |kvp|
+    file = kvp[1]
+    shaders << file
+  end
 end
 
 shaders.each do |shader|

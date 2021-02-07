@@ -29,6 +29,10 @@ namespace ExpGame
        */
       void create();
 
+      void show();
+
+      void hide();
+
       void swap_buffers();
 
       void poll_events();

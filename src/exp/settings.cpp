@@ -29,9 +29,11 @@ namespace ExpGame
 
     auto SettingsManager::serialize() -> std::string
     {
-      json j = {
-       {"window",
-        {{"title", this->window.title.raw()}, {"height", this->window.height.raw()}, {"width", this->window.width.raw()}}}};
+      json j = { { "window",
+                   { { "title", this->window.title.raw() },
+                     { "height", this->window.height.raw() },
+                     { "width", this->window.width.raw() } },
+                   { "game", { "target_fps", 60 } } } };
 
       return j.dump(2);
     }
@@ -43,7 +45,7 @@ namespace ExpGame
       try {
         j = json::parse(std::string(raw));
       } catch (std::exception& e) {
-        LOG(FATAL) << "Could not parse json: " << e.what();
+        LOG(FATAL) << "could not parse json: " << e.what();
       }
 
       auto window = j["window"];

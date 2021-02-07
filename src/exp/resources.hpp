@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "gl.hpp"
 #include "io.hpp"
 
@@ -9,7 +10,18 @@ namespace ExpGame
   {
     class Shaders
     {
+      struct ConfigCacheEntry
+      {
+        bool has_vertex   = false;
+        bool has_fragment = false;
+        std::vector<std::string> shaders;
+      };
+
       Shaders();
+
+      using ShaderMap   = std::map<std::string, GL::Shader>;
+      using ProgramMap  = std::map<std::string, GL::Program>;
+      using ConfigCache = std::map<std::string, ConfigCacheEntry>;
 
      public:
       Shaders(const Shaders&) = delete;
@@ -19,39 +31,54 @@ namespace ExpGame
 
       static auto instance() -> Shaders&;
 
+      void load_all();
+
+      void release();
+
       template <GL::Shader::Type T>
-      auto load_shader(std::string id, std::string file) -> bool
+      auto load_shader(std::string file) -> bool
       {
-        if (this->shader_map.find(id) != this->shader_map.end()) {
-          LOG(INFO) << "skipping shader load, already loaded shader id " << id;
-          return false;
-        } else {
-          LOG(INFO) << "loading shader " << id << " (" << file << ')';
+        if (this->shader_map.find(file) != this->shader_map.end()) {
+          LOG(INFO) << "skipping shader load, already loaded shader " << file;
+          return true;
         }
 
-        auto v_res = IO::File::load(file);
-        if (v_res.is_err()) {
-          LOG(ERROR) << "Unable to load shader";
-          return false;
-        }
+        LOG(INFO) << "loading shader " << file;
 
-        auto v_file = v_res.ok_val();
-
-        auto shader = std::make_shared<GL::Shader>();
-        if (!shader->compile(T, v_file.data)) {
-          LOG(ERROR) << "Unable to compile shader";
+        auto abs_path = std::string(SHADER_DIR) + "/" + file;
+        auto src_res  = IO::File::load(abs_path);
+        if (!src_res) {
+          LOG(ERROR) << "unable to load shader";
           return false;
         }
 
-        this->shader_map[id] = shader;
+        auto src_file = src_res.ok_val();
+
+        auto& shader = this->shader_map[file];
+        if (!shader.compile(T, src_file.data)) {
+          LOG(ERROR) << "unable to compile shader";
+        }
+
         return true;
       }
 
-      auto load_program(std::string id, std::string vertex_id, std::string fragment_id) -> bool;
+      auto load_program(std::string id) -> bool;
+
+      auto find_shader(std::string name) const -> ShaderMap::const_iterator;
+      auto shader_begin() const -> ShaderMap::const_iterator;
+      auto shader_end() const -> ShaderMap::const_iterator;
+
+      auto find_program(std::string name) const -> ProgramMap::const_iterator;
+      auto program_begin() const -> ProgramMap::const_iterator;
+      auto program_end() const -> ProgramMap::const_iterator;
+
+      auto cache_begin() const -> ConfigCache::const_iterator;
+      auto cache_end() const -> ConfigCache::const_iterator;
 
      private:
-      std::map<std::string, std::shared_ptr<GL::Program>> program_map;
-      std::map<std::string, std::shared_ptr<GL::Shader>> shader_map;
+      ShaderMap shader_map;
+      ProgramMap program_map;
+      ConfigCache cache;
     };
   }  // namespace Resources
 }  // namespace ExpGame
