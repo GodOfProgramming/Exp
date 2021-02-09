@@ -234,5 +234,44 @@ namespace ExpGame
     {
       return !this->fragment.empty();
     }
+
+    auto GameObjects::instance() noexcept -> GameObjects&
+    {
+      static GameObjects objs;
+      return objs;
+    }
+
+    void GameObjects::load_all()
+    {
+      using nlohmann::json;
+      std::function<void(std::filesystem::path, std::string)> decend = [&](std::filesystem::path dir, std::string nspace) {
+        for (const auto& iter : std::filesystem::directory_iterator(dir)) {
+          if (iter.is_directory()) {
+            decend(iter, nspace + "." + iter.path().filename().string());
+          } else if (iter.is_regular_file()) {
+            nspace += "." + iter.path().stem().string();
+
+            LOG(INFO) << "loading game objects under namespace " << nspace;
+
+            auto file_res = IO::File::load(iter);
+            if (!file_res) {
+              LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
+            }
+
+            auto file = file_res.ok_val();
+
+            json obj;
+
+            try {
+              obj = json::parse(file.data);
+            } catch (std::exception& e) {
+              LOG(FATAL) << "could not parse json: " << e.what();
+            }
+          }
+        }
+      };
+
+      decend(GAME_OBJECT_DIR, std::string{ "exp" });
+    }
   }  // namespace Resources
 }  // namespace ExpGame

@@ -11,6 +11,7 @@ int main(int, char* argv[])
   using ExpGame::Input::Dispatcher;
   using ExpGame::IO::File;
   using ExpGame::Render::Renderer;
+  using ExpGame::Resources::GameObjects;
   using ExpGame::Resources::Shaders;
   using ExpGame::Settings::SettingsManager;
   using ExpGame::Ui::UiManager;
@@ -69,6 +70,11 @@ int main(int, char* argv[])
   auto& ui = UiManager::instance();
   {
     ui.load_all();
+  }
+
+  auto& game_objects = GameObjects::instance();
+  {
+    game_objects.load_all();
   }
 
   // rendering

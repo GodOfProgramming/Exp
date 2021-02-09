@@ -136,5 +136,26 @@ namespace ExpGame
 
       return true;
     }
+
+    struct ObjectMeta
+    {};
+
+    class GameObjects
+    {
+      GameObjects() = default;
+
+     public:
+      GameObjects(const GameObjects&) = delete;
+      GameObjects(GameObjects&&)      = delete;
+      auto operator=(const GameObjects&) -> GameObjects& = delete;
+      auto operator=(GameObjects&&) -> GameObjects& = delete;
+
+      static auto instance() noexcept -> GameObjects&;
+
+      void load_all();
+
+     private:
+      std::map<std::string, ObjectMeta> objects;
+    };
   }  // namespace Resources
 }  // namespace ExpGame
