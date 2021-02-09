@@ -6,136 +6,106 @@ namespace ExpGame
 {
   namespace Resources
   {
-    Shaders::Shaders() {}
-
     auto Shaders::instance() -> Shaders&
     {
       static Shaders shaders;
       return shaders;
     }
 
-    void Shaders::load_all()
+    void Shaders::load_all(const json& cfg)
     {
-      using nlohmann::json;
-
       LOG(INFO) << "loading shaders";
 
-      auto file_res = IO::File::load(SHADER_CFG_FILE);
-      if (!file_res) {
-        LOG(FATAL) << "unable to load shader configuration file: " << file_res.err_val();
-        return;
-      }
-
-      auto file = file_res.ok_val();
-
-      json j;
-
-      try {
-        j = json::parse(file.data);
-      } catch (std::exception& e) {
-        LOG(FATAL) << "could not parse json: " << e.what();
-      }
-
-      if (!j.is_object()) {
+      if (!cfg.is_object()) {
         LOG(FATAL) << "shader json is not in proper format, first type is not object";
       }
 
-      std::set<std::string> program_ids;
+      std::set<std::string> valid_programs;
+      std::set<std::string> attempted_loads;
 
-      for (const auto& shader_json : j.items()) {
-        auto id = shader_json.key();
-        if (program_ids.find(id) != program_ids.end()) {
+      for (const auto& shader_item : cfg.items()) {
+        auto id = shader_item.key();
+
+        if (attempted_loads.find(id) != attempted_loads.end()) {
           LOG(WARNING) << "already loaded shader program: " << id << ", skipping...";
           continue;
         }
 
-        auto shader = shader_json.value();
+        attempted_loads.emplace(id);
 
-        if (!shader.is_object()) {
-          LOG(WARNING) << "shader is not object, skipping: " << shader.dump(2);
+        auto shader_json = shader_item.value();
+        const ShaderMeta shader(id, shader_json);
+
+        if (!shader.is_valid()) {
+          LOG(WARNING) << "shader " << id << " is not valid";
           continue;
         }
 
-        auto& cfg = this->cache[id];
+        bool should_continue = false;
 
-        for (const auto& item : shader.items()) {
-          auto shader_type    = item.key();
-          auto filename_value = item.value();
-          if (!filename_value.is_string()) {
-            LOG(INFO) << "could not load shader: " << filename_value.dump(2);
-          }
-
-          std::string filename = filename_value;
-
-          if (shader_type == SHADER_VERTEX_KEY) {
-            if (cfg.has_vertex) {
-              LOG(WARNING) << "program already has vertex shader linked: " << id;
-              continue;
-            }
-
-            if (this->load_shader<GL::Shader::Type::VERTEX>(filename)) {
-              cfg.has_vertex = true;
-              cfg.shaders.push_back({ SHADER_VERTEX_KEY, filename });
-            }
-          } else if (shader_type == SHADER_FRAGMENT_KEY) {
-            if (cfg.has_fragment) {
-              LOG(WARNING) << "program already has fragment shader linked: " << id;
-              continue;
-            }
-
-            if (this->load_shader<GL::Shader::Type::FRAGMENT>(filename)) {
-              cfg.has_fragment = true;
-              cfg.shaders.push_back({ SHADER_FRAGMENT_KEY, filename });
-            }
-          } else {
-            LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
-          }
+        if (!this->load_shader<GL::Shader::Type::VERTEX>(shader.vertex)) {
+          should_continue = true;
         }
 
-        program_ids.emplace(id);
+        if (!this->load_shader<GL::Shader::Type::FRAGMENT>(shader.fragment)) {
+          should_continue = true;
+        }
+
+        this->cache[id] = shader;
+
+        if (should_continue) {
+          continue;
+        }
+
+        valid_programs.emplace(id);
       }
 
-      for (const auto& id : program_ids) { this->load_program(id); }
+      for (const auto& id : valid_programs) { this->load_program(id); }
+
+      DLOG(INFO) << "loaded shaders";
     }
 
     void Shaders::reload_program(std::string id)
     {
+      LOG(INFO) << "reloading program " << id;
       auto iter = this->cache.find(id);
       if (iter == this->cache.end()) {
         LOG(WARNING) << "unable to reload program, does not exist";
         return;
       }
 
-      auto& cfg        = iter->second;
-      cfg.has_vertex   = false;
-      cfg.has_fragment = false;
+      auto& cache_entry = iter->second;
 
-      for (const auto& kvp : cfg.shaders) {
-        const auto& shader_type = kvp.first;
-        const auto& shader_file = kvp.second;
-        if (shader_type == SHADER_VERTEX_KEY) {
-          if (cfg.has_vertex) {
-            LOG(WARNING) << "program already has vertex shader linked: " << id;
-            continue;
-          }
-
-          if (this->reload_shader<GL::Shader::Type::VERTEX>(shader_file)) {
-            cfg.has_vertex = true;
-          }
-        } else if (shader_type == SHADER_FRAGMENT_KEY) {
-          if (cfg.has_fragment) {
-            LOG(WARNING) << "program already has fragment shader linked: " << id;
-            continue;
-          }
-
-          if (this->reload_shader<GL::Shader::Type::FRAGMENT>(shader_file)) {
-            cfg.has_fragment = true;
-          }
-        } else {
-          // sanity check
-          LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
-        }
+      if (!this->reload_shader<GL::Shader::Type::VERTEX>(cache_entry.vertex)) {
+        LOG(WARNING) << "unable to reload vertex shader";
+        return;
       }
+
+      if (!this->reload_shader<GL::Shader::Type::FRAGMENT>(cache_entry.fragment)) {
+        LOG(WARNING) << "unable to reload fragment shader";
+        return;
+      }
+
+      auto program = std::make_shared<GL::Program>();
+
+      if (!program->attach(*this->shader_map[cache_entry.vertex])) {
+        LOG(ERROR) << "unable to attach vertex shader to program";
+        return;
+      }
+
+      if (!program->attach(*this->shader_map[cache_entry.fragment])) {
+        LOG(ERROR) << "unable to attach fragment shader to program";
+        return;
+      }
+
+      if (!program->link()) {
+        LOG(WARNING) << "unable to link program";
+        return;
+      }
+
+      this->program_map[id] = program;
+
+      DLOG(INFO) << "reloaded program";
     }
 
     void Shaders::release()
@@ -148,54 +118,27 @@ namespace ExpGame
     auto Shaders::load_program(std::string id) -> bool
     {
       LOG(INFO) << "loading program: " << id;
-      const auto iter = this->cache.find(id);
 
-      // sanity check
-      if (iter == this->cache.end()) {
-        LOG(ERROR) << "unable to load program " << id << " not found";
+      const auto& cache_entry = this->cache[id];
+
+      auto program          = std::make_shared<GL::Program>();
+      this->program_map[id] = program;
+
+      if (!program->attach(*this->shader_map[cache_entry.vertex])) {
+        LOG(ERROR) << "unable to attach vertex shader to program";
         return false;
       }
 
-      // validate shaders were loaded
-      const auto& cfg = iter->second;
-
-      if (!cfg.has_vertex) {
-        LOG(ERROR) << "unable to attach shader program " << id << ", vertex not present";
+      if (!program->attach(*this->shader_map[cache_entry.fragment])) {
+        LOG(ERROR) << "unable to attach fragment shader to program";
         return false;
       }
 
-      if (!cfg.has_vertex) {
-        LOG(ERROR) << "unable to attach shader program " << id << ", vertex not present";
-        return false;
-      }
-
-      for (const auto& shader : cfg.shaders) {
-        auto shader_iter = this->shader_map.find(shader.second);
-        if (shader_iter == this->shader_map.end()) {
-          LOG(ERROR) << "unable to attach shader program " << id << ", shader not loaded";
-          return false;
-        }
-
-        if (!shader_iter->second.is_valid()) {
-          LOG(ERROR) << "tried to load invalid shader for program " << id;
-          return false;
-        }
-      }
-
-      // if everything passes, attach them
-
-      auto& program = this->program_map[id];
-
-      for (const auto& shader : cfg.shaders) {
-        if (!program.attach(this->shader_map[shader.second])) {
-          LOG(ERROR) << "unable to attach shaders to program";
-          return false;
-        }
-      }
-
-      if (!program.link()) {
+      if (!program->link()) {
         LOG(WARNING) << "unable to link program";
       }
+
+      DLOG(INFO) << "loaded program";
 
       return true;
     }
@@ -238,6 +181,58 @@ namespace ExpGame
     auto Shaders::cache_end() const -> ConfigCache::const_iterator
     {
       return this->cache.end();
+    }
+
+    Shaders::ShaderMeta::ShaderMeta(std::string st, json& sj)
+     : shader_type(st)
+    {
+      if (!sj.is_object()) {
+        LOG(WARNING) << "shader is not object, skipping: " << sj.dump(2);
+        return;
+      }
+
+      for (const auto& item : sj.items()) {
+        auto shader_type    = item.key();
+        auto filename_value = item.value();
+
+        if (!filename_value.is_string()) {
+          LOG(INFO) << "could not load shader: " << filename_value.dump(2);
+          continue;
+        }
+
+        if (shader_type == SHADER_VERTEX_KEY) {
+          if (this->has_vertex()) {
+            LOG(WARNING) << "program already has vertex shader linked: " << this->shader_type;
+            continue;
+          }
+
+          this->vertex = filename_value;
+        } else if (shader_type == SHADER_FRAGMENT_KEY) {
+          if (this->has_fragment()) {
+            LOG(WARNING) << "program already has fragment shader linked: " << this->shader_type;
+            continue;
+          }
+
+          this->fragment = filename_value;
+        } else {
+          LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
+        }
+      }
+    }
+
+    auto Shaders::ShaderMeta::is_valid() const noexcept -> bool
+    {
+      return !this->shader_type.empty() && this->has_vertex() && this->has_fragment();
+    }
+
+    auto Shaders::ShaderMeta::has_vertex() const noexcept -> bool
+    {
+      return !this->vertex.empty();
+    }
+
+    auto Shaders::ShaderMeta::has_fragment() const noexcept -> bool
+    {
+      return !this->fragment.empty();
     }
   }  // namespace Resources
 }  // namespace ExpGame

@@ -18,6 +18,8 @@ namespace ExpGame
 
       static auto load(std::filesystem::path filename) -> LoadResult;
 
+      static auto dirname(std::filesystem::path path) -> std::filesystem::path;
+
       std::string data;
 
      private:

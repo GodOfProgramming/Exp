@@ -15,46 +15,71 @@ int main(int, char* argv[])
   using ExpGame::Settings::SettingsManager;
   using ExpGame::Ui::UiManager;
   using ExpGame::Window::AppWindow;
+  using nlohmann::json;
 
   google::InitGoogleLogging(argv[0]);
 
   DLOG(INFO) << "starting app";
 
-  auto settings_file_res = File::load(ExpGame::SETTINGS_FILE);
-  if (!settings_file_res) {
-    LOG(ERROR) << "unable to load game settings: " << settings_file_res.err_val();
-    return 1;
-  }
-
-  auto settings_file = settings_file_res.ok_val();
-
-  auto& settings = SettingsManager::instance();
-  settings.deserialize(settings_file.data);
-
-  auto& window = AppWindow::instance();
-  window.create();
-
   bool exit = false;
 
-  window.on_close([&] { exit = true; });
+  auto& settings = SettingsManager::instance();
+  {
+    auto file_res = File::load(ExpGame::SETTINGS_FILE);
+    if (!file_res) {
+      LOG(FATAL) << "unable to load game settings: " << file_res.err_val();
+    }
 
-  std::uint32_t frame_counter = 0;
+    auto file = file_res.ok_val();
 
-  auto stats_update_timer = std::chrono::system_clock::now();
+    settings.deserialize(file.data);
+  }
+
+  auto& window = AppWindow::instance();
+  {
+    window.create();
+    window.on_close([&] { exit = true; });
+  }
 
   auto& input = Dispatcher::instance();
-  input.set_root_handler(&window);
+  {
+    input.set_root_handler(&window);
+  }
 
   auto& shaders = Shaders::instance();
-  shaders.load_all();
+  {
+    auto file_res = File::load(ExpGame::SHADER_CFG_FILE);
+    if (!file_res) {
+      LOG(FATAL) << "unable to load shader configuration file: " << file_res.err_val();
+    }
+
+    auto file = file_res.ok_val();
+
+    json shader_json;
+
+    try {
+      shader_json = json::parse(file.data);
+    } catch (std::exception& e) {
+      LOG(FATAL) << "could not parse json: " << e.what();
+    }
+
+    shaders.load_all(shader_json);
+  }
 
   auto& ui = UiManager::instance();
-  ui.load_all();
+  {
+    ui.load_all();
+  }
 
+  // rendering
   Renderer renderer{ ui };
 
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
+
+  std::uint32_t frame_counter = 0;
+
+  auto stats_update_timer = std::chrono::system_clock::now();
 
   window.show();
 

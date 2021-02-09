@@ -11,6 +11,7 @@ namespace ExpGame
     auto File::save(std::filesystem::path path) -> bool
     {
       std::ofstream ostr(path);
+      return true;
     }
 
     auto File::load(std::filesystem::path path) -> LoadResult
@@ -26,6 +27,11 @@ namespace ExpGame
       std::back_insert_iterator<std::string> string_inserter(contents);
       std::copy(input_iter, empty_iter, string_inserter);
       return LoadResult::ok(File(contents));
+    }
+
+    auto File::dirname(std::filesystem::path path) -> std::filesystem::path
+    {
+      return path.parent_path();
     }
   }  // namespace IO
 }  // namespace ExpGame

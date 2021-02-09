@@ -14,7 +14,9 @@ namespace ExpGame
     void Renderer::render_to(Window& window)
     {
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+      GL_CHECK();
       glClear(GL_COLOR_BUFFER_BIT);
+      GL_CHECK();
 
       this->ui.render();
 

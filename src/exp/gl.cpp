@@ -12,14 +12,14 @@ namespace ExpGame
 
     ErrorMap::ErrorMap()
     {
-      this->errors[GL_NO_ERROR]                      = { "No error detected" };
-      this->errors[GL_INVALID_ENUM]                  = { "Illegal enumeration" };
-      this->errors[GL_INVALID_VALUE]                 = { "Illegal value parameter" };
-      this->errors[GL_INVALID_OPERATION]             = { "Wrong parameter for state change" };
-      this->errors[GL_STACK_OVERFLOW]                = { "Stack push overflow" };
-      this->errors[GL_STACK_UNDERFLOW]               = { "Stack pop on empty stack" };
-      this->errors[GL_OUT_OF_MEMORY]                 = { "Not enough memory for given operation" };
-      this->errors[GL_INVALID_FRAMEBUFFER_OPERATION] = { "Read/write to framebuffer that is not complete" };
+      this->errors[GL_NO_ERROR]                      = { "No error detected", {} };
+      this->errors[GL_INVALID_ENUM]                  = { "Illegal enumeration", {} };
+      this->errors[GL_INVALID_VALUE]                 = { "Illegal value parameter", {} };
+      this->errors[GL_INVALID_OPERATION]             = { "Wrong parameter for state change", {} };
+      this->errors[GL_STACK_OVERFLOW]                = { "Stack push overflow", {} };
+      this->errors[GL_STACK_UNDERFLOW]               = { "Stack pop on empty stack", {} };
+      this->errors[GL_OUT_OF_MEMORY]                 = { "Not enough memory for given operation", {} };
+      this->errors[GL_INVALID_FRAMEBUFFER_OPERATION] = { "Read/write to framebuffer that is not complete", {} };
     }
 
     auto ErrorMap::check(const char* file, int line) -> bool
@@ -30,11 +30,11 @@ namespace ExpGame
       } else {
         auto entry = this->errors.find(err);
         if (entry == this->errors.end()) {
-          this->errors[err].occurrences[std::string(file)].push_back(line);
+          this->errors[err].occurrences[std::string(file)][line]++;
         } else {
           auto& entry = this->errors[err];
           entry.desc  = std::to_string(err);
-          entry.occurrences[std::string(file)].push_back(line);
+          entry.occurrences[std::string(file)][line]++;
         }
         return false;
       }
@@ -63,14 +63,15 @@ namespace ExpGame
     }
 
     Shader::Shader() noexcept
-     : id(0)
-     , valid(false)
+     : valid(false)
+     , id(0)
     {}
 
     Shader::~Shader() noexcept
     {
       if (this->id != 0) {
         glDeleteShader(this->id);
+        GL_CHECK();
       }
     }
 
@@ -98,28 +99,34 @@ namespace ExpGame
         return false;
       }
 
-      glCompileShader(this->id);
+      bool result = true;
 
-      GLint success;
+      glCompileShader(this->id);
+      if (!GL_CHECK()) {
+        LOG(WARNING) << "shader failed to compile";
+        result = false;
+      }
+
+      GLint success = 0;
       glGetShaderiv(this->id, GL_COMPILE_STATUS, &success);
+      if (!GL_CHECK()) {
+        LOG(WARNING) << "could not get shader compile status";
+        result = false;
+      }
 
       if (success == 0) {
+        result      = false;
         GLsizei len = 0;
         std::array<char, 1024> info_log;
         glGetShaderInfoLog(this->id, info_log.size(), &len, info_log.data());
         if (!GL_CHECK()) {
           LOG(ERROR) << "unable to get compilation errors for shader";
-          return false;
+          result = false;
         }
-        this->compile_error.assign(info_log.data(), len);
+        this->compile_error.assign(info_log.data(), static_cast<std::size_t>(len));
       }
 
-      if (!GL_CHECK()) {
-        LOG(ERROR) << "unable to compile shader";
-        return false;
-      }
-
-      return this->valid = true;
+      return this->valid = result;
     }
 
     auto Shader::shader_id() const noexcept -> ShaderID
@@ -155,6 +162,7 @@ namespace ExpGame
     {
       if (this->id != 0) {
         glDeleteProgram(this->id);
+        GL_CHECK();
       }
     }
 
@@ -183,7 +191,8 @@ namespace ExpGame
       }
 
       GLint success;
-      glGetShaderiv(this->id, GL_LINK_STATUS, &success);
+      glGetProgramiv(this->id, GL_LINK_STATUS, &success);
+      GL_CHECK();
 
       if (success == 0) {
         GLsizei len = 0;

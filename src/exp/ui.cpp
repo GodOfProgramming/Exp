@@ -284,15 +284,20 @@ namespace ExpGame
           if (loaded) {
             const auto& program = program_iter->second;
 
-            for (const auto& kvp : shader_meta.shaders) {
-              auto& shader_type = kvp.first;
-              auto& shader_file = kvp.second;
-              ImGui::Indent(1.0f);
-              ImGui::Text("%s (%s)", shader_file.c_str(), shader_type.c_str());
-            }
+            auto& window = AppWindow::instance();
+            auto dim     = window.get_size();
+            auto indent  = dim.x * 0.025f;
 
-            if (!program.is_valid()) {
-              ImGui::Text("Link Error: %s", program.error().c_str());
+            ImGui::Indent(indent);
+            ImGui::Text("%s (vertex)", shader_meta.vertex.c_str());
+            ImGui::Indent(-indent);
+
+            ImGui::Indent(indent);
+            ImGui::Text("%s (fragment)", shader_meta.fragment.c_str());
+            ImGui::Indent(-indent);
+
+            if (!program->is_valid()) {
+              ImGui::Text("Link Error: %s", program->error().c_str());
             }
           }
 
@@ -310,8 +315,8 @@ namespace ExpGame
         static std::string current_shader_id;
         std::size_t id = 0;
         for (auto shader_iter = shaders.shader_begin(); shader_iter != shaders.shader_end(); shader_iter++, id++) {
-          auto& shader_id = shader_iter->first;
-          auto& shader    = shader_iter->second;
+          auto shader_id = shader_iter->first;
+          auto shader    = shader_iter->second;
           ImGui::Text("Shader File: \"%s\"", shader_id.c_str());
           ImGui::SameLine();
 
@@ -325,10 +330,10 @@ namespace ExpGame
           }
           ImGui::PopID();
 
-          const char* valid_text = shader.is_valid() ? "Ok" : "Error";
+          const char* valid_text = shader->is_valid() ? "Ok" : "Error";
           ImGui::Text("Status: %s", valid_text);
-          if (!shader.is_valid()) {
-            ImGui::Text("%s", shader.error().c_str());
+          if (!shader->is_valid() && !shader->error().empty()) {
+            ImGui::Text("Error: %s", shader->error().c_str());
           }
           ImGui::Separator();
         }
@@ -337,7 +342,7 @@ namespace ExpGame
           auto shader_iter = shaders.find_shader(current_shader_id);
           ImGui::Text("Source of %s", current_shader_id.c_str());
           if (ImGui::BeginChild("Source", { 0, 0 }, true)) {
-            ImGui::Text("%s", shader_iter->second.get_source().c_str());
+            ImGui::Text("%s", shader_iter->second->get_source().c_str());
           }
           ImGui::EndChild();
         }
@@ -360,6 +365,10 @@ namespace ExpGame
 
       ImGui::Begin("OpenGL Errors");
 
+      auto& window = AppWindow::instance();
+      auto dim     = window.get_size();
+      auto indent  = dim.x * 0.025f;
+
       ImGuiID first = 1;
       for (const auto& kvp : errors) {
         auto id     = kvp.first;
@@ -367,11 +376,16 @@ namespace ExpGame
 
         ImGui::Text("Code: %u", id);
         ImGui::Text("Desc: %s", error.desc.c_str());
-        if (ImGui::BeginChild(first++, { 0, 0 }, true)) {
+        if (ImGui::BeginChild(first++, { 0, dim.x * 0.2f }, true)) {
           for (const auto& file_lines_pair : error.occurrences) {
             auto& file  = file_lines_pair.first;
             auto& lines = file_lines_pair.second;
             ImGui::Text("File %s", file.c_str());
+            for (const auto& line : lines) {
+              ImGui::Indent(indent);
+              ImGui::Text("%d: %lu", line.first, line.second);
+              ImGui::Indent(-indent);
+            }
           }
         }
         ImGui::EndChild();

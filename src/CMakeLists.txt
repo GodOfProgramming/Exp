@@ -29,6 +29,7 @@ set(PCH_HEADERS
   "<iostream>"
   "<map>"
   "<memory>"
+  "<regex>"
   "<set>"
   "<sstream>"
   "<string>"

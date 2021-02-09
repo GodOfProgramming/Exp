@@ -11,7 +11,7 @@ namespace ExpGame
     struct Error
     {
       std::string desc;
-      std::map<std::string, std::vector<int>> occurrences;
+      std::map<std::string, std::map<int, std::size_t>> occurrences;
     };
 
     class ErrorMap
@@ -96,9 +96,9 @@ namespace ExpGame
       auto get_source() const noexcept -> const std::string&;
 
      private:
+      bool valid;
       ShaderID id;
       std::string compile_error;
-      bool valid;
       std::string source;
     };
 
