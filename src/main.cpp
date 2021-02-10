@@ -8,6 +8,7 @@
 
 int main(int, char* argv[])
 {
+  using ExpGame::Game::Object;
   using ExpGame::Input::Dispatcher;
   using ExpGame::IO::File;
   using ExpGame::Render::Renderer;
@@ -83,9 +84,16 @@ int main(int, char* argv[])
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
 
+  auto stats_update_timer = std::chrono::system_clock::now();
+
   std::uint32_t frame_counter = 0;
 
-  auto stats_update_timer = std::chrono::system_clock::now();
+  std::vector<std::shared_ptr<Object>> objects;
+  auto obj = game_objects.find("exp.debug.random.triangle");
+  if (obj == game_objects.end()) {
+    LOG(FATAL) << "could not even load the friggen debug object, nice job dumbass";
+  }
+  objects.push_back(std::make_shared<Object>(obj->second));
 
   window.show();
 
@@ -98,7 +106,7 @@ int main(int, char* argv[])
 
     window.poll_events();
 
-    renderer.render_to(window);
+    renderer.render_to(window, objects);
 
     auto update_check_time = std::chrono::system_clock::now();
     if (update_check_time > stats_update_timer) {
@@ -112,6 +120,8 @@ int main(int, char* argv[])
 
     std::this_thread::sleep_until(resume);
   }
+
+  game_objects.release();
 
   ui.shutdown();
 

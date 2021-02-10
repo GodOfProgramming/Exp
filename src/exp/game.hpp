@@ -1,15 +1,18 @@
 #pragma once
-#include "gl.hpp"
+#include "resources.hpp"
 
 namespace ExpGame
 {
   namespace Game
   {
-    class GameObject
+    class Object
     {
      public:
+      Object(const Resources::ObjectMeta meta);
+
+      const Resources::ObjectMeta meta;
+
      private:
-      GL::VBO vbo;
     };
   }  // namespace Game
 }  // namespace ExpGame

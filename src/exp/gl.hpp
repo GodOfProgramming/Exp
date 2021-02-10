@@ -19,7 +19,7 @@ namespace ExpGame
       ErrorMap();
 
       using Internal = std::map<GLenum, Error>;
-      using Iter     = Internal::iterator;
+      using Iter     = Internal::const_iterator;
 
      public:
       ErrorMap(const ErrorMap&) = delete;
@@ -29,10 +29,10 @@ namespace ExpGame
 
       static auto instance() -> ErrorMap&;
 
-      auto check(const char* file, int line) -> bool;
+      auto check(const char* file, int line) noexcept -> bool;
 
-      auto begin() -> Iter;
-      auto end() -> Iter;
+      auto begin() const noexcept -> Iter;
+      auto end() const noexcept -> Iter;
 
      private:
       Internal errors;
@@ -51,23 +51,45 @@ namespace ExpGame
       using Vertex       = VertexBuffer::value_type;
 
      public:
-      auto gen() -> bool;
+      ~VBO();
 
-      auto bind() -> bool;
+      auto gen() noexcept -> bool;
+
+      auto bind() const noexcept -> bool;
+
+      auto del() noexcept -> bool;
 
       template <GlDraw T>
-      auto set(VertexBuffer& data) -> bool
+      auto set(VertexBuffer& data) const noexcept -> bool
       {
         if (!this->bind()) {
           return false;
         }
 
         glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * data.size(), data.data(), static_cast<GLenum>(T));
-        return GL_CHECK();
+        if (!GL_CHECK()) {
+          return false;
+        }
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), nullptr);
+        if (!GL_CHECK()) {
+          return false;
+        }
+        glEnableVertexAttribArray(0);
       }
+
+      auto valid() const noexcept -> bool;
 
      private:
       GLuint id = 0;
+    };
+
+    class VAO
+    {
+     public:
+      ~VAO();
+
+     private:
     };
 
     class Shader

@@ -8,27 +8,33 @@ namespace ExpGame
 {
   namespace Resources
   {
-    class Shaders
+    class IResource
     {
-      class ShaderMeta
-      {
-        using json = nlohmann::json;
+     public:
+      virtual void release() = 0;
+    };
 
-       public:
-        ShaderMeta() = default;
-        ShaderMeta(std::string st, json& sj);
+    class ShaderMeta
+    {
+      using json = nlohmann::json;
 
-        auto is_valid() const noexcept -> bool;
+     public:
+      ShaderMeta() = default;
+      ShaderMeta(std::string st, json& sj);
 
-        auto has_vertex() const noexcept -> bool;
+      auto is_valid() const noexcept -> bool;
 
-        auto has_fragment() const noexcept -> bool;
+      auto has_vertex() const noexcept -> bool;
 
-        std::string shader_type;
-        std::string vertex;
-        std::string fragment;
-      };
+      auto has_fragment() const noexcept -> bool;
 
+      std::string shader_type;
+      std::string vertex;
+      std::string fragment;
+    };
+
+    class Shaders: public IResource
+    {
       Shaders() = default;
 
       using ShaderMap   = std::map<std::string, std::shared_ptr<GL::Shader>>;
@@ -46,7 +52,7 @@ namespace ExpGame
 
       void load_all(const json& cfg);
 
-      void release();
+      void release() final;
 
       auto load_program(std::string id) -> bool;
 
@@ -138,11 +144,15 @@ namespace ExpGame
     }
 
     struct ObjectMeta
-    {};
-
-    class GameObjects
     {
-      GameObjects() = default;
+      std::shared_ptr<GL::Program> shader;
+      std::shared_ptr<GL::VBO> vbo;
+    };
+
+    class GameObjects: public IResource
+    {
+      using ObjectMap = std::map<std::string, ObjectMeta>;
+      GameObjects()   = default;
 
      public:
       GameObjects(const GameObjects&) = delete;
@@ -154,8 +164,14 @@ namespace ExpGame
 
       void load_all();
 
+      void release() final;
+
+      auto find(std::string id) const noexcept -> ObjectMap::const_iterator;
+      auto begin() const noexcept -> ObjectMap::const_iterator;
+      auto end() const noexcept -> ObjectMap::const_iterator;
+
      private:
-      std::map<std::string, ObjectMeta> objects;
+      ObjectMap objects;
     };
   }  // namespace Resources
 }  // namespace ExpGame

@@ -183,7 +183,7 @@ namespace ExpGame
       return this->cache.end();
     }
 
-    Shaders::ShaderMeta::ShaderMeta(std::string st, json& sj)
+    ShaderMeta::ShaderMeta(std::string st, json& sj)
      : shader_type(st)
     {
       if (!sj.is_object()) {
@@ -220,17 +220,17 @@ namespace ExpGame
       }
     }
 
-    auto Shaders::ShaderMeta::is_valid() const noexcept -> bool
+    auto ShaderMeta::is_valid() const noexcept -> bool
     {
       return !this->shader_type.empty() && this->has_vertex() && this->has_fragment();
     }
 
-    auto Shaders::ShaderMeta::has_vertex() const noexcept -> bool
+    auto ShaderMeta::has_vertex() const noexcept -> bool
     {
       return !this->vertex.empty();
     }
 
-    auto Shaders::ShaderMeta::has_fragment() const noexcept -> bool
+    auto ShaderMeta::has_fragment() const noexcept -> bool
     {
       return !this->fragment.empty();
     }
@@ -243,6 +243,7 @@ namespace ExpGame
 
     void GameObjects::load_all()
     {
+      auto& shaders = Shaders::instance();
       using nlohmann::json;
       std::function<void(std::filesystem::path, std::string)> decend = [&](std::filesystem::path dir, std::string nspace) {
         for (const auto& iter : std::filesystem::directory_iterator(dir)) {
@@ -260,18 +261,83 @@ namespace ExpGame
 
             auto file = file_res.ok_val();
 
-            json obj;
+            json objects;
 
             try {
-              obj = json::parse(file.data);
+              objects = json::parse(file.data);
             } catch (std::exception& e) {
-              LOG(FATAL) << "could not parse json: " << e.what();
+              LOG(WARNING) << "could not parse json: " << e.what();
+              continue;
+            }
+
+            for (const auto item : objects.items()) {
+              auto id  = nspace + "." + item.key();
+              auto obj = item.value();
+
+              ObjectMeta meta;
+
+              std::string shader_id = obj["shader"];
+              auto shader           = shaders.find_program(shader_id);
+              if (shader == shaders.program_end()) {
+                LOG(WARNING) << "cannot find shader with id " << shader_id;
+                continue;
+              }
+
+              meta.shader = shader->second;
+              meta.vbo    = std::make_shared<GL::VBO>();
+
+              if (obj["vertices"].is_array()) {
+                auto list = obj["vertices"];
+                if (list.size() % 3 != 0) {
+                  LOG(WARNING) << "cannot load item " << id << ", invalid number of vertices";
+                  continue;
+                }
+                std::vector<glm::vec3> vertices(list.size() / 3);
+
+                for (std::size_t i = 0; i < list.size(); i += 3) {
+                  glm::vec3 vertex{};
+                  vertex.x        = list[i + 0];
+                  vertex.y        = list[i + 1];
+                  vertex.z        = list[i + 2];
+                  vertices[i / 3] = vertex;
+                }
+
+                if (!meta.vbo->set<GL::GlDraw::STATIC>(vertices)) {
+                  LOG(WARNING) << "unable to set vertices to object";
+                  continue;
+                }
+              } else {
+                LOG(WARNING) << "no way to create object vertices";
+                continue;
+              }
+
+              this->objects.emplace(id, meta);
             }
           }
         }
       };
 
       decend(GAME_OBJECT_DIR, std::string{ "exp" });
+    }
+
+    void GameObjects::release()
+    {
+      this->objects.clear();
+    }
+
+    auto GameObjects::find(std::string id) const noexcept -> ObjectMap::const_iterator
+    {
+      return this->objects.find(id);
+    }
+
+    auto GameObjects::begin() const noexcept -> ObjectMap::const_iterator
+    {
+      return this->objects.begin();
+    }
+
+    auto GameObjects::end() const noexcept -> ObjectMap::const_iterator
+    {
+      return this->objects.end();
     }
   }  // namespace Resources
 }  // namespace ExpGame

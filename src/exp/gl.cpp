@@ -22,7 +22,7 @@ namespace ExpGame
       this->errors[GL_INVALID_FRAMEBUFFER_OPERATION] = { "Read/write to framebuffer that is not complete", {} };
     }
 
-    auto ErrorMap::check(const char* file, int line) -> bool
+    auto ErrorMap::check(const char* file, int line) noexcept -> bool
     {
       auto err = glGetError();
       if (err == GL_NO_ERROR) {
@@ -40,26 +40,45 @@ namespace ExpGame
       }
     }
 
-    auto ErrorMap::begin() -> Iter
+    auto ErrorMap::begin() const noexcept -> Iter
     {
       return this->errors.begin();
     }
 
-    auto ErrorMap::end() -> Iter
+    auto ErrorMap::end() const noexcept -> Iter
     {
       return this->errors.end();
     }
 
-    auto VBO::gen() -> bool
+    VBO::~VBO()
+    {
+      if (this->valid()) {
+        this->del();
+      }
+    }
+
+    auto VBO::gen() noexcept -> bool
     {
       glGenBuffers(1, &this->id);
       return GL_CHECK();
     }
 
-    auto VBO::bind() -> bool
+    auto VBO::bind() const noexcept -> bool
     {
       glBindBuffer(GL_ARRAY_BUFFER, this->id);
       return GL_CHECK();
+    }
+
+    auto VBO::del() noexcept -> bool
+    {
+      glDeleteBuffers(1, &this->id);
+      this->id = 0;
+      return GL_CHECK();
+    }
+
+    auto VBO::valid() const noexcept -> bool
+    {
+      return this->id != 0;
     }
 
     Shader::Shader() noexcept

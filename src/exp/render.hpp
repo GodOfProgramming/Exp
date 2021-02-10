@@ -1,5 +1,6 @@
 #pragma once
 
+#include "game.hpp"
 #include "ui.hpp"
 #include "window.hpp"
 
@@ -14,7 +15,8 @@ namespace ExpGame
 
      public:
       Renderer(UiManager& ui);
-      void render_to(Window& window);
+
+      void render_to(Window& window, std::vector<std::shared_ptr<Game::Object>>& objects);
 
      private:
       UiManager& ui;
