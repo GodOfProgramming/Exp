@@ -361,30 +361,34 @@ namespace ExpGame
 
       ImGui::Begin("OpenGL Errors");
 
-      auto& window = AppWindow::instance();
-      auto dim     = window.get_size();
-      auto indent  = dim.x * 0.025f;
+      if (errors.error_count() == 0) {
+        ImGui::Text("No Errors Detected");
+      } else {
+        auto& window = AppWindow::instance();
+        auto dim     = window.get_size();
+        auto indent  = dim.x * 0.025f;
 
-      ImGuiID first = 1;
-      for (const auto& kvp : errors) {
-        auto id     = kvp.first;
-        auto& error = kvp.second;
+        ImGuiID first = 1;
+        for (const auto& kvp : errors) {
+          auto id     = kvp.first;
+          auto& error = kvp.second;
 
-        ImGui::Text("Code: %u", id);
-        ImGui::Text("Desc: %s", error.desc.c_str());
-        if (ImGui::BeginChild(first++, { 0, dim.x * 0.2f }, true)) {
-          for (const auto& file_lines_pair : error.occurrences) {
-            auto& file  = file_lines_pair.first;
-            auto& lines = file_lines_pair.second;
-            ImGui::Text("File %s", file.c_str());
-            for (const auto& line : lines) {
-              ImGui::Indent(indent);
-              ImGui::Text("%d: %lu", line.first, line.second);
-              ImGui::Indent(-indent);
+          ImGui::Text("Code: %u", id);
+          ImGui::Text("Desc: %s", error.desc.c_str());
+          if (ImGui::BeginChild(first++, { 0, dim.x * 0.2f }, true)) {
+            for (const auto& file_lines_pair : error.occurrences) {
+              auto& file  = file_lines_pair.first;
+              auto& lines = file_lines_pair.second;
+              ImGui::Text("File %s", file.c_str());
+              for (const auto& line : lines) {
+                ImGui::Indent(indent);
+                ImGui::Text("%d: %lu", line.first, line.second);
+                ImGui::Indent(-indent);
+              }
             }
           }
+          ImGui::EndChild();
         }
-        ImGui::EndChild();
       }
 
       ImGui::End();

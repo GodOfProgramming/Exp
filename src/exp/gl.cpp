@@ -11,16 +11,17 @@ namespace ExpGame
     }
 
     ErrorMap::ErrorMap()
-    {
-      this->errors[GL_NO_ERROR]                      = { "No error detected", {} };
-      this->errors[GL_INVALID_ENUM]                  = { "Illegal enumeration", {} };
-      this->errors[GL_INVALID_VALUE]                 = { "Illegal value parameter", {} };
-      this->errors[GL_INVALID_OPERATION]             = { "Wrong parameter for state change", {} };
-      this->errors[GL_STACK_OVERFLOW]                = { "Stack push overflow", {} };
-      this->errors[GL_STACK_UNDERFLOW]               = { "Stack pop on empty stack", {} };
-      this->errors[GL_OUT_OF_MEMORY]                 = { "Not enough memory for given operation", {} };
-      this->errors[GL_INVALID_FRAMEBUFFER_OPERATION] = { "Read/write to framebuffer that is not complete", {} };
-    }
+     : definitions({
+        { GL_NO_ERROR, "No error detected" },
+        { GL_INVALID_ENUM, "Illegal enumeration" },
+        { GL_INVALID_VALUE, "Illegal value parameter" },
+        { GL_INVALID_OPERATION, "Wrong parameter for state change" },
+        { GL_STACK_OVERFLOW, "Stack push overflow" },
+        { GL_STACK_UNDERFLOW, "Stack pop on empty stack" },
+        { GL_OUT_OF_MEMORY, "Not enough memory for given operation" },
+        { GL_INVALID_FRAMEBUFFER_OPERATION, "Read/write to framebuffer that is not complete" },
+       })
+    {}
 
     auto ErrorMap::check(const char* file, int line) noexcept -> bool
     {
@@ -34,7 +35,12 @@ namespace ExpGame
         this->errors[err].occurrences[std::string(file)][line]++;
       } else {
         auto& entry = this->errors[err];
-        entry.desc  = std::to_string(err);
+        auto desc   = this->definitions.find(err);
+        if (desc == this->definitions.end()) {
+          entry.desc = std::to_string(err);
+        } else {
+          entry.desc = desc->second;
+        }
         entry.occurrences[std::string(file)][line]++;
       }
       return false;
@@ -48,6 +54,11 @@ namespace ExpGame
     auto ErrorMap::end() const noexcept -> Iter
     {
       return this->errors.end();
+    }
+
+    auto ErrorMap::error_count() const noexcept -> std::size_t
+    {
+      return this->errors.size();
     }
 
     VAO::~VAO()
@@ -177,7 +188,6 @@ namespace ExpGame
         glGetShaderInfoLog(this->id, info_log.size(), &len, info_log.data());
         if (!GL_CHECK()) {
           LOG(ERROR) << "unable to get compilation errors for shader";
-          result = false;
         }
         this->compile_error.assign(info_log.data(), static_cast<std::size_t>(len));
       }

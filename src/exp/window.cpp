@@ -33,6 +33,7 @@ namespace ExpGame
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
       glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+      glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
       auto& settings = SettingsManager::instance();
 

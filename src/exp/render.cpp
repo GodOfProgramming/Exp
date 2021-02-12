@@ -1,7 +1,6 @@
 #include "render.hpp"
 
 #include "game.hpp"
-#include "resources.hpp"
 
 namespace ExpGame
 {
@@ -13,7 +12,6 @@ namespace ExpGame
 
     void Renderer::render_to(Window& window, std::vector<std::shared_ptr<Game::Object>>& objects)
     {
-      using Resources::Shaders;
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       if (!GL_CHECK()) {
         LOG(ERROR) << "could not clear gl color";

@@ -34,8 +34,11 @@ namespace ExpGame
       auto begin() const noexcept -> Iter;
       auto end() const noexcept -> Iter;
 
+      auto error_count() const noexcept -> std::size_t;
+
      private:
       Internal errors;
+      const std::map<GLenum, std::string> definitions;
     };
 
     enum class GlDraw
