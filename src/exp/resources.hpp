@@ -146,6 +146,7 @@ namespace ExpGame
     struct ObjectMeta
     {
       std::shared_ptr<GL::Program> shader;
+      std::shared_ptr<GL::VAO> vao;
       std::shared_ptr<GL::VBO> vbo;
     };
 
@@ -169,6 +170,8 @@ namespace ExpGame
       auto find(std::string id) const noexcept -> ObjectMap::const_iterator;
       auto begin() const noexcept -> ObjectMap::const_iterator;
       auto end() const noexcept -> ObjectMap::const_iterator;
+
+      auto lookup(std::string id) const noexcept -> ObjectMap::value_type;
 
      private:
       ObjectMap objects;

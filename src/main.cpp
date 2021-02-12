@@ -8,6 +8,7 @@
 
 int main(int, char* argv[])
 {
+  constexpr const bool PRINT_GL_ERRORS = false;
   using ExpGame::Game::Object;
   using ExpGame::Input::Dispatcher;
   using ExpGame::IO::File;
@@ -68,14 +69,14 @@ int main(int, char* argv[])
     shaders.load_all(shader_json);
   }
 
-  auto& ui = UiManager::instance();
-  {
-    ui.load_all();
-  }
-
   auto& game_objects = GameObjects::instance();
   {
     game_objects.load_all();
+  }
+
+  auto& ui = UiManager::instance();
+  {
+    ui.load_all();
   }
 
   // rendering
@@ -114,6 +115,17 @@ int main(int, char* argv[])
       LOG(INFO) << "FPS: " << frame_counter - last_count;
       last_count         = frame_counter;
       stats_update_timer = update_check_time + one_second;
+
+      if constexpr (PRINT_GL_ERRORS) {
+        auto& errors = ExpGame::GL::ErrorMap::instance();
+        for (const auto& error : errors) {
+          LOG(INFO) << "Error " << error.first << ": " << error.second.desc;
+          for (const auto& occurrance : error.second.occurrences) {
+            LOG(INFO) << "\tFile: " << occurrance.first;
+            for (const auto line : occurrance.second) { LOG(INFO) << "\tLine" << line.first << " - " << line.second; }
+          }
+        }
+      }
     }
 
     frame_counter++;
@@ -121,9 +133,11 @@ int main(int, char* argv[])
     std::this_thread::sleep_until(resume);
   }
 
-  game_objects.release();
+  objects.clear();
 
   ui.shutdown();
+
+  game_objects.release();
 
   shaders.release();
 

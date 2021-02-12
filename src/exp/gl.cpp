@@ -27,17 +27,17 @@ namespace ExpGame
       auto err = glGetError();
       if (err == GL_NO_ERROR) {
         return true;
-      } else {
-        auto entry = this->errors.find(err);
-        if (entry == this->errors.end()) {
-          this->errors[err].occurrences[std::string(file)][line]++;
-        } else {
-          auto& entry = this->errors[err];
-          entry.desc  = std::to_string(err);
-          entry.occurrences[std::string(file)][line]++;
-        }
-        return false;
       }
+
+      auto entry = this->errors.find(err);
+      if (entry == this->errors.end()) {
+        this->errors[err].occurrences[std::string(file)][line]++;
+      } else {
+        auto& entry = this->errors[err];
+        entry.desc  = std::to_string(err);
+        entry.occurrences[std::string(file)][line]++;
+      }
+      return false;
     }
 
     auto ErrorMap::begin() const noexcept -> Iter
@@ -50,8 +50,45 @@ namespace ExpGame
       return this->errors.end();
     }
 
+    VAO::~VAO()
+    {
+      DLOG(INFO) << "deleted vao";
+      if (this->valid()) {
+        this->del();
+      }
+    }
+
+    auto VAO::gen() noexcept -> bool
+    {
+      glGenVertexArrays(1, &this->id);
+      return GL_CHECK();
+    }
+
+    auto VAO::bind() const noexcept -> bool
+    {
+      glBindVertexArray(this->id);
+      return GL_CHECK();
+    }
+
+    auto VAO::del() noexcept -> bool
+    {
+      glDeleteVertexArrays(1, &this->id);
+      this->id = 0;
+      return GL_CHECK();
+    }
+
+    auto VAO::valid() const noexcept -> bool
+    {
+      return this->id != 0;
+    }
+
+    VBO::VBO(std::shared_ptr<VAO> v)
+     : vao(v)
+    {}
+
     VBO::~VBO()
     {
+      DLOG(INFO) << "deleted vbo";
       if (this->valid()) {
         this->del();
       }
@@ -245,12 +282,7 @@ namespace ExpGame
     auto Program::use() -> bool
     {
       glUseProgram(this->id);
-      if (!GL_CHECK()) {
-        LOG(ERROR) << "unable to use program";
-        return false;
-      }
-
-      return true;
+      return GL_CHECK();
     }
   }  // namespace GL
 }  // namespace ExpGame

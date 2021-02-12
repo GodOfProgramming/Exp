@@ -15,13 +15,33 @@ namespace ExpGame
     {
       using Resources::Shaders;
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-      GL_CHECK();
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "could not clear gl color";
+        return;
+      }
+
       glClear(GL_COLOR_BUFFER_BIT);
-      GL_CHECK();
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "could not clear color buffer bit";
+        return;
+      }
 
-      auto& shaders = Shaders::instance();
+      for (const auto object : objects) {
+        if (!object->meta.shader->use()) {
+          LOG(WARNING) << "unable to draw game object, shader could not be used";
+          continue;
+        }
 
-      for (const auto object : objects) { object->meta.vbo->bind(); }
+        if (!object->meta.vao->bind()) {
+          LOG(WARNING) << "unable to draw game object, vao not bound";
+          continue;
+        }
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        GL_CHECK();
+      }
 
       this->ui.render();
 

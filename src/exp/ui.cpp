@@ -108,11 +108,11 @@ namespace ExpGame
       ImGuiWindowFlags flags = 0;
       flags |= ImGuiWindowFlags_NoResize;
 
-      ImVec2 size{ this->dim.x, this->dim.y };
+      ImVec2 size{ static_cast<float>(this->dim.x), static_cast<float>(this->dim.y) };
       ImGui::SetNextWindowSize(size);
 
       if (!this->initial_render) {
-        ImVec2 pos{ this->pos.x, this->pos.y };
+        ImVec2 pos{ static_cast<float>(this->pos.x), static_cast<float>(this->pos.y) };
         ImGui::SetNextWindowPos(pos);
         this->initial_render = true;
       }
@@ -120,10 +120,6 @@ namespace ExpGame
       ImGui::Begin(this->title.c_str(), nullptr, flags);
 
       for (const auto& element : elements) { element->render(); }
-
-      auto& errors = GL::ErrorMap::instance();
-
-      for (const auto& pair : errors) {}
 
       ImGui::End();
     }
@@ -259,8 +255,8 @@ namespace ExpGame
       if (!this->initial_render) {
         auto& window = AppWindow::instance();
         auto size    = window.get_size();
-        ImGui::SetNextWindowSize(ImVec2{ size.x * 0.8, size.y * 0.8 });
-        ImGui::SetNextWindowPos(ImVec2{ size.x * 0.1, size.y * 0.1 });
+        ImGui::SetNextWindowSize(ImVec2{ static_cast<float>(size.x) * 0.8f, static_cast<float>(size.y) * 0.8f });
+        ImGui::SetNextWindowPos(ImVec2{ static_cast<float>(size.x) * 0.1f, static_cast<float>(size.y) * 0.1f });
         this->initial_render = true;
       }
 
@@ -356,8 +352,8 @@ namespace ExpGame
       if (!this->initial_render) {
         auto& window = AppWindow::instance();
         auto size    = window.get_size();
-        ImGui::SetNextWindowSize(ImVec2{ size.x * 0.8, size.y * 0.8 });
-        ImGui::SetNextWindowPos(ImVec2{ size.x * 0.1, size.y * 0.1 });
+        ImGui::SetNextWindowSize(ImVec2{ static_cast<float>(size.x) * 0.8f, static_cast<float>(size.y) * 0.8f });
+        ImGui::SetNextWindowPos(ImVec2{ static_cast<float>(size.x) * 0.1f, static_cast<float>(size.y) * 0.1f });
         this->initial_render = true;
       }
 

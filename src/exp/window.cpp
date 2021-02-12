@@ -1,5 +1,6 @@
 #include "window.hpp"
 
+#include "gl.hpp"
 #include "settings.hpp"
 
 namespace ExpGame
@@ -26,8 +27,9 @@ namespace ExpGame
 
     void AppWindow::create()
     {
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+      LOG(INFO) << "creating window";
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
       glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -90,6 +92,12 @@ namespace ExpGame
       });
 
       glfwSetCharCallback(this->window, [](GLFWwindow* window, unsigned int c) { ImGui_ImplGlfw_CharCallback(window, c); });
+
+      LOG(INFO) << "GLFW Version: " << glfwGetVersionString();
+      LOG(INFO) << "OpenGL Renderer: " << glGetString(GL_RENDERER);
+      GL_CHECK();
+      LOG(INFO) << "OpenGL Version: " << glGetString(GL_VERSION);
+      GL_CHECK();
     }
 
     void AppWindow::show()
@@ -155,12 +163,12 @@ namespace ExpGame
       return nullptr;
     }
 
-    auto AppWindow::handle(Input::MouseButtonEvent e) -> Input::IHandler*
+    auto AppWindow::handle(Input::MouseButtonEvent) -> Input::IHandler*
     {
       return this->get_next();
     }
 
-    auto AppWindow::handle(Input::MouseMoveEvent e) -> Input::IHandler*
+    auto AppWindow::handle(Input::MouseMoveEvent) -> Input::IHandler*
     {
       return this->get_next();
     }

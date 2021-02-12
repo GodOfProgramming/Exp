@@ -110,6 +110,7 @@ namespace ExpGame
 
     void Shaders::release()
     {
+      DLOG(INFO) << "releasing shaders";
       this->shader_map.clear();
       this->program_map.clear();
       this->cache.clear();
@@ -274,20 +275,52 @@ namespace ExpGame
               auto id  = nspace + "." + item.key();
               auto obj = item.value();
 
-              ObjectMeta meta;
-
               std::string shader_id = obj["shader"];
-              auto shader           = shaders.find_program(shader_id);
-              if (shader == shaders.program_end()) {
+              auto shader_iter      = shaders.find_program(shader_id);
+              if (shader_iter == shaders.program_end()) {
                 LOG(WARNING) << "cannot find shader with id " << shader_id;
+                continue;
+              } else {
+                DLOG(INFO) << "object has shader id " << shader_id;
+              }
+
+              auto shader = shader_iter->second;
+
+              if (!shader->is_valid()) {
+                LOG(WARNING) << "cannot load item, shader " << shader_id << " not valid";
                 continue;
               }
 
-              meta.shader = shader->second;
-              meta.vbo    = std::make_shared<GL::VBO>();
+              auto vao = std::make_shared<GL::VAO>();
+
+              if (!vao->gen()) {
+                LOG(WARNING) << "unable to generate vao";
+                continue;
+              } else {
+                DLOG(INFO) << "generated vao";
+              }
+
+              if (!vao->valid()) {
+                LOG(WARNING) << "unable to load object, vao not valid";
+                continue;
+              }
+
+              auto vbo = std::make_shared<GL::VBO>(vao);
+
+              if (!vbo->gen()) {
+                LOG(WARNING) << "could not generate vbo";
+                continue;
+              } else {
+                DLOG(INFO) << "generated vbo";
+              }
+
+              if (!vbo->valid()) {
+                LOG(WARNING) << "unable to load object, vbo not valid";
+                continue;
+              }
 
               if (obj["vertices"].is_array()) {
-                auto list = obj["vertices"];
+                std::vector<float> list = obj["vertices"];
                 if (list.size() % 3 != 0) {
                   LOG(WARNING) << "cannot load item " << id << ", invalid number of vertices";
                   continue;
@@ -300,9 +333,10 @@ namespace ExpGame
                   vertex.y        = list[i + 1];
                   vertex.z        = list[i + 2];
                   vertices[i / 3] = vertex;
+                  DLOG(INFO) << "adding vertex (" << vertex.x << ", " << vertex.y << ", " << vertex.z << ") at index " << i / 3;
                 }
 
-                if (!meta.vbo->set<GL::GlDraw::STATIC>(vertices)) {
+                if (!vbo->set<GL::GlDraw::STATIC>(vertices)) {
                   LOG(WARNING) << "unable to set vertices to object";
                   continue;
                 }
@@ -311,6 +345,12 @@ namespace ExpGame
                 continue;
               }
 
+              ObjectMeta meta;
+              meta.shader = shader;
+              meta.vao    = vao;
+              meta.vbo    = vbo;
+
+              DLOG(INFO) << "adding game object " << id;
               this->objects.emplace(id, meta);
             }
           }
@@ -322,6 +362,7 @@ namespace ExpGame
 
     void GameObjects::release()
     {
+      DLOG(INFO) << "releasing game objects";
       this->objects.clear();
     }
 

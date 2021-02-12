@@ -47,7 +47,7 @@ ASSIMP_BUILD_NONFREE_C4D_IMPORTER:BOOL=FALSE
 ASSIMP_BUILD_SAMPLES:BOOL=FALSE
 
 //If the test suite for Assimp is built in addition to the library.
-ASSIMP_BUILD_TESTS:BOOL=FALSE
+ASSIMP_BUILD_TESTS:BOOL=TRUE
 
 //Build your own zlib
 ASSIMP_BUILD_ZLIB:BOOL=FALSE
@@ -382,52 +382,52 @@ COVERAGE_COMMAND:FILEPATH=/usr/bin/gcov
 COVERAGE_EXTRA_FLAGS:STRING=-l
 
 //Enable to build Debian packages
-CPACK_BINARY_DEB:BOOL=OFF
+CPACK_BINARY_DEB:BOOL=FALSE
 
 //Enable to build FreeBSD packages
-CPACK_BINARY_FREEBSD:BOOL=OFF
+CPACK_BINARY_FREEBSD:BOOL=FALSE
 
 //Enable to build IFW packages
-CPACK_BINARY_IFW:BOOL=OFF
+CPACK_BINARY_IFW:BOOL=FALSE
 
 //Enable to build NSIS packages
-CPACK_BINARY_NSIS:BOOL=OFF
+CPACK_BINARY_NSIS:BOOL=FALSE
 
 //Enable to build RPM packages
-CPACK_BINARY_RPM:BOOL=OFF
+CPACK_BINARY_RPM:BOOL=FALSE
 
 //Enable to build STGZ packages
-CPACK_BINARY_STGZ:BOOL=ON
+CPACK_BINARY_STGZ:BOOL=TRUE
 
 //Enable to build TBZ2 packages
-CPACK_BINARY_TBZ2:BOOL=OFF
+CPACK_BINARY_TBZ2:BOOL=FALSE
 
 //Enable to build TGZ packages
-CPACK_BINARY_TGZ:BOOL=ON
+CPACK_BINARY_TGZ:BOOL=TRUE
 
 //Enable to build TXZ packages
-CPACK_BINARY_TXZ:BOOL=OFF
+CPACK_BINARY_TXZ:BOOL=FALSE
 
 //Enable to build TZ packages
-CPACK_BINARY_TZ:BOOL=ON
+CPACK_BINARY_TZ:BOOL=TRUE
 
 //Enable to build RPM source packages
-CPACK_SOURCE_RPM:BOOL=OFF
+CPACK_SOURCE_RPM:BOOL=FALSE
 
 //Enable to build TBZ2 source packages
-CPACK_SOURCE_TBZ2:BOOL=ON
+CPACK_SOURCE_TBZ2:BOOL=TRUE
 
 //Enable to build TGZ source packages
-CPACK_SOURCE_TGZ:BOOL=ON
+CPACK_SOURCE_TGZ:BOOL=TRUE
 
 //Enable to build TXZ source packages
-CPACK_SOURCE_TXZ:BOOL=ON
+CPACK_SOURCE_TXZ:BOOL=TRUE
 
 //Enable to build TZ source packages
-CPACK_SOURCE_TZ:BOOL=ON
+CPACK_SOURCE_TZ:BOOL=TRUE
 
 //Enable to build ZIP source packages
-CPACK_SOURCE_ZIP:BOOL=OFF
+CPACK_SOURCE_ZIP:BOOL=FALSE
 
 //How many times to retry timed-out CTest submissions.
 CTEST_SUBMIT_RETRY_COUNT:STRING=3
@@ -457,38 +457,38 @@ Exp_SOURCE_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp
 FMT_BINARY_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/build/lib/fmt/upstream
 
 //Generate the cuda-test target.
-FMT_CUDA_TEST:BOOL=OFF
+FMT_CUDA_TEST:BOOL=FALSE
 
 //Debug library postfix.
 FMT_DEBUG_POSTFIX:STRING=d
 
 //Generate the doc target.
-FMT_DOC:BOOL=OFF
+FMT_DOC:BOOL=FALSE
 
 //Generate the fuzz target.
-FMT_FUZZ:BOOL=OFF
+FMT_FUZZ:BOOL=FALSE
 
 //Installation directory for include files, a relative path that
 // will be joined with /usr/local or an absolute path.
 FMT_INC_DIR:STRING=include
 
 //Generate the install target.
-FMT_INSTALL:BOOL=OFF
+FMT_INSTALL:BOOL=FALSE
 
 //Include core requiring OS (Windows/Posix) 
-FMT_OS:BOOL=ON
+FMT_OS:BOOL=TRUE
 
 //Enable extra warnings and expensive tests.
-FMT_PEDANTIC:BOOL=OFF
+FMT_PEDANTIC:BOOL=FALSE
 
 //Value Computed by CMake
 FMT_SOURCE_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/lib/fmt/upstream
 
 //Generate the test target.
-FMT_TEST:BOOL=OFF
+FMT_TEST:BOOL=FALSE
 
 //Halt the compilation with an error on compiler warnings.
-FMT_WERROR:BOOL=OFF
+FMT_WERROR:BOOL=FALSE
 
 //Path to a program.
 GITCOMMAND:FILEPATH=/usr/bin/git
@@ -526,7 +526,7 @@ GLAD_NO_LOADER:BOOL=FALSE
 GLAD_OUT_DIR:STRING=/media/jdizzle/BigLinux/workspace/Exp/build/lib/glad/upstream
 
 //OpenGL profile
-GLAD_PROFILE:STRING=compatibility
+GLAD_PROFILE:STRING=core
 
 //Reproducible build
 GLAD_REPRODUCIBLE:BOOL=FALSE
@@ -590,10 +590,10 @@ INJECT_DEBUG_POSTFIX:BOOL=TRUE
 INSTALL_GTEST:BOOL=FALSE
 
 //Build the unit tests when BUILD_TESTING is enabled.
-JSFALSE_BuildTests:BOOL=ON
+JSFALSE_BuildTests:BOOL=TRUE
 
 //Install CMake targets during install step.
-JSFALSE_Install:BOOL=ON
+JSFALSE_Install:BOOL=TRUE
 
 //Build the unit tests when BUILD_TESTING is enabled.
 JSON_BuildTests:BOOL=ON
@@ -619,8 +619,14 @@ JSON_Sanitizer:BOOL=FALSE
 //Execute test suite with Valgrind
 JSON_Valgrind:BOOL=FALSE
 
+//Build the unit tests when BUILD_TESTING is enabled.
+JSTRUE_BuildTests:BOOL=ON
+
 //Enable implicit conversions.
 JSTRUE_ImplicitConversions:BOOL=ON
+
+//Install CMake targets during install step.
+JSTRUE_Install:BOOL=ON
 
 //Path to a program.
 LSB_RELEASE_COMMAND:FILEPATH=/usr/bin/lsb_release
@@ -647,7 +653,7 @@ PKGCONFIG_INSTALL_DIR:PATH=share/pkgconfig
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
 //Print raw pc values on symbolization failure
-PRINT_UNSYMBOLIZED_STACK_TRACES:BOOL=OFF
+PRINT_UNSYMBOLIZED_STACK_TRACES:BOOL=FALSE
 
 //Path to a program.
 PYTHON_EXECUTABLE:FILEPATH=/home/jdizzle/.asdf/shims/python
@@ -718,13 +724,13 @@ UNWIND_LIBRARY:FILEPATH=UNWIND_LIBRARY-NOTFOUND
 VER_COMMAND:FILEPATH=VER_COMMAND-NOTFOUND
 
 //Use gflags
-WITH_GFLAGS:BOOL=ON
+WITH_GFLAGS:BOOL=TRUE
 
 //Enable multithreading support
-WITH_THREADS:BOOL=ON
+WITH_THREADS:BOOL=TRUE
 
 //Enable Thread Local Storage (TLS) support
-WITH_TLS:BOOL=ON
+WITH_TLS:BOOL=TRUE
 
 //Path to a file.
 X11_ICE_INCLUDE_PATH:PATH=/usr/include
@@ -1195,7 +1201,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=45
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=47
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1333,11 +1339,11 @@ HAVE_GCC_TLS:INTERNAL=1
 //Have include glob.h
 HAVE_GLOB_H:INTERNAL=1
 //Result of TRY_COMPILE
-HAVE_HAVE_UINT16_T:INTERNAL=TRUE
+HAVE_HAVE_UINT16_T:INTERNAL=2
 //Result of TRY_COMPILE
-HAVE_HAVE_U_INT16_T:INTERNAL=TRUE
+HAVE_HAVE_U_INT16_T:INTERNAL=2
 //Result of TRY_COMPILE
-HAVE_HAVE___UINT16:INTERNAL=FALSE
+HAVE_HAVE___UINT16:INTERNAL=
 //Have include inttypes.h
 HAVE_INTTYPES_H:INTERNAL=1
 //Have include libunwind.h
@@ -1435,7 +1441,7 @@ HAVE___SYNC_VAL_COMPARE_AND_SWAP:INTERNAL=1
 //CHECK_TYPE_SIZE: unsigned __int16 unknown
 HAVE___UINT16:INTERNAL=
 //Result of TRY_COMPILE
-HAVE_uint32_t:INTERNAL=TRUE
+HAVE_uint32_t:INTERNAL=4
 //ADVANCED property for variable: HGCOMMAND
 HGCOMMAND-ADVANCED:INTERNAL=1
 //IrrXML_Include
