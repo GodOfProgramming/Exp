@@ -72,8 +72,8 @@ end
 shaders.each do |shader|
   forge_shader("#{SRC_DIR}/#{shader}", [], Set.new) do |code|
     File.open("#{OUT_DIR}/#{shader}", 'w') do |f|
-      f.write("/** Auto-Generated on #{Time.now} **/\n")
       f.write(code)
+      f.write("/** Auto-Generated on #{Time.now} **/\n")
     end
   end
 end

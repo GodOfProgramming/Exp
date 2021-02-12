@@ -262,86 +262,48 @@ namespace ExpGame
 
       ImGui::Begin("Shaders");
 
-      if (ImGui::CollapsingHeader("Programs")) {
-        std::size_t id = 0;
-        for (auto cfg_iter = shaders.cache_begin(); cfg_iter != shaders.cache_end(); cfg_iter++, id++) {
-          auto& program_id  = cfg_iter->first;
-          auto& shader_meta = cfg_iter->second;
+      std::size_t id = 0;
+      for (auto cfg_iter = shaders.cache_begin(); cfg_iter != shaders.cache_end(); cfg_iter++, id++) {
+        auto& program_id  = cfg_iter->first;
+        auto& shader_meta = cfg_iter->second;
 
-          ImGui::Text("ID: \"%s\"", program_id.c_str());
+        ImGui::Text("ID: \"%s\"", program_id.c_str());
 
-          const auto program_iter = shaders.find_program(cfg_iter->first);
+        const auto program_iter = shaders.find_program(cfg_iter->first);
 
-          bool loaded = program_iter != shaders.program_end();
+        bool loaded = program_iter != shaders.program_end();
 
-          const char* status_txt = loaded ? "Yes" : "No";
-          ImGui::Text("Loaded: %s", status_txt);
+        const char* status_txt = loaded ? "Yes" : "No";
+        ImGui::Text("Loaded: %s", status_txt);
 
-          if (loaded) {
-            const auto& program = program_iter->second;
+        if (loaded) {
+          const auto& program = program_iter->second;
 
-            auto& window = AppWindow::instance();
-            auto dim     = window.get_size();
-            auto indent  = dim.x * 0.025f;
+          auto& window = AppWindow::instance();
+          auto dim     = window.get_size();
+          auto indent  = dim.x * 0.025f;
 
-            ImGui::Indent(indent);
-            ImGui::Text("%s (vertex)", shader_meta.vertex.c_str());
-            ImGui::Indent(-indent);
+          ImGui::Indent(indent);
+          ImGui::Text("%s (vertex)", shader_meta.vertex.file.c_str());
+          ImGui::Text("%s", shader_meta.vertex.error.c_str());
+          ImGui::Indent(-indent);
 
-            ImGui::Indent(indent);
-            ImGui::Text("%s (fragment)", shader_meta.fragment.c_str());
-            ImGui::Indent(-indent);
+          ImGui::Indent(indent);
+          ImGui::Text("%s (fragment)", shader_meta.fragment.file.c_str());
+          ImGui::Text("%s", shader_meta.fragment.error.c_str());
+          ImGui::Indent(-indent);
 
-            if (!program->is_valid()) {
-              ImGui::Text("Link Error: %s", program->error().c_str());
-            }
+          if (!program->is_valid()) {
+            ImGui::Text("Link Error: %s", shader_meta.link_error.c_str());
           }
-
-          ImGui::PushID(id);
-          if (ImGui::Button("Reload")) {
-            shaders.reload_program(program_id);
-          }
-          ImGui::PopID();
-          ImGui::Separator();
-        }
-      }
-
-      if (ImGui::CollapsingHeader("Shaders")) {
-        static bool show_src = false;
-        static std::string current_shader_id;
-        std::size_t id = 0;
-        for (auto shader_iter = shaders.shader_begin(); shader_iter != shaders.shader_end(); shader_iter++, id++) {
-          auto shader_id = shader_iter->first;
-          auto shader    = shader_iter->second;
-          ImGui::Text("Shader File: \"%s\"", shader_id.c_str());
-          ImGui::SameLine();
-
-          ImGui::PushID(id);
-          if (ImGui::Button("Show")) {
-            show_src = !show_src;
-            if (show_src || current_shader_id != shader_id) {
-              show_src          = true;
-              current_shader_id = shader_id;
-            }
-          }
-          ImGui::PopID();
-
-          const char* valid_text = shader->is_valid() ? "Ok" : "Error";
-          ImGui::Text("Status: %s", valid_text);
-          if (!shader->is_valid() && !shader->error().empty()) {
-            ImGui::Text("Error: %s", shader->error().c_str());
-          }
-          ImGui::Separator();
         }
 
-        if (show_src) {
-          auto shader_iter = shaders.find_shader(current_shader_id);
-          ImGui::Text("Source of %s", current_shader_id.c_str());
-          if (ImGui::BeginChild("Source", { 0, 0 }, true)) {
-            ImGui::Text("%s", shader_iter->second->get_source().c_str());
-          }
-          ImGui::EndChild();
+        ImGui::PushID(id);
+        if (ImGui::Button("Reload")) {
+          shaders.reload_program(program_id);
         }
+        ImGui::PopID();
+        ImGui::Separator();
       }
 
       ImGui::End();

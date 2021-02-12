@@ -142,10 +142,8 @@ namespace ExpGame
       }
     }
 
-    auto Shader::compile(Type t, const std::string_view src) noexcept -> bool
+    auto Shader::compile(Type t, const std::string_view src, std::string& errstr) noexcept -> bool
     {
-      this->source = src;
-
       this->id = glCreateShader(static_cast<GLenum>(t));
       if (!GL_CHECK()) {
         LOG(ERROR) << "unable to create new shader (gl error != GL_NO_ERROR)";
@@ -181,7 +179,7 @@ namespace ExpGame
         result = false;
       }
 
-      if (success == 0) {
+      if (success == GL_FALSE) {
         result      = false;
         GLsizei len = 0;
         std::array<char, 1024> info_log;
@@ -189,7 +187,7 @@ namespace ExpGame
         if (!GL_CHECK()) {
           LOG(ERROR) << "unable to get compilation errors for shader";
         }
-        this->compile_error.assign(info_log.data(), static_cast<std::size_t>(len));
+        errstr.assign(info_log.data(), static_cast<std::size_t>(len));
       }
 
       return this->valid = result;
@@ -200,19 +198,9 @@ namespace ExpGame
       return this->id;
     }
 
-    auto Shader::error() const noexcept -> const std::string&
-    {
-      return this->compile_error;
-    }
-
     auto Shader::is_valid() const noexcept -> bool
     {
       return this->valid;
-    }
-
-    auto Shader::get_source() const noexcept -> const std::string&
-    {
-      return this->source;
     }
 
     Program::Program()
@@ -234,8 +222,14 @@ namespace ExpGame
 
     auto Program::attach(const Shader& shader) -> bool
     {
+      DLOG(INFO) << "attaching shader with id: " << shader.shader_id();
       if (this->id == 0) {
         LOG(ERROR) << "unable to link program (program id == 0)";
+        return false;
+      }
+
+      if (!shader.is_valid()) {
+        LOG(ERROR) << "tried linking invalid shader";
         return false;
       }
 
@@ -248,40 +242,40 @@ namespace ExpGame
       return true;
     }
 
-    auto Program::link() -> bool
+    auto Program::link(std::string& errstr) -> bool
     {
+      bool result = true;
+
       glLinkProgram(this->id);
       if (!GL_CHECK()) {
         LOG(ERROR) << "unable to link shader program";
-        return false;
+        result = false;
       }
 
       GLint success;
       glGetProgramiv(this->id, GL_LINK_STATUS, &success);
-      GL_CHECK();
+      if (!GL_CHECK()) {
+        LOG(ERROR) << "unable to get program iv";
+        result = false;
+      }
 
-      if (success == 0) {
+      if (success == GL_FALSE) {
+        result      = false;
         GLsizei len = 0;
         std::array<char, 1024> info_log;
         glGetProgramInfoLog(this->id, info_log.size(), &len, info_log.data());
         if (!GL_CHECK()) {
           LOG(ERROR) << "unable to get compilation errors for shader";
-          return false;
         }
-        this->link_error.assign(info_log.data(), len);
+        errstr.assign(info_log.data(), static_cast<std::size_t>(len));
       }
 
-      return this->valid = true;
+      return this->valid = result;
     }
 
     auto Program::program_id() const noexcept -> ProgramID
     {
       return this->id;
-    }
-
-    auto Program::error() const noexcept -> const std::string&
-    {
-      return this->link_error;
     }
 
     auto Program::is_valid() const noexcept -> bool

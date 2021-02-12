@@ -14,13 +14,21 @@ namespace ExpGame
       virtual void release() = 0;
     };
 
-    class ShaderMeta
+    struct ShaderMeta
+    {
+      std::string file;
+      std::string source;
+      std::string error;
+      bool present = false;
+    };
+
+    class ShaderProgramMeta
     {
       using json = nlohmann::json;
 
      public:
-      ShaderMeta() = default;
-      ShaderMeta(std::string st, json& sj);
+      ShaderProgramMeta() = default;
+      ShaderProgramMeta(std::string st, json& sj);
 
       auto is_valid() const noexcept -> bool;
 
@@ -28,9 +36,10 @@ namespace ExpGame
 
       auto has_fragment() const noexcept -> bool;
 
-      std::string shader_type;
-      std::string vertex;
-      std::string fragment;
+      std::string type;
+      std::string link_error;
+      ShaderMeta vertex;
+      ShaderMeta fragment;
     };
 
     class Shaders: public IResource
@@ -39,7 +48,7 @@ namespace ExpGame
 
       using ShaderMap   = std::map<std::string, std::shared_ptr<GL::Shader>>;
       using ProgramMap  = std::map<std::string, std::shared_ptr<GL::Program>>;
-      using ConfigCache = std::map<std::string, ShaderMeta>;
+      using ConfigCache = std::map<std::string, ShaderProgramMeta>;
       using json        = nlohmann::json;
 
      public:
@@ -59,10 +68,10 @@ namespace ExpGame
       void reload_program(std::string id);
 
       template <GL::Shader::Type T>
-      auto load_shader(std::string file) -> bool;
+      auto load_shader(ShaderMeta& meta) -> bool;
 
       template <GL::Shader::Type T>
-      auto reload_shader(std::string file) -> bool;
+      auto reload_shader(ShaderMeta& meta) -> bool;
 
       auto find_shader(std::string name) const -> ShaderMap::const_iterator;
       auto shader_begin() const -> ShaderMap::const_iterator;
@@ -84,43 +93,40 @@ namespace ExpGame
     };
 
     template <GL::Shader::Type T>
-    auto Shaders::load_shader(std::string file) -> bool
+    auto Shaders::load_shader(ShaderMeta& meta) -> bool
     {
-      if (this->shader_map.find(file) != this->shader_map.end()) {
-        LOG(INFO) << "skipping shader load, already loaded shader " << file;
+      if (this->shader_map.find(meta.file) != this->shader_map.end()) {
+        LOG(INFO) << "skipping shader load, already loaded shader " << meta.file;
         return true;
       }
 
-      LOG(INFO) << "loading shader " << file;
-
-      auto abs_path = std::string(SHADER_DIR) + "/" + file;
-      auto src_res  = IO::File::load(abs_path);
-      if (!src_res) {
-        LOG(ERROR) << "unable to load shader";
+      if (!meta.present) {
+        LOG(ERROR) << "tried loading absent shader";
         return false;
       }
 
-      auto src_file = src_res.ok_val();
+      LOG(INFO) << "loading shader " << meta.file;
 
-      auto shader            = std::make_shared<GL::Shader>();
-      this->shader_map[file] = shader;
+      auto shader = std::make_shared<GL::Shader>();
 
-      if (!shader->compile(T, src_file.data)) {
-        LOG(ERROR) << "unable to compile shader:\n" << shader->error();
+      if (!shader->compile(T, meta.source, meta.error)) {
+        LOG(ERROR) << "unable to compile shader:\n" << meta.error;
         return false;
       }
 
       DLOG(INFO) << "loaded shader";
 
+      this->shader_map[meta.file] = shader;
+
       return true;
     }
 
     template <GL::Shader::Type T>
-    auto Shaders::reload_shader(std::string file) -> bool
+    auto Shaders::reload_shader(ShaderMeta& meta) -> bool
     {
-      LOG(INFO) << "reloading shader " << file;
+      LOG(INFO) << "reloading shader " << meta.file;
 
-      auto abs_path = std::string(SHADER_DIR) + "/" + file;
+      auto abs_path = std::string(SHADER_DIR) + "/" + meta.file;
       auto src_res  = IO::File::load(abs_path);
       if (!src_res) {
         LOG(ERROR) << "unable to load shader";
@@ -128,17 +134,18 @@ namespace ExpGame
       }
 
       auto src_file = src_res.ok_val();
+      meta.source   = src_file.data;
 
       auto shader = std::make_shared<GL::Shader>();
 
-      if (!shader->compile(T, src_file.data)) {
-        LOG(ERROR) << "unable to compile shader:\n" << shader->error();
+      if (!shader->compile(T, meta.source, meta.error)) {
+        LOG(ERROR) << "unable to compile shader:\n" << meta.error;
         return false;
       }
 
       DLOG(INFO) << "reloaded shader";
 
-      this->shader_map[file] = shader;
+      this->shader_map[meta.file] = shader;
 
       return true;
     }

@@ -34,7 +34,7 @@ namespace ExpGame
         attempted_loads.emplace(id);
 
         auto shader_json = shader_item.value();
-        const ShaderMeta shader(id, shader_json);
+        ShaderProgramMeta shader(id, shader_json);
 
         if (!shader.is_valid()) {
           LOG(WARNING) << "shader " << id << " is not valid";
@@ -88,17 +88,17 @@ namespace ExpGame
 
       auto program = std::make_shared<GL::Program>();
 
-      if (!program->attach(*this->shader_map[cache_entry.vertex])) {
+      if (!program->attach(*this->shader_map[cache_entry.vertex.file])) {
         LOG(ERROR) << "unable to attach vertex shader to program";
         return;
       }
 
-      if (!program->attach(*this->shader_map[cache_entry.fragment])) {
+      if (!program->attach(*this->shader_map[cache_entry.fragment.file])) {
         LOG(ERROR) << "unable to attach fragment shader to program";
         return;
       }
 
-      if (!program->link()) {
+      if (!program->link(cache_entry.link_error)) {
         LOG(WARNING) << "unable to link program";
         return;
       }
@@ -120,23 +120,24 @@ namespace ExpGame
     {
       LOG(INFO) << "loading program: " << id;
 
-      const auto& cache_entry = this->cache[id];
+      auto& cache_entry = this->cache[id];
 
       auto program          = std::make_shared<GL::Program>();
       this->program_map[id] = program;
 
-      if (!program->attach(*this->shader_map[cache_entry.vertex])) {
+      if (!program->attach(*this->shader_map[cache_entry.vertex.file])) {
         LOG(ERROR) << "unable to attach vertex shader to program";
         return false;
       }
 
-      if (!program->attach(*this->shader_map[cache_entry.fragment])) {
+      if (!program->attach(*this->shader_map[cache_entry.fragment.file])) {
         LOG(ERROR) << "unable to attach fragment shader to program";
         return false;
       }
 
-      if (!program->link()) {
+      if (!program->link(cache_entry.link_error)) {
         LOG(WARNING) << "unable to link program";
+        return false;
       }
 
       DLOG(INFO) << "loaded program";
@@ -184,8 +185,8 @@ namespace ExpGame
       return this->cache.end();
     }
 
-    ShaderMeta::ShaderMeta(std::string st, json& sj)
-     : shader_type(st)
+    ShaderProgramMeta::ShaderProgramMeta(std::string st, json& sj)
+     : type(st)
     {
       if (!sj.is_object()) {
         LOG(WARNING) << "shader is not object, skipping: " << sj.dump(2);
@@ -201,39 +202,54 @@ namespace ExpGame
           continue;
         }
 
+        ShaderMeta* shader = nullptr;
+
         if (shader_type == SHADER_VERTEX_KEY) {
-          if (this->has_vertex()) {
-            LOG(WARNING) << "program already has vertex shader linked: " << this->shader_type;
+          if (!this->vertex.file.empty()) {
+            LOG(WARNING) << "program already has vertex shader linked: " << this->type;
             continue;
           }
 
-          this->vertex = filename_value;
+          shader = &this->vertex;
         } else if (shader_type == SHADER_FRAGMENT_KEY) {
-          if (this->has_fragment()) {
-            LOG(WARNING) << "program already has fragment shader linked: " << this->shader_type;
+          if (!this->fragment.file.empty()) {
+            LOG(WARNING) << "program already has fragment shader linked: " << this->type;
             continue;
           }
 
-          this->fragment = filename_value;
+          shader = &this->fragment;
         } else {
           LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
+          continue;
         }
+
+        shader->file  = filename_value;
+        auto abs_path = std::string(SHADER_DIR) + "/" + shader->file;
+        auto src_res  = IO::File::load(abs_path);
+        if (!src_res) {
+          LOG(ERROR) << "unable to load shader";
+          continue;
+        }
+
+        auto src_file   = src_res.ok_val();
+        shader->source  = src_file.data;
+        shader->present = true;
       }
     }
 
-    auto ShaderMeta::is_valid() const noexcept -> bool
+    auto ShaderProgramMeta::is_valid() const noexcept -> bool
     {
-      return !this->shader_type.empty() && this->has_vertex() && this->has_fragment();
+      return !this->type.empty() && this->has_vertex() && this->has_fragment();
     }
 
-    auto ShaderMeta::has_vertex() const noexcept -> bool
+    auto ShaderProgramMeta::has_vertex() const noexcept -> bool
     {
-      return !this->vertex.empty();
+      return this->vertex.present;
     }
 
-    auto ShaderMeta::has_fragment() const noexcept -> bool
+    auto ShaderProgramMeta::has_fragment() const noexcept -> bool
     {
-      return !this->fragment.empty();
+      return this->fragment.present;
     }
 
     auto GameObjects::instance() noexcept -> GameObjects&
