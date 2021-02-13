@@ -3,6 +3,7 @@
 EXE='Exp'
 EXE_TEST='ExpTest'
 
+lines=0
 setup=0
 clean=0
 build=0
@@ -14,11 +15,14 @@ run=0
 proj_root="$(dirname "$0")"
 build_dir="${proj_root}/build"
 
-while getopts 'hicbstgra' flag; do
+while getopts 'hlicbstgra' flag; do
 	case "$flag" in
 		h)
 			echo 'build.sh [flags]'
 			exit 0
+			;;
+		l)
+			lines=1
 			;;
     i)
       setup=1
@@ -54,6 +58,10 @@ while getopts 'hicbstgra' flag; do
 done
 
 shift $((OPTIND-1))
+
+if [ $lines -eq 1 ]; then
+	git ls-files | grep '\(src\)\|\(assets\)' | xargs cloc
+fi
 
 if [ $setup -eq 1 ]; then
   git submodule update --init --recursive
