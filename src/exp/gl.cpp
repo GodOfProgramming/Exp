@@ -142,7 +142,7 @@ namespace ExpGame
       }
     }
 
-    auto Shader::compile(Type t, const std::string_view src, std::string& errstr) noexcept -> bool
+    auto Shader::compile(Type t, const std::string& src, std::string& errstr) noexcept -> bool
     {
       this->id = glCreateShader(static_cast<GLenum>(t));
       if (!GL_CHECK()) {
@@ -180,7 +180,6 @@ namespace ExpGame
       }
 
       if (success == GL_FALSE) {
-        result      = false;
         GLsizei len = 0;
         std::array<char, 1024> info_log;
         glGetShaderInfoLog(this->id, info_log.size(), &len, info_log.data());
@@ -188,6 +187,7 @@ namespace ExpGame
           LOG(ERROR) << "unable to get compilation errors for shader";
         }
         errstr.assign(info_log.data(), static_cast<std::size_t>(len));
+        result = false;
       }
 
       return this->valid = result;
@@ -223,6 +223,7 @@ namespace ExpGame
     auto Program::attach(const Shader& shader) -> bool
     {
       DLOG(INFO) << "attaching shader with id: " << shader.shader_id();
+
       if (this->id == 0) {
         LOG(ERROR) << "unable to link program (program id == 0)";
         return false;
@@ -260,7 +261,6 @@ namespace ExpGame
       }
 
       if (success == GL_FALSE) {
-        result      = false;
         GLsizei len = 0;
         std::array<char, 1024> info_log;
         glGetProgramInfoLog(this->id, info_log.size(), &len, info_log.data());
@@ -268,6 +268,7 @@ namespace ExpGame
           LOG(ERROR) << "unable to get compilation errors for shader";
         }
         errstr.assign(info_log.data(), static_cast<std::size_t>(len));
+        result = false;
       }
 
       return this->valid = result;

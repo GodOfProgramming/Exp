@@ -352,6 +352,7 @@ namespace ExpGame
                   DLOG(INFO) << "adding vertex (" << vertex.x << ", " << vertex.y << ", " << vertex.z << ") at index " << i / 3;
                 }
 
+                DLOG(INFO) << "bytes = " << sizeof(decltype(vertices)::value_type) * vertices.size();
                 if (!vbo->set<GL::GlDraw::STATIC>(vertices)) {
                   LOG(WARNING) << "unable to set vertices to object";
                   continue;

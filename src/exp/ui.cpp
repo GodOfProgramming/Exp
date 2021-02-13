@@ -284,12 +284,31 @@ namespace ExpGame
           auto indent  = dim.x * 0.025f;
 
           ImGui::Indent(indent);
-          ImGui::Text("%s (vertex)", shader_meta.vertex.file.c_str());
-          ImGui::Text("%s", shader_meta.vertex.error.c_str());
+          ImGui::Text("Vertex: %s", shader_meta.vertex.file.c_str());
+          {
+            ImGui::Indent(indent);
+            auto vertex             = shaders.find_shader(shader_meta.vertex.file)->second;
+            auto* vertex_status_str = vertex->is_valid() ? "Ok" : "Error";
+            ImGui::Text("Status: %s", vertex_status_str);
+            if (!vertex->is_valid()) {
+              ImGui::Text("%s", shader_meta.vertex.error.c_str());
+            }
+            ImGui::Indent(-indent);
+          }
           ImGui::Indent(-indent);
 
           ImGui::Indent(indent);
-          ImGui::Text("%s (fragment)", shader_meta.fragment.file.c_str());
+          ImGui::Text("Fragment: %s", shader_meta.fragment.file.c_str());
+          {
+            ImGui::Indent(indent);
+            auto fragment             = shaders.find_shader(shader_meta.fragment.file)->second;
+            auto* fragment_status_str = fragment->is_valid() ? "Ok" : "Error";
+            ImGui::Text("Status: %s", fragment_status_str);
+            if (!fragment->is_valid()) {
+              ImGui::Text("%s", shader_meta.vertex.error.c_str());
+            }
+            ImGui::Indent(-indent);
+          }
           ImGui::Text("%s", shader_meta.fragment.error.c_str());
           ImGui::Indent(-indent);
 

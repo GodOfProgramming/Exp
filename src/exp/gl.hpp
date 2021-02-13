@@ -77,8 +77,12 @@ namespace ExpGame
 
       auto del() noexcept -> bool;
 
-      template <GlDraw DrawType, typename VertexType, typename DataType = typename VertexType::value_type>
-      auto set(std::vector<VertexType>& data) const noexcept -> bool
+      template <
+       GlDraw draw_type_t,
+       typename vertex_type_t,
+       typename datatype_t                          = typename vertex_type_t::value_type,
+       vertex_type_t::length_type items_in_stride_t = vertex_type_t::length()>
+      auto set(std::vector<vertex_type_t>& data) const noexcept -> bool
       {
         if (!this->vao->bind()) {
           LOG(WARNING) << "could not set vbo data, not able to bind vao";
@@ -90,13 +94,13 @@ namespace ExpGame
           return false;
         }
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(DataType) * data.size(), data.data(), static_cast<GLenum>(DrawType));
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_type_t) * data.size(), data.data(), static_cast<GLenum>(draw_type_t));
         if (!GL_CHECK()) {
           LOG(WARNING) << "could not set vbo data, not able to set buffer data";
           return false;
         }
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VertexType::length() * sizeof(DataType), nullptr);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, items_in_stride_t * sizeof(datatype_t), nullptr);
         if (!GL_CHECK()) {
           LOG(WARNING) << "could not set vbo data, not able to enable vertex attrib pointer";
           return false;
@@ -128,7 +132,7 @@ namespace ExpGame
 
       ~Shader() noexcept;
 
-      auto compile(Type t, const std::string_view src, std::string& errstr) noexcept -> bool;
+      auto compile(Type t, const std::string& src, std::string& errstr) noexcept -> bool;
 
       auto shader_id() const noexcept -> ShaderID;
 
