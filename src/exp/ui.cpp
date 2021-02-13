@@ -1,6 +1,7 @@
 #include "ui.hpp"
 
 #include "constants.hpp"
+#include "game.hpp"
 #include "gl.hpp"
 #include "io.hpp"
 #include "resources.hpp"
@@ -98,14 +99,19 @@ namespace ExpGame
 
     WindowUi::WindowUi(std::string t)
      : title(t)
-     , is_closed(false)
      , dim({ 0, 0 })
      , pos({ 0, 0 })
+     , hide(false)
      , initial_render(false)
+     , is_collapsed(false)
     {}
 
     void WindowUi::render()
     {
+      if (this->hide) {
+        return;
+      }
+
       ImGuiWindowFlags flags = 0;
       flags |= ImGuiWindowFlags_NoResize;
 
@@ -119,11 +125,21 @@ namespace ExpGame
         this->initial_render = true;
       }
 
-      ImGui::Begin(this->title.c_str(), &this->is_closed, flags);
+      bool is_open = true;
+      ImGui::Begin(this->title.c_str(), &is_open, flags);
 
       for (const auto& element : elements) { element->render(); }
 
       ImGui::End();
+
+      if (!is_open && this->lua.has_value()) {
+        this->hide   = true;
+        auto& script = this->lua.value();
+        auto fn      = script["on_close"];
+        if (fn.get_type() == sol::type::function) {
+          fn.call(this);
+        }
+      }
     }
 
     auto WindowUi::parse(tinyxml2::XMLNode* self) -> bool
@@ -215,6 +231,45 @@ namespace ExpGame
             return false;
           }
           this->pos.y = size.y * percent / 100.0;
+        }
+      }
+
+      {
+        auto script_attr = element->FindAttribute("script");
+        if (script_attr != nullptr) {
+          std::string script_key = script_attr->Value();
+          auto& scripts          = Resources::Scripts::instance();
+          auto script_iter       = scripts.find(script_key);
+          if (script_iter == scripts.end()) {
+            LOG(WARNING) << "unable to load script " << script_key;
+            return false;
+          }
+
+          auto& script = script_iter->second;
+
+          sol::state state;
+          auto res = state.load(script.src);
+          if (!res.valid()) {
+            LOG(WARNING) << "script " << script_key << " is invalid";
+            return false;
+          }
+
+          auto exec_res = res();
+
+          if (!exec_res.valid()) {
+            LOG(WARNING) << "script " << script_key << " was not able to run";
+            return false;
+          }
+
+          state.open_libraries(sol::lib::base, sol::lib::string);
+
+          state.new_usertype<glm::ivec2>("ivec2", "x", &glm::ivec2::x, "y", &glm::ivec2::y);
+          state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
+          state.new_usertype<Game::Info>("GameInfo", "fps", &Game::Info::fps, "frames", &Game::Info::frames);
+
+          state.set("game_info", &Game::Info::instance());
+
+          this->lua = std::move(state);
         }
       }
 

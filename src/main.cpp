@@ -9,12 +9,14 @@
 int main(int, char* argv[])
 {
   constexpr const bool PRINT_GL_ERRORS = false;
+  using ExpGame::Game::Info;
   using ExpGame::Game::Object;
   using ExpGame::Input::Dispatcher;
   using ExpGame::IO::File;
   using ExpGame::Render::Renderer;
   using ExpGame::Resources::GameObjects;
   using ExpGame::Resources::Models;
+  using ExpGame::Resources::Scripts;
   using ExpGame::Resources::Shaders;
   using ExpGame::Settings::SettingsManager;
   using ExpGame::Ui::UiManager;
@@ -78,6 +80,11 @@ int main(int, char* argv[])
     game_objects.load_all();
   }
 
+  auto& scripts = Scripts::instance();
+  {
+    scripts.load_all();
+  }
+
   auto& ui = UiManager::instance();
   {
     ui.load_all();
@@ -91,14 +98,14 @@ int main(int, char* argv[])
 
   auto stats_update_timer = std::chrono::system_clock::now();
 
-  std::uint32_t frame_counter = 0;
-
   std::vector<std::shared_ptr<Object>> objects;
   auto obj = game_objects.find("exp.debug.random.square");
   if (obj == game_objects.end()) {
     LOG(FATAL) << "could not even load the friggen debug object, nice job dumbass";
   }
   objects.push_back(std::make_shared<Object>(obj->second));
+
+  auto& info = Info::instance();
 
   window.show();
 
@@ -116,8 +123,9 @@ int main(int, char* argv[])
     auto update_check_time = std::chrono::system_clock::now();
     if (update_check_time > stats_update_timer) {
       static std::uint32_t last_count = 0;
-      LOG(INFO) << "FPS: " << frame_counter - last_count;
-      last_count         = frame_counter;
+      info.fps                        = info.frames - last_count;
+      LOG(INFO) << "FPS: " << info.fps;
+      last_count         = info.frames;
       stats_update_timer = update_check_time + one_second;
 
       if constexpr (PRINT_GL_ERRORS) {
@@ -132,7 +140,7 @@ int main(int, char* argv[])
       }
     }
 
-    frame_counter++;
+    info.frames++;
 
     std::this_thread::sleep_until(resume);
   }
@@ -140,6 +148,8 @@ int main(int, char* argv[])
   objects.clear();
 
   ui.shutdown();
+
+  scripts.release();
 
   game_objects.release();
 

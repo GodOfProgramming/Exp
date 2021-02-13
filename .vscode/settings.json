@@ -58,5 +58,8 @@
     "future": "cpp",
     "thread": "cpp"
   },
-  "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map,**/lib/**/upstream/**}"
+  "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map,**/lib/**/upstream/**}",
+  "Lua.diagnostics.globals": [
+    "game_info"
+  ]
 }

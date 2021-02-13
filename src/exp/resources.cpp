@@ -256,7 +256,8 @@ namespace ExpGame
 
         auto file_res = IO::File::load(path);
         if (!file_res) {
-          LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
+          LOG(WARNING) << "unable to load model configuration file: " << file_res.err_val();
+          return;
         }
 
         auto file = file_res.ok_val();
@@ -393,6 +394,51 @@ namespace ExpGame
       return this->models.end();
     }
 
+    auto Scripts::instance() noexcept -> Scripts&
+    {
+      static Scripts scripts;
+      return scripts;
+    }
+
+    void Scripts::load_all()
+    {
+      IO::iterate_dir_with_namespace(GAME_SCRIPT_DIR, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+        auto file_res = IO::File::load(path);
+        if (!file_res) {
+          LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
+          return;
+        }
+
+        auto file = file_res.ok_val();
+
+        LOG(INFO) << "loading script " << nspace;
+
+        ScriptMeta meta;
+        meta.src = file.data;
+        this->scripts.emplace(nspace, std::move(meta));
+      });
+    }
+
+    void Scripts::release()
+    {
+      this->scripts.clear();
+    }
+
+    auto Scripts::find(std::string id) const noexcept -> ScriptMap::const_iterator
+    {
+      return this->scripts.find(id);
+    }
+
+    auto Scripts::begin() const noexcept -> ScriptMap::const_iterator
+    {
+      return this->scripts.begin();
+    }
+
+    auto Scripts::end() const noexcept -> ScriptMap::const_iterator
+    {
+      return this->scripts.end();
+    }
+
     auto GameObjects::instance() noexcept -> GameObjects&
     {
       static GameObjects objs;
@@ -407,6 +453,7 @@ namespace ExpGame
         auto file_res = IO::File::load(path);
         if (!file_res) {
           LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
+          return;
         }
 
         auto file = file_res.ok_val();

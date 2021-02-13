@@ -179,6 +179,37 @@ namespace ExpGame
       ModelMap models;
     };
 
+    struct ScriptMeta
+    {
+      std::string src;
+    };
+
+    class Scripts
+    {
+      Scripts() = default;
+
+      using ScriptMap = std::map<std::string, ScriptMeta>;
+
+     public:
+      Scripts(const Scripts&) = delete;
+      Scripts(Scripts&&)      = delete;
+      auto operator=(const Scripts&) -> Scripts& = delete;
+      auto operator=(Scripts&&) -> Scripts& = delete;
+
+      static auto instance() noexcept -> Scripts&;
+
+      void load_all();
+
+      void release();
+
+      auto find(std::string id) const noexcept -> ScriptMap::const_iterator;
+      auto begin() const noexcept -> ScriptMap::const_iterator;
+      auto end() const noexcept -> ScriptMap::const_iterator;
+
+     private:
+      ScriptMap scripts;
+    };
+
     struct ObjectMeta
     {
       std::shared_ptr<GL::Program> shader;
@@ -188,10 +219,10 @@ namespace ExpGame
 
     class GameObjects: public IResource
     {
-      using ObjectMap = std::map<std::string, ObjectMeta>;
-      GameObjects()   = default;
+      GameObjects() = default;
 
-      using json = nlohmann::json;
+      using ObjectMap = std::map<std::string, ObjectMeta>;
+      using json      = nlohmann::json;
 
      public:
       GameObjects(const GameObjects&) = delete;

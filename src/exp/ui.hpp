@@ -53,12 +53,13 @@ namespace ExpGame
 
      private:
       std::string title;
-      bool is_closed;
-      bool is_collapsed;
       glm::ivec2 dim;
       glm::ivec2 pos;
+      bool hide;
       bool initial_render;
+      bool is_collapsed;
       std::vector<std::unique_ptr<Ui>> elements;
+      std::optional<sol::state> lua;
     };
 
     class DebugUi: public Ui

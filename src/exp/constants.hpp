@@ -11,4 +11,5 @@ namespace ExpGame
   constexpr const char* UI_EL_WINDOW        = "window";
   constexpr const char* GAME_OBJECT_DIR     = "assets/game";
   constexpr const char* GAME_MODEL_DIR      = "assets/models";
+  constexpr const char* GAME_SCRIPT_DIR     = "assets/scripts";
 }  // namespace ExpGame
