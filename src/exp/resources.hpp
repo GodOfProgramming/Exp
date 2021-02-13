@@ -114,8 +114,6 @@ namespace ExpGame
         return false;
       }
 
-      DLOG(INFO) << "loaded shader";
-
       this->shader_map[meta.file] = shader;
 
       return true;
@@ -143,18 +141,48 @@ namespace ExpGame
         return false;
       }
 
-      DLOG(INFO) << "reloaded shader";
-
       this->shader_map[meta.file] = shader;
 
       return true;
     }
 
+    struct ModelMeta
+    {
+      std::shared_ptr<GL::VAO> vao;
+      std::shared_ptr<GL::VBO> vbo;
+      std::shared_ptr<GL::EBO> ebo;
+    };
+
+    class Models
+    {
+      Models() = default;
+
+      using ModelMap = std::map<std::string, std::shared_ptr<ModelMeta>>;
+
+     public:
+      Models(const Models&) = delete;
+      Models(Models&&)      = delete;
+      auto operator=(const Models&) -> Models& = delete;
+      auto operator=(Models&&) -> Models& = delete;
+
+      static auto instance() noexcept -> Models&;
+
+      void load_all();
+
+      void release();
+
+      auto find(std::string id) const noexcept -> ModelMap::const_iterator;
+      auto begin() const noexcept -> ModelMap::const_iterator;
+      auto end() const noexcept -> ModelMap::const_iterator;
+
+     private:
+      ModelMap models;
+    };
+
     struct ObjectMeta
     {
       std::shared_ptr<GL::Program> shader;
-      std::shared_ptr<GL::VAO> vao;
-      std::shared_ptr<GL::VBO> vbo;
+      std::shared_ptr<ModelMeta> model;
     };
 
     class GameObjects: public IResource
@@ -177,8 +205,6 @@ namespace ExpGame
       auto find(std::string id) const noexcept -> ObjectMap::const_iterator;
       auto begin() const noexcept -> ObjectMap::const_iterator;
       auto end() const noexcept -> ObjectMap::const_iterator;
-
-      auto lookup(std::string id) const noexcept -> ObjectMap::value_type;
 
      private:
       ObjectMap objects;

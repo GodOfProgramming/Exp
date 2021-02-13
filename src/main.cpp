@@ -14,6 +14,7 @@ int main(int, char* argv[])
   using ExpGame::IO::File;
   using ExpGame::Render::Renderer;
   using ExpGame::Resources::GameObjects;
+  using ExpGame::Resources::Models;
   using ExpGame::Resources::Shaders;
   using ExpGame::Settings::SettingsManager;
   using ExpGame::Ui::UiManager;
@@ -21,8 +22,6 @@ int main(int, char* argv[])
   using nlohmann::json;
 
   google::InitGoogleLogging(argv[0]);
-
-  DLOG(INFO) << "starting app";
 
   bool exit = false;
 
@@ -67,6 +66,11 @@ int main(int, char* argv[])
     }
 
     shaders.load_all(shader_json);
+  }
+
+  auto& models = Models::instance();
+  {
+    models.load_all();
   }
 
   auto& game_objects = GameObjects::instance();
@@ -138,6 +142,8 @@ int main(int, char* argv[])
   ui.shutdown();
 
   game_objects.release();
+
+  models.release();
 
   shaders.release();
 

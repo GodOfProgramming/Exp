@@ -61,47 +61,15 @@ namespace ExpGame
       return this->errors.size();
     }
 
-    VAO::~VAO()
-    {
-      DLOG(INFO) << "deleted vao";
-      if (this->valid()) {
-        this->del();
-      }
-    }
-
-    auto VAO::gen() noexcept -> bool
-    {
-      glGenVertexArrays(1, &this->id);
-      return GL_CHECK();
-    }
-
-    auto VAO::bind() const noexcept -> bool
-    {
-      glBindVertexArray(this->id);
-      return GL_CHECK();
-    }
-
-    auto VAO::del() noexcept -> bool
-    {
-      glDeleteVertexArrays(1, &this->id);
-      this->id = 0;
-      return GL_CHECK();
-    }
-
-    auto VAO::valid() const noexcept -> bool
-    {
-      return this->id != 0;
-    }
-
-    VBO::VBO(std::shared_ptr<VAO> v)
-     : vao(v)
+    VBO::VBO()
+     : id(0)
     {}
 
     VBO::~VBO()
     {
-      DLOG(INFO) << "deleted vbo";
-      if (this->valid()) {
-        this->del();
+      if (this->is_valid()) {
+        std::size_t attempts = 0;
+        while (!this->del() && attempts < 5) { attempts++; }
       }
     }
 
@@ -113,6 +81,10 @@ namespace ExpGame
 
     auto VBO::bind() const noexcept -> bool
     {
+      if (!this->is_valid()) {
+        LOG(WARNING) << "attempted to bind vbo without validity";
+        return false;
+      }
       glBindBuffer(GL_ARRAY_BUFFER, this->id);
       return GL_CHECK();
     }
@@ -120,13 +92,117 @@ namespace ExpGame
     auto VBO::del() noexcept -> bool
     {
       glDeleteBuffers(1, &this->id);
+      if (!GL_CHECK()) {
+        return false;
+      }
       this->id = 0;
+      return true;
+    }
+
+    auto VBO::is_valid() const noexcept -> bool
+    {
+      return this->id != 0;
+    }
+
+    EBO::EBO()
+     : id(0)
+    {}
+
+    EBO::~EBO()
+    {
+      if (this->is_valid()) {
+        std::size_t attempts = 0;
+        while (!this->del() && attempts < 5) { attempts++; }
+      }
+    }
+
+    auto EBO::gen() noexcept -> bool
+    {
+      glGenBuffers(1, &this->id);
       return GL_CHECK();
     }
 
-    auto VBO::valid() const noexcept -> bool
+    auto EBO::bind() const noexcept -> bool
+    {
+      if (!this->is_valid()) {
+        LOG(WARNING) << "attempted to bind ebo without validity";
+        return false;
+      }
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+      return GL_CHECK();
+    }
+
+    auto EBO::del() noexcept -> bool
+    {
+      glDeleteBuffers(1, &this->id);
+      if (!GL_CHECK()) {
+        return false;
+      }
+      this->id = 0;
+      return true;
+    }
+
+    auto EBO::is_valid() const noexcept -> bool
     {
       return this->id != 0;
+    }
+
+    VAO::VAO(std::shared_ptr<VBO> v, std::shared_ptr<EBO> e)
+     : vbo(v)
+     , ebo(e)
+     , id(0)
+     , valid(false)
+     , index_count(0)
+    {}
+
+    VAO::~VAO()
+    {
+      if (this->is_valid()) {
+        std::size_t attempts = 0;
+        while (!this->del() && attempts < 5) { attempts++; }
+      }
+    }
+
+    auto VAO::gen() noexcept -> bool
+    {
+      glGenVertexArrays(1, &this->id);
+      return GL_CHECK();
+    }
+
+    auto VAO::bind() const noexcept -> bool
+    {
+      if (this->id == 0) {
+        LOG(WARNING) << "attempted to bind vao without validity";
+        return false;
+      }
+      glBindVertexArray(this->id);
+      return GL_CHECK();
+    }
+
+    auto VAO::del() noexcept -> bool
+    {
+      glDeleteVertexArrays(1, &this->id);
+      if (!GL_CHECK()) {
+        return false;
+      }
+      this->id    = 0;
+      this->valid = false;
+      return true;
+    }
+
+    auto VAO::draw() const noexcept -> bool
+    {
+      if (!this->bind()) {
+        LOG(WARNING) << "could not draw object, cannot bind vao";
+      }
+
+      glDrawElements(GL_TRIANGLES, this->index_count, GL_UNSIGNED_INT, 0);
+      return GL_CHECK();
+    }
+
+    auto VAO::is_valid() const noexcept -> bool
+    {
+      return this->id != 0 && this->valid;
     }
 
     Shader::Shader() noexcept
@@ -222,8 +298,6 @@ namespace ExpGame
 
     auto Program::attach(const Shader& shader) -> bool
     {
-      DLOG(INFO) << "attaching shader with id: " << shader.shader_id();
-
       if (this->id == 0) {
         LOG(ERROR) << "unable to link program (program id == 0)";
         return false;

@@ -61,8 +61,6 @@ namespace ExpGame
       }
 
       for (const auto& id : valid_programs) { this->load_program(id); }
-
-      DLOG(INFO) << "loaded shaders";
     }
 
     void Shaders::reload_program(std::string id)
@@ -104,13 +102,10 @@ namespace ExpGame
       }
 
       this->program_map[id] = program;
-
-      DLOG(INFO) << "reloaded program";
     }
 
     void Shaders::release()
     {
-      DLOG(INFO) << "releasing shaders";
       this->shader_map.clear();
       this->program_map.clear();
       this->cache.clear();
@@ -118,8 +113,6 @@ namespace ExpGame
 
     auto Shaders::load_program(std::string id) -> bool
     {
-      LOG(INFO) << "loading program: " << id;
-
       auto& cache_entry = this->cache[id];
 
       auto program          = std::make_shared<GL::Program>();
@@ -139,8 +132,6 @@ namespace ExpGame
         LOG(WARNING) << "unable to link program";
         return false;
       }
-
-      DLOG(INFO) << "loaded program";
 
       return true;
     }
@@ -252,6 +243,156 @@ namespace ExpGame
       return this->fragment.present;
     }
 
+    auto Models::instance() noexcept -> Models&
+    {
+      static Models models;
+      return models;
+    }
+
+    void Models::load_all()
+    {
+      IO::iterate_dir_with_namespace(GAME_MODEL_DIR, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+        using nlohmann::json;
+
+        auto file_res = IO::File::load(path);
+        if (!file_res) {
+          LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
+        }
+
+        auto file = file_res.ok_val();
+
+        json objects;
+
+        try {
+          objects = json::parse(file.data);
+        } catch (std::exception& e) {
+          LOG(WARNING) << "could not parse json: " << e.what();
+          return;
+        }
+
+        for (const auto item : objects.items()) {
+          auto id  = nspace + "." + item.key();
+          auto obj = item.value();
+
+          LOG(INFO) << "loading model " << id;
+
+          auto vbo = std::make_shared<GL::VBO>();
+
+          if (!vbo->gen()) {
+            LOG(WARNING) << "could not generate vbo";
+            continue;
+          }
+
+          if (!vbo->is_valid()) {
+            LOG(WARNING) << "unable to load object, vbo not valid";
+            continue;
+          }
+
+          std::optional<std::vector<glm::vec3>> vertices_container;
+
+          if (obj["vertices"].is_array()) {
+            std::vector<float> list = obj["vertices"];
+            if (list.size() % 3 != 0) {
+              LOG(WARNING) << "cannot load item " << id << ", invalid number of vertices";
+              continue;
+            }
+            std::vector<glm::vec3> vertices(list.size() / 3);
+
+            for (std::size_t i = 0; i < list.size(); i += 3) {
+              glm::vec3 vertex{};
+              vertex.x        = list[i + 0];
+              vertex.y        = list[i + 1];
+              vertex.z        = list[i + 2];
+              vertices[i / 3] = vertex;
+            }
+
+            vertices_container = std::move(vertices);
+          } else {
+            LOG(WARNING) << "no way to create object vertices";
+            continue;
+          }
+
+          auto ebo = std::make_shared<GL::EBO>();
+
+          if (!ebo->gen()) {
+            LOG(WARNING) << "could not generate ebo";
+            continue;
+          }
+
+          if (!ebo->is_valid()) {
+            LOG(WARNING) << "unable to load object, ebo not valid";
+            continue;
+          }
+
+          std::optional<std::vector<GLuint>> indices_container;
+
+          if (obj["indices"].is_array()) {
+            std::vector<GLuint> list = obj["indices"];
+            indices_container        = std::move(list);
+          } else {
+            LOG(WARNING) << "no way to create object indices";
+          }
+
+          auto vao = std::make_shared<GL::VAO>(vbo, ebo);
+
+          if (!vao->gen()) {
+            LOG(WARNING) << "unable to generate vao";
+            continue;
+          }
+
+          if (!vertices_container.has_value()) {
+            LOG(WARNING) << "no vertices to make object out of";
+            continue;
+          }
+
+          if (!indices_container.has_value()) {
+            LOG(WARNING) << "no indices to make object out of";
+            continue;
+          }
+
+          std::vector<glm::vec3> vertices = std::move(vertices_container.value());
+          std::vector<GLuint> indices     = std::move(indices_container.value());
+
+          if (!vao->set<GL::GlDraw::STATIC>(vertices, indices)) {
+            LOG(WARNING) << "unable to set vertices to object";
+            continue;
+          }
+
+          if (!vao->is_valid()) {
+            LOG(WARNING) << "unable to load object, vao not valid";
+            continue;
+          }
+
+          auto meta = std::make_shared<ModelMeta>();
+          meta->vao = vao;
+          meta->vbo = vbo;
+          meta->ebo = ebo;
+
+          this->models.emplace(id, meta);
+        }
+      });
+    }
+
+    void Models::release()
+    {
+      this->models.clear();
+    }
+
+    auto Models::find(std::string id) const noexcept -> ModelMap::const_iterator
+    {
+      return this->models.find(id);
+    }
+
+    auto Models::begin() const noexcept -> ModelMap::const_iterator
+    {
+      return this->models.begin();
+    }
+
+    auto Models::end() const noexcept -> ModelMap::const_iterator
+    {
+      return this->models.end();
+    }
+
     auto GameObjects::instance() noexcept -> GameObjects&
     {
       static GameObjects objs;
@@ -261,125 +402,66 @@ namespace ExpGame
     void GameObjects::load_all()
     {
       auto& shaders = Shaders::instance();
-      using nlohmann::json;
-      std::function<void(std::filesystem::path, std::string)> decend = [&](std::filesystem::path dir, std::string nspace) {
-        for (const auto& iter : std::filesystem::directory_iterator(dir)) {
-          if (iter.is_directory()) {
-            decend(iter, nspace + "." + iter.path().filename().string());
-          } else if (iter.is_regular_file()) {
-            nspace += "." + iter.path().stem().string();
+      auto& models  = Models::instance();
+      IO::iterate_dir_with_namespace(GAME_OBJECT_DIR, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+        using nlohmann::json;
 
-            LOG(INFO) << "loading game objects under namespace " << nspace;
-
-            auto file_res = IO::File::load(iter);
-            if (!file_res) {
-              LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
-            }
-
-            auto file = file_res.ok_val();
-
-            json objects;
-
-            try {
-              objects = json::parse(file.data);
-            } catch (std::exception& e) {
-              LOG(WARNING) << "could not parse json: " << e.what();
-              continue;
-            }
-
-            for (const auto item : objects.items()) {
-              auto id  = nspace + "." + item.key();
-              auto obj = item.value();
-
-              std::string shader_id = obj["shader"];
-              auto shader_iter      = shaders.find_program(shader_id);
-              if (shader_iter == shaders.program_end()) {
-                LOG(WARNING) << "cannot find shader with id " << shader_id;
-                continue;
-              } else {
-                DLOG(INFO) << "object has shader id " << shader_id;
-              }
-
-              auto shader = shader_iter->second;
-
-              if (!shader->is_valid()) {
-                LOG(WARNING) << "cannot load item, shader " << shader_id << " not valid";
-                continue;
-              }
-
-              auto vao = std::make_shared<GL::VAO>();
-
-              if (!vao->gen()) {
-                LOG(WARNING) << "unable to generate vao";
-                continue;
-              } else {
-                DLOG(INFO) << "generated vao";
-              }
-
-              if (!vao->valid()) {
-                LOG(WARNING) << "unable to load object, vao not valid";
-                continue;
-              }
-
-              auto vbo = std::make_shared<GL::VBO>(vao);
-
-              if (!vbo->gen()) {
-                LOG(WARNING) << "could not generate vbo";
-                continue;
-              } else {
-                DLOG(INFO) << "generated vbo";
-              }
-
-              if (!vbo->valid()) {
-                LOG(WARNING) << "unable to load object, vbo not valid";
-                continue;
-              }
-
-              if (obj["vertices"].is_array()) {
-                std::vector<float> list = obj["vertices"];
-                if (list.size() % 3 != 0) {
-                  LOG(WARNING) << "cannot load item " << id << ", invalid number of vertices";
-                  continue;
-                }
-                std::vector<glm::vec3> vertices(list.size() / 3);
-
-                for (std::size_t i = 0; i < list.size(); i += 3) {
-                  glm::vec3 vertex{};
-                  vertex.x        = list[i + 0];
-                  vertex.y        = list[i + 1];
-                  vertex.z        = list[i + 2];
-                  vertices[i / 3] = vertex;
-                  DLOG(INFO) << "adding vertex (" << vertex.x << ", " << vertex.y << ", " << vertex.z << ") at index " << i / 3;
-                }
-
-                DLOG(INFO) << "bytes = " << sizeof(decltype(vertices)::value_type) * vertices.size();
-                if (!vbo->set<GL::GlDraw::STATIC>(vertices)) {
-                  LOG(WARNING) << "unable to set vertices to object";
-                  continue;
-                }
-              } else {
-                LOG(WARNING) << "no way to create object vertices";
-                continue;
-              }
-
-              ObjectMeta meta;
-              meta.shader = shader;
-              meta.vao    = vao;
-              meta.vbo    = vbo;
-
-              DLOG(INFO) << "adding game object " << id;
-              this->objects.emplace(id, meta);
-            }
-          }
+        auto file_res = IO::File::load(path);
+        if (!file_res) {
+          LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
         }
-      };
 
-      decend(GAME_OBJECT_DIR, std::string{ "exp" });
+        auto file = file_res.ok_val();
+
+        json objects;
+
+        try {
+          objects = json::parse(file.data);
+        } catch (std::exception& e) {
+          LOG(WARNING) << "could not parse json: " << e.what();
+          return;
+        }
+
+        for (const auto item : objects.items()) {
+          auto id  = nspace + "." + item.key();
+          auto obj = item.value();
+
+          LOG(INFO) << "loading game object " << id;
+
+          std::string shader_id = obj["shader"];
+          auto shader_iter      = shaders.find_program(shader_id);
+          if (shader_iter == shaders.program_end()) {
+            LOG(WARNING) << "cannot find shader with id " << shader_id;
+            continue;
+          }
+
+          auto shader = shader_iter->second;
+
+          if (!shader->is_valid()) {
+            LOG(WARNING) << "cannot load item, shader " << shader_id << " not valid";
+            continue;
+          }
+
+          std::string model_id = obj["model"];
+          auto model_iter      = models.find(model_id);
+          if (model_iter == models.end()) {
+            LOG(WARNING) << "cannot find model with id " << model_id;
+            continue;
+          }
+
+          auto model = model_iter->second;
+
+          ObjectMeta meta;
+          meta.shader = shader;
+          meta.model  = model;
+
+          this->objects.emplace(id, meta);
+        }
+      });
     }
 
     void GameObjects::release()
     {
-      DLOG(INFO) << "releasing game objects";
       this->objects.clear();
     }
 

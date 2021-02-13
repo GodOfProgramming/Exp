@@ -123,14 +123,12 @@ namespace ExpGame
 
     void AppWindow::close()
     {
-      DLOG(INFO) << "closing window";
       this->on_close_callback();
       glfwSetWindowShouldClose(this->window, GLFW_TRUE);
     }
 
     void AppWindow::destroy()
     {
-      DLOG(INFO) << "destorying window";
       glfwDestroyWindow(this->window);
       glfwTerminate();
       this->window = nullptr;

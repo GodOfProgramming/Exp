@@ -64,8 +64,6 @@ namespace ExpGame
       auto first               = document.FirstChild();
       std::string element_type = first->Value();
 
-      DLOG(INFO) << "processing element " << element_type;
-
       if (element_type == UI_EL_WINDOW) {
         auto window = std::make_unique<WindowUi>();
         if (window->parse(first)) {
@@ -93,7 +91,6 @@ namespace ExpGame
 
     void UiManager::shutdown()
     {
-      DLOG(INFO) << "shutting down ui";
       ImGui_ImplOpenGL3_Shutdown();
       ImGui_ImplGlfw_Shutdown();
       ImGui::DestroyContext(this->context);
@@ -140,7 +137,6 @@ namespace ExpGame
       }
 
       this->title = title_attr->Value();
-      DLOG(INFO) << "creating window with title " << this->title;
 
       auto& window = AppWindow::instance();
       auto size    = window.get_size();

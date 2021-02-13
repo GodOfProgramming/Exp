@@ -1,16 +1,6 @@
 {
   "triangle": {
     "shader": "basic",
-    "vertices": [
-      -0.5,
-      -0.5,
-      0.0,
-      0.5,
-      -0.5,
-      0.0,
-      0.0,
-      0.5,
-      0.0
-    ]
+    "model": "exp.basic.sprite_square"
   }
 }

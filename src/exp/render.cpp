@@ -30,15 +30,10 @@ namespace ExpGame
           continue;
         }
 
-        if (!object->meta.vao->bind()) {
+        if (!object->meta.model->vao->draw()) {
           LOG(WARNING) << "unable to draw game object, vao not bound";
           continue;
         }
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        GL_CHECK();
       }
 
       this->ui.render();
