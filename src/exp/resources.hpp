@@ -183,12 +183,15 @@ namespace ExpGame
     {
       std::shared_ptr<GL::Program> shader;
       std::shared_ptr<ModelMeta> model;
+      GL::DrawDescription drawdesc;
     };
 
     class GameObjects: public IResource
     {
       using ObjectMap = std::map<std::string, ObjectMeta>;
       GameObjects()   = default;
+
+      using json = nlohmann::json;
 
      public:
       GameObjects(const GameObjects&) = delete;
@@ -208,6 +211,8 @@ namespace ExpGame
 
      private:
       ObjectMap objects;
+
+      auto parse_drawdesc(const json&, GL::DrawDescription& desc) -> bool;
     };
   }  // namespace Resources
 }  // namespace ExpGame

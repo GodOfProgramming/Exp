@@ -94,7 +94,7 @@ int main(int, char* argv[])
   std::uint32_t frame_counter = 0;
 
   std::vector<std::shared_ptr<Object>> objects;
-  auto obj = game_objects.find("exp.debug.random.triangle");
+  auto obj = game_objects.find("exp.debug.random.square");
   if (obj == game_objects.end()) {
     LOG(FATAL) << "could not even load the friggen debug object, nice job dumbass";
   }

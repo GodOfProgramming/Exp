@@ -8,6 +8,17 @@ namespace ExpGame
 {
   namespace GL
   {
+    struct DrawDescription
+    {
+      bool wireframe = false;
+
+      struct
+      {
+        bool front = true;
+        bool back  = false;
+      } polygon_mode;
+    };
+
     struct Error
     {
       std::string desc;
@@ -104,7 +115,7 @@ namespace ExpGame
        vertex_type_t::length_type items_in_stride_t = vertex_type_t::length()>
       auto set(const std::vector<vertex_type_t>& data, const std::vector<index_type_t>& indices) noexcept -> bool;
 
-      auto draw() const noexcept -> bool;
+      auto draw(const DrawDescription& desc) const noexcept -> bool;
 
       auto is_valid() const noexcept -> bool;
 

@@ -404,8 +404,6 @@ namespace ExpGame
       auto& shaders = Shaders::instance();
       auto& models  = Models::instance();
       IO::iterate_dir_with_namespace(GAME_OBJECT_DIR, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
-        using nlohmann::json;
-
         auto file_res = IO::File::load(path);
         if (!file_res) {
           LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
@@ -449,11 +447,23 @@ namespace ExpGame
             continue;
           }
 
+          GL::DrawDescription desc;
+
+          auto drawdesc_json = obj["draw_description"];
+          if (drawdesc_json.is_object()) {
+            if (!this->parse_drawdesc(drawdesc_json, desc)) {
+              LOG(WARNING) << "unable to parse partial or full draw desc on object, using what was valid";
+            }
+          } else if (!drawdesc_json.is_null()) {
+            LOG(WARNING) << "detected draw description in config but desc was not of type object";
+          }
+
           auto model = model_iter->second;
 
           ObjectMeta meta;
-          meta.shader = shader;
-          meta.model  = model;
+          meta.shader   = shader;
+          meta.model    = model;
+          meta.drawdesc = desc;
 
           this->objects.emplace(id, meta);
         }
@@ -478,6 +488,43 @@ namespace ExpGame
     auto GameObjects::end() const noexcept -> ObjectMap::const_iterator
     {
       return this->objects.end();
+    }
+
+    auto GameObjects::parse_drawdesc(const json& desc_json, GL::DrawDescription& desc) -> bool
+    {
+      auto wireframe = desc_json["wireframe"];
+      if (wireframe.is_boolean()) {
+        desc.wireframe = wireframe;
+      } else if (!wireframe.is_null()) {
+        LOG(WARNING) << "detected wireframe option in draw desc but was not of boolean type: " << wireframe.dump();
+        return false;
+      }
+
+      auto polygon_mode = desc_json["polygon_mode"];
+      if (polygon_mode.is_object()) {
+        auto front = polygon_mode["front"];
+
+        if (front.is_boolean()) {
+          desc.polygon_mode.front = front;
+        } else if (!front.is_null()) {
+          LOG(WARNING) << "detected polygon mode front option in draw desc but was not of boolean type: " << front.dump();
+          return false;
+        }
+
+        auto back = polygon_mode["back"];
+
+        if (back.is_boolean()) {
+          desc.polygon_mode.back = back;
+        } else if (!back.is_null()) {
+          LOG(WARNING) << "detected polygon mode back option in draw desc but was not of boolean type: " << back.dump();
+          return false;
+        }
+      } else if (!polygon_mode.is_null()) {
+        LOG(WARNING) << "detected polygon mode option in draw desc but was not of object type";
+        return false;
+      }
+
+      return true;
     }
   }  // namespace Resources
 }  // namespace ExpGame

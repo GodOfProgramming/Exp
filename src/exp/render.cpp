@@ -30,7 +30,7 @@ namespace ExpGame
           continue;
         }
 
-        if (!object->meta.model->vao->draw()) {
+        if (!object->meta.model->vao->draw(object->meta.drawdesc)) {
           LOG(WARNING) << "unable to draw game object, vao not bound";
           continue;
         }

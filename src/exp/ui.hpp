@@ -53,9 +53,11 @@ namespace ExpGame
 
      private:
       std::string title;
-      glm::ivec2 pos;
+      bool is_closed;
+      bool is_collapsed;
       glm::ivec2 dim;
-      bool initial_render = false;
+      glm::ivec2 pos;
+      bool initial_render;
       std::vector<std::unique_ptr<Ui>> elements;
     };
 

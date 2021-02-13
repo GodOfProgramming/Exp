@@ -98,6 +98,10 @@ namespace ExpGame
 
     WindowUi::WindowUi(std::string t)
      : title(t)
+     , is_closed(false)
+     , dim({ 0, 0 })
+     , pos({ 0, 0 })
+     , initial_render(false)
     {}
 
     void WindowUi::render()
@@ -111,10 +115,11 @@ namespace ExpGame
       if (!this->initial_render) {
         ImVec2 pos{ static_cast<float>(this->pos.x), static_cast<float>(this->pos.y) };
         ImGui::SetNextWindowPos(pos);
+        ImGui::SetNextWindowCollapsed(this->is_collapsed);
         this->initial_render = true;
       }
 
-      ImGui::Begin(this->title.c_str(), nullptr, flags);
+      ImGui::Begin(this->title.c_str(), &this->is_closed, flags);
 
       for (const auto& element : elements) { element->render(); }
 
@@ -134,6 +139,18 @@ namespace ExpGame
       if (title_attr == nullptr) {
         LOG(WARNING) << "unable to get title value of window";
         return false;
+      }
+
+      auto collapsed_attr = element->FindAttribute("collapsed");
+
+      if (collapsed_attr != nullptr) {
+        bool collapsed = false;
+        auto res       = collapsed_attr->QueryBoolValue(&collapsed);
+        if (res != tinyxml2::XML_SUCCESS) {
+          LOG(WARNING) << "unable to parse width: " << res;
+          return false;
+        }
+        this->is_collapsed = collapsed;
       }
 
       this->title = title_attr->Value();
@@ -187,14 +204,14 @@ namespace ExpGame
       }
 
       {
-        auto y_attr = element->FindAttribute("x");
+        auto y_attr = element->FindAttribute("y");
         if (y_attr == nullptr) {
           this->pos.y = 0;
         } else {
           float percent{ 0.0 };
           auto res = y_attr->QueryFloatValue(&percent);
           if (res != tinyxml2::XML_SUCCESS) {
-            LOG(WARNING) << "unable to parse x pos: " << res;
+            LOG(WARNING) << "unable to parse y pos: " << res;
             return false;
           }
           this->pos.y = size.y * percent / 100.0;
