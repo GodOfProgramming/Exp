@@ -2,7 +2,7 @@
 
 #include <optional>
 
-namespace ExpGame
+namespace Exp
 {
   namespace Util
   {
@@ -92,4 +92,4 @@ namespace ExpGame
       return join(v, tok);
     }
   }  // namespace Util
-}  // namespace ExpGame
+}  // namespace Exp

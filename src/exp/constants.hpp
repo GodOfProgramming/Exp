@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ExpGame
+namespace Exp
 {
   constexpr const char* SETTINGS_FILE       = "assets/settings.json";
   constexpr const char* SHADER_CFG_FILE     = "assets/shaders/shaders.json";
@@ -13,4 +13,4 @@ namespace ExpGame
   constexpr const char* GAME_OBJECT_DIR     = "assets/game";
   constexpr const char* GAME_MODEL_DIR      = "assets/models";
   constexpr const char* GAME_SCRIPT_DIR     = "assets/scripts";
-}  // namespace ExpGame
+}  // namespace Exp

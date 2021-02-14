@@ -1,26 +1,33 @@
 #include "exp/constants.hpp"
-#include "exp/io.hpp"
-#include "exp/render.hpp"
-#include "exp/resources.hpp"
-#include "exp/settings.hpp"
-#include "exp/ui.hpp"
-#include "exp/window.hpp"
+#include "exp/game/info.hpp"
+#include "exp/game/object.hpp"
+#include "exp/gl/error_map.hpp"
+#include "exp/input/dispatcher.hpp"
+#include "exp/io/file.hpp"
+#include "exp/render/app_window.hpp"
+#include "exp/render/renderer.hpp"
+#include "exp/resources/game_objects.hpp"
+#include "exp/resources/models.hpp"
+#include "exp/resources/scripts.hpp"
+#include "exp/resources/shaders.hpp"
+#include "exp/settings/settings_manager.hpp"
+#include "exp/ui/ui_manager.hpp"
 
 int main(int, char* argv[])
 {
   constexpr const bool PRINT_GL_ERRORS = false;
-  using ExpGame::Game::Info;
-  using ExpGame::Game::Object;
-  using ExpGame::Input::Dispatcher;
-  using ExpGame::IO::File;
-  using ExpGame::Render::Renderer;
-  using ExpGame::Resources::GameObjects;
-  using ExpGame::Resources::Models;
-  using ExpGame::Resources::Scripts;
-  using ExpGame::Resources::Shaders;
-  using ExpGame::Settings::SettingsManager;
-  using ExpGame::Ui::UiManager;
-  using ExpGame::Window::AppWindow;
+  using Exp::Game::Info;
+  using Exp::Game::Object;
+  using Exp::Input::Dispatcher;
+  using Exp::IO::File;
+  using Exp::Render::AppWindow;
+  using Exp::Render::Renderer;
+  using Exp::Resources::GameObjects;
+  using Exp::Resources::Models;
+  using Exp::Resources::Scripts;
+  using Exp::Resources::Shaders;
+  using Exp::Settings::SettingsManager;
+  using Exp::Ui::UiManager;
   using nlohmann::json;
 
   google::InitGoogleLogging(argv[0]);
@@ -29,7 +36,7 @@ int main(int, char* argv[])
 
   auto& settings = SettingsManager::instance();
   {
-    auto file_res = File::load(ExpGame::SETTINGS_FILE);
+    auto file_res = File::load(Exp::SETTINGS_FILE);
     if (!file_res) {
       LOG(FATAL) << "unable to load game settings: " << file_res.err_val();
     }
@@ -52,7 +59,7 @@ int main(int, char* argv[])
 
   auto& shaders = Shaders::instance();
   {
-    auto file_res = File::load(ExpGame::SHADER_CFG_FILE);
+    auto file_res = File::load(Exp::SHADER_CFG_FILE);
     if (!file_res) {
       LOG(FATAL) << "unable to load shader configuration file: " << file_res.err_val();
     }
@@ -129,7 +136,7 @@ int main(int, char* argv[])
       stats_update_timer = update_check_time + one_second;
 
       if constexpr (PRINT_GL_ERRORS) {
-        auto& errors = ExpGame::GL::ErrorMap::instance();
+        auto& errors = Exp::GL::ErrorMap::instance();
         for (const auto& error : errors) {
           LOG(INFO) << "Error " << error.first << ": " << error.second.desc;
           for (const auto& occurrance : error.second.occurrences) {

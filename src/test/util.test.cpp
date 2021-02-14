@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-using ExpGame::Util::Result;
+using Exp::Util::Result;
 
 using TestResult = Result<std::string, std::string>;
 
