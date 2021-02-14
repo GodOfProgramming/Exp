@@ -10,6 +10,8 @@ namespace Exp
 
       std::size_t fps    = 0;
       std::size_t frames = 0;
+
+      static void add_usertype(sol::state& state);
     };
   }  // namespace Game
 

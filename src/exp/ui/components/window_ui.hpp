@@ -18,6 +18,8 @@ namespace Exp
 
         auto parse(tinyxml2::XMLNode* self) -> bool;
 
+        static void add_usertype(sol::state& state);
+
        private:
         std::string title;
         glm::ivec2 dim;

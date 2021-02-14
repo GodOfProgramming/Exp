@@ -1,5 +1,4 @@
-function on_close(self)
+function OnClose(self)
   print("closing window with title "..self.title);
-  local fmt = string.format("current fps is %d", game_info.fps);
-  print(fmt);
+  print(string.format("current fps is %d", GameInfo.fps));
 end

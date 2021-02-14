@@ -2,6 +2,7 @@
   "square": {
     "shader": "color",
     "model": "exp.basic.sprite_square",
+    "script": "exp.game.square",
     "draw_description": {
       "wireframe": false
     }

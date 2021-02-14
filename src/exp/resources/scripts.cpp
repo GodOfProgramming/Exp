@@ -52,5 +52,32 @@ namespace Exp
     {
       return this->scripts.end();
     }
+
+    void Scripts::make_script(std::string id, std::optional<sol::state>& state, std::function<bool(sol::state&)> callback)
+    {
+      auto iter = this->find(id);
+      if (iter == this->end()) {
+        return;
+      }
+
+      sol::state lua;
+      lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
+
+      if (!callback(lua)) {
+        return;
+      }
+
+      auto res = lua.load(iter->second.src);
+      if (!res.valid()) {
+        return;
+      }
+
+      auto exec_res = res();
+      if (!exec_res.valid()) {
+        return;
+      }
+
+      state = std::move(lua);
+    }
   }  // namespace Resources
 }  // namespace Exp

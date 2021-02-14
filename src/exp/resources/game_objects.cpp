@@ -72,14 +72,24 @@ namespace Exp
             }
           } else if (!drawdesc_json.is_null()) {
             LOG(WARNING) << "detected draw description in config but desc was not of type object";
+            continue;
           }
 
           auto model = model_iter->second;
 
           ObjectMeta meta;
+          meta.id       = id;
           meta.shader   = shader;
           meta.model    = model;
           meta.drawdesc = desc;
+
+          auto script_json = obj["script"];
+          if (script_json.is_string()) {
+            meta.script_id = script_json;
+          } else if (!script_json.is_null()) {
+            LOG(WARNING) << "detected script in config but was not of type string";
+            continue;
+          }
 
           this->objects.emplace(id, meta);
         }

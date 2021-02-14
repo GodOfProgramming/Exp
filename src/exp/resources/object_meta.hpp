@@ -10,9 +10,13 @@ namespace Exp
   {
     struct ObjectMeta
     {
+      std::string id;
       std::shared_ptr<GL::Program> shader;
       std::shared_ptr<ModelMeta> model;
       GL::DrawDescription drawdesc;
+      std::optional<std::string> script_id;
+
+      static void add_usertype(sol::state& state);
     };
   }  // namespace Resources
 }  // namespace Exp

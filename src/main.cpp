@@ -125,6 +125,8 @@ int main(int, char* argv[])
 
     window.poll_events();
 
+    for (auto& object : objects) { object->update(); }
+
     renderer.render_to(window, objects);
 
     auto update_check_time = std::chrono::system_clock::now();

@@ -48,7 +48,7 @@ namespace Exp
         if (!is_open && this->lua.has_value()) {
           this->hide   = true;
           auto& script = this->lua.value();
-          auto fn      = script["on_close"];
+          auto fn      = script["OnClose"];
           if (fn.get_type() == sol::type::function) {
             fn.call(this);
           }
@@ -156,41 +156,28 @@ namespace Exp
           if (script_attr != nullptr) {
             std::string script_key = script_attr->Value();
             auto& scripts          = Scripts::instance();
-            auto script_iter       = scripts.find(script_key);
-            if (script_iter == scripts.end()) {
+
+            scripts.make_script(script_key, this->lua, [](sol::state& state) {
+              state.new_usertype<glm::ivec2>("ivec2", "x", &glm::ivec2::x, "y", &glm::ivec2::y);
+              WindowUi::add_usertype(state);
+              Info::add_usertype(state);
+              state.set("GameInfo", &Info::instance());
+              return true;
+            });
+
+            if (!this->lua.has_value()) {
               LOG(WARNING) << "unable to load script " << script_key;
               return false;
             }
-
-            auto& script = script_iter->second;
-
-            sol::state state;
-            auto res = state.load(script.src);
-            if (!res.valid()) {
-              LOG(WARNING) << "script " << script_key << " is invalid";
-              return false;
-            }
-
-            auto exec_res = res();
-
-            if (!exec_res.valid()) {
-              LOG(WARNING) << "script " << script_key << " was not able to run";
-              return false;
-            }
-
-            state.open_libraries(sol::lib::base, sol::lib::string);
-
-            state.new_usertype<glm::ivec2>("ivec2", "x", &glm::ivec2::x, "y", &glm::ivec2::y);
-            state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
-            state.new_usertype<Info>("GameInfo", "fps", &Info::fps, "frames", &Info::frames);
-
-            state.set("game_info", &Info::instance());
-
-            this->lua = std::move(state);
           }
         }
 
         return true;
+      }
+
+      void WindowUi::add_usertype(sol::state& state)
+      {
+        state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
       }
     }  // namespace Components
   }    // namespace Ui

@@ -8,12 +8,19 @@ namespace Exp
   {
     class Object
     {
-     public:
-      Object(const Resources::ObjectMeta meta);
+      using ObjectMeta = Resources::ObjectMeta;
 
-      const Resources::ObjectMeta meta;
+     public:
+      Object(const ObjectMeta meta);
+
+      const ObjectMeta meta;
+
+      void update();
+
+      static void add_usertype(sol::state& state);
 
      private:
+      std::optional<sol::state> script;
     };
   }  // namespace Game
 }  // namespace Exp
