@@ -56,28 +56,14 @@ namespace Exp
       if (desc.wireframe) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         if (!GL_CHECK()) {
-          LOG(WARNING) << "cannot draw object, cannot set writeframe";
+          LOG(WARNING) << "cannot draw object, cannot set wireframe";
           return false;
         }
       } else {
-        if (desc.polygon_mode.front && desc.polygon_mode.back) {
-          glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-          if (!GL_CHECK()) {
-            LOG(WARNING) << "cannot draw object, cannot draw front and back";
-            return false;
-          }
-        } else if (desc.polygon_mode.front) {
-          glPolygonMode(GL_FRONT, GL_FILL);
-          if (!GL_CHECK()) {
-            LOG(WARNING) << "cannot draw object, cannot draw front";
-            return false;
-          }
-        } else if (desc.polygon_mode.back) {
-          glPolygonMode(GL_BACK, GL_FILL);
-          if (!GL_CHECK()) {
-            LOG(WARNING) << "cannot draw object, cannot draw front";
-            return false;
-          }
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        if (!GL_CHECK()) {
+          LOG(WARNING) << "cannot draw object, cannot draw front and back fill mode";
+          return false;
         }
       }
 

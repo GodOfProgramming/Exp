@@ -116,30 +116,6 @@ namespace Exp
         return false;
       }
 
-      auto polygon_mode = desc_json["polygon_mode"];
-      if (polygon_mode.is_object()) {
-        auto front = polygon_mode["front"];
-
-        if (front.is_boolean()) {
-          desc.polygon_mode.front = front;
-        } else if (!front.is_null()) {
-          LOG(WARNING) << "detected polygon mode front option in draw desc but was not of boolean type: " << front.dump();
-          return false;
-        }
-
-        auto back = polygon_mode["back"];
-
-        if (back.is_boolean()) {
-          desc.polygon_mode.back = back;
-        } else if (!back.is_null()) {
-          LOG(WARNING) << "detected polygon mode back option in draw desc but was not of boolean type: " << back.dump();
-          return false;
-        }
-      } else if (!polygon_mode.is_null()) {
-        LOG(WARNING) << "detected polygon mode option in draw desc but was not of object type";
-        return false;
-      }
-
       return true;
     }
   }  // namespace Resources
