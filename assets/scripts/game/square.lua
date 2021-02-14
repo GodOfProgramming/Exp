@@ -1,5 +1,9 @@
+function Instantiate(self)
+  self.uniforms:set("color", Uniform.new("u_color"));
+end
+
 function Update(self)
-  print(string.format("updating "..self.meta.id))
-  -- local green_value = math.sin(GameInfo.fps) / 2.0 + 0.5
-  -- self.uniforms["color"].set_vec4(0.0, green_value, 0.0, 1.0);
+  local green_value = math.sin(GameInfo.frames) / 2.0 + 0.5
+  local uniform = self.uniforms:get("color");
+  uniform:set_vec4(0.0, green_value, 0.0, 1.0);
 end

@@ -61,6 +61,7 @@ namespace Exp
       }
 
       sol::state lua;
+
       lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
       if (!callback(lua)) {

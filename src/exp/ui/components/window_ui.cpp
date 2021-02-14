@@ -161,7 +161,6 @@ namespace Exp
               state.new_usertype<glm::ivec2>("ivec2", "x", &glm::ivec2::x, "y", &glm::ivec2::y);
               WindowUi::add_usertype(state);
               Info::add_usertype(state);
-              state.set("GameInfo", &Info::instance());
               return true;
             });
 
