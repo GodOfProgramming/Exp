@@ -1,6 +1,6 @@
 #include "ui_manager.hpp"
 
-#include "components/debug_ui.hpp"
+#include "components/gl_errors_ui.hpp"
 #include "components/shader_ui.hpp"
 #include "components/window_ui.hpp"
 #include "exp/constants.hpp"
@@ -18,6 +18,10 @@ namespace Exp
     }
 
     UiManager::UiManager()
+     : show_demo_window(false)
+     , show_shader_window(false)
+     , show_gl_window(false)
+     , show_menu_bar(false)
     {
       using Render::AppWindow;
 
@@ -34,7 +38,6 @@ namespace Exp
 
     void UiManager::load_all()
     {
-      using Components::DebugUi;
       using IO::File;
 
       std::filesystem::directory_iterator iter(UI_DIRECTORY);
@@ -52,8 +55,6 @@ namespace Exp
 
         this->parse(std::move(file.data));
       }
-
-      this->elements.push_back(std::make_unique<DebugUi>());
     }
 
     auto UiManager::parse(std::string&& xml) -> bool
@@ -84,9 +85,50 @@ namespace Exp
 
     void UiManager::render()
     {
+      using Render::AppWindow;
+
       ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
+
+      if (this->show_menu_bar) {
+        if (ImGui::BeginMainMenuBar()) {
+          if (ImGui::BeginMenu("Debug")) {
+            if (ImGui::MenuItem("Demo Window")) {
+              this->show_demo_window = !this->show_demo_window;
+            }
+
+            if (ImGui::MenuItem("Shaders")) {
+              this->show_shader_window = !this->show_shader_window;
+            }
+
+            if (ImGui::MenuItem("OpenGL Errors")) {
+              this->show_gl_window = !this->show_gl_window;
+            }
+
+            if (ImGui::MenuItem("Exit")) {
+              auto& window = AppWindow::instance();
+              window.close();
+            }
+            ImGui::EndMenu();
+          }
+          ImGui::EndMainMenuBar();
+        }
+      }
+
+      if (this->show_demo_window) {
+        ImGui::ShowDemoWindow();
+      }
+
+      if (this->show_shader_window) {
+        static Components::ShaderUi ui;
+        ui.render();
+      }
+
+      if (this->show_gl_window) {
+        static Components::GlErrorsUi ui;
+        ui.render();
+      }
 
       for (auto& element : this->elements) { element->render(); }
 
@@ -100,5 +142,33 @@ namespace Exp
       ImGui_ImplGlfw_Shutdown();
       ImGui::DestroyContext(this->context);
     }
+
+    auto UiManager::handle(Input::KeyEvent e) -> IHandler*
+    {
+      using Input::Key;
+      switch (e.key) {
+        case Key::F4: {
+          if (e.action == Input::Action::Press) {
+            this->show_menu_bar = !this->show_menu_bar;
+          }
+        } break;
+        default: {
+          return this->get_next();
+        }
+      }
+
+      return nullptr;
+    }
+
+    auto UiManager::handle(Input::MouseButtonEvent) -> IHandler*
+    {
+      return this->get_next();
+    }
+
+    auto UiManager::handle(Input::MouseMoveEvent) -> IHandler*
+    {
+      return this->get_next();
+    }
+
   }  // namespace Ui
 }  // namespace Exp

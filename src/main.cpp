@@ -95,13 +95,11 @@ int main(int, char* argv[])
   auto& ui = UiManager::instance();
   {
     ui.load_all();
+    window.set_next(&ui);
   }
 
   // rendering
   Renderer renderer{ ui };
-
-  const std::chrono::duration<long, std::milli> one_milli(1);
-  const std::chrono::duration<long, std::ratio<1>> one_second(1);
 
   auto stats_update_timer = std::chrono::system_clock::now();
 
@@ -113,6 +111,9 @@ int main(int, char* argv[])
   objects.push_back(std::make_shared<Object>(obj->second));
 
   auto& info = Info::instance();
+
+  const std::chrono::duration<long, std::milli> one_milli(1);
+  const std::chrono::duration<long, std::ratio<1>> one_second(1);
 
   window.show();
 
@@ -133,9 +134,8 @@ int main(int, char* argv[])
     if (update_check_time > stats_update_timer) {
       static std::uint32_t last_count = 0;
       info.fps                        = info.frames - last_count;
-      LOG(INFO) << "FPS: " << info.fps;
-      last_count         = info.frames;
-      stats_update_timer = update_check_time + one_second;
+      last_count                      = info.frames;
+      stats_update_timer              = update_check_time + one_second;
 
       if constexpr (PRINT_GL_ERRORS) {
         auto& errors = Exp::GL::ErrorMap::instance();

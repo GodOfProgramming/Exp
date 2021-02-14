@@ -1,8 +1,10 @@
 #include "window_ui.hpp"
 
+#include "exp/constants.hpp"
 #include "exp/game/info.hpp"
 #include "exp/render/app_window.hpp"
 #include "exp/resources/scripts.hpp"
+#include "text_box.hpp"
 
 namespace Exp
 {
@@ -160,6 +162,7 @@ namespace Exp
             scripts.make_script(script_key, this->lua, [](sol::state& state) {
               state.new_usertype<glm::ivec2>("ivec2", "x", &glm::ivec2::x, "y", &glm::ivec2::y);
               WindowUi::add_usertype(state);
+              TextBox::add_usertype(state);
               Info::add_usertype(state);
               return true;
             });
@@ -168,6 +171,31 @@ namespace Exp
               LOG(WARNING) << "unable to load script " << script_key;
               return false;
             }
+          }
+        }
+
+        {
+          auto child = self->FirstChild();
+          while (child != nullptr) {
+            std::string type = child->Value();
+
+            if (type == UI_EL_TEXT_BOX) {
+              std::string fn;
+              auto child_el = child->ToElement();
+              auto text     = child_el->GetText();
+              auto fn_attr  = child_el->FindAttribute("fn");
+              if (fn_attr != nullptr) {
+                fn = fn_attr->Value();
+              }
+
+              auto text_box = std::make_unique<TextBox>(this->lua, fn, text == nullptr ? "" : text);
+              this->elements.push_back(std::move(text_box));
+            } else {
+              LOG(WARNING) << "invalid type detected " << type;
+              return false;
+            }
+
+            child = child->NextSibling();
           }
         }
 

@@ -7,6 +7,7 @@ namespace Exp
     enum class Key
     {
       ESC = GLFW_KEY_ESCAPE,
+      F4  = GLFW_KEY_F4,
     };
 
     enum class Action

@@ -1,4 +1,7 @@
-function OnClose(self)
-  print("closing window with title "..self.title);
-  print(string.format("current fps is %d", GameInfo.fps));
+function FpsText(self)
+  self.text = string.format("fps = %d", GameInfo.fps);
+end
+
+function FrameCountText(self)
+  self.text = string.format("frames = %d", GameInfo.frames);
 end
