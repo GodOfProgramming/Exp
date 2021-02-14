@@ -328,6 +328,22 @@ namespace ExpGame
         this->initial_render = true;
       }
 
+      auto print_shader_info = [&](float indent, const char* shader_type, const Resources::ShaderMeta& meta) {
+        ImGui::Indent(indent);
+        ImGui::Text("%s: %s", shader_type, meta.file.c_str());
+        {
+          ImGui::Indent(indent);
+          auto shader      = shaders.find_shader(meta.file)->second;
+          auto* status_str = shader->is_valid() ? "Ok" : "Error";
+          ImGui::Text("Status: %s", status_str);
+          if (!shader->is_valid()) {
+            ImGui::Text("%s", meta.error.c_str());
+          }
+          ImGui::Indent(-indent);
+        }
+        ImGui::Indent(-indent);
+      };
+
       ImGui::Begin("Shaders");
 
       std::size_t id = 0;
@@ -351,34 +367,17 @@ namespace ExpGame
           auto dim     = window.get_size();
           auto indent  = dim.x * 0.025f;
 
-          ImGui::Indent(indent);
-          ImGui::Text("Vertex: %s", shader_meta.vertex.file.c_str());
-          {
-            ImGui::Indent(indent);
-            auto vertex             = shaders.find_shader(shader_meta.vertex.file)->second;
-            auto* vertex_status_str = vertex->is_valid() ? "Ok" : "Error";
-            ImGui::Text("Status: %s", vertex_status_str);
-            if (!vertex->is_valid()) {
-              ImGui::Text("%s", shader_meta.vertex.error.c_str());
-            }
-            ImGui::Indent(-indent);
-          }
-          ImGui::Indent(-indent);
+          print_shader_info(indent, "Vertex", shader_meta.vertex);
+          print_shader_info(indent, "Fragment", shader_meta.fragment);
 
-          ImGui::Indent(indent);
-          ImGui::Text("Fragment: %s", shader_meta.fragment.file.c_str());
-          {
-            ImGui::Indent(indent);
-            auto fragment             = shaders.find_shader(shader_meta.fragment.file)->second;
-            auto* fragment_status_str = fragment->is_valid() ? "Ok" : "Error";
-            ImGui::Text("Status: %s", fragment_status_str);
-            if (!fragment->is_valid()) {
-              ImGui::Text("%s", shader_meta.vertex.error.c_str());
-            }
-            ImGui::Indent(-indent);
+          std::string text;
+          if (shader_meta.uniforms.empty()) {
+            text = "None";
+          } else {
+            text = Util::join(shader_meta.uniforms);
           }
-          ImGui::Text("%s", shader_meta.fragment.error.c_str());
-          ImGui::Indent(-indent);
+
+          ImGui::Text("Uniforms: %s", text.c_str());
 
           if (!program->is_valid()) {
             ImGui::Text("Link Error: %s", shader_meta.link_error.c_str());
@@ -429,11 +428,17 @@ namespace ExpGame
               auto& file  = file_lines_pair.first;
               auto& lines = file_lines_pair.second;
               ImGui::Text("File %s", file.c_str());
+              std::vector<std::string> line_info(lines.size());
               for (const auto& line : lines) {
-                ImGui::Indent(indent);
-                ImGui::Text("%d: %lu", line.first, line.second);
-                ImGui::Indent(-indent);
+                std::stringstream ss;
+                ss << line.first << ": " << line.second;
+                line_info.push_back(ss.str());
               }
+
+              auto str = Util::join(line_info);
+              ImGui::Indent(indent);
+              ImGui::Text("%s", str.c_str());
+              ImGui::Indent(-indent);
             }
           }
           ImGui::EndChild();

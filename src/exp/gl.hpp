@@ -248,7 +248,7 @@ namespace ExpGame
 
      private:
       const std::string_view name;
-      std::tuple<float, glm::vec2, glm::vec3, glm::vec4> value;
+      std::variant<float, glm::vec2, glm::vec3, glm::vec4> value;
     };
   }  // namespace GL
 }  // namespace ExpGame

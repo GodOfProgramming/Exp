@@ -40,6 +40,7 @@ namespace ExpGame
       std::string link_error;
       ShaderMeta vertex;
       ShaderMeta fragment;
+      std::set<std::string> uniforms;
     };
 
     class Shaders: public IResource

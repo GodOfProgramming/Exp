@@ -9,7 +9,9 @@ SRC_DIR = "#{__dir__}/src"
 OUT_DIR = "#{__dir__}/out"
 SHADER_CFG = 'shaders.json'
 
-IMPORT_REGEX = %r{//\s*import\s*"[\-\w.]+"}.freeze
+IMPORT_REGEX = /^#\s*import\s*"[\-\w.]+"$/.freeze
+
+SUPPORTED_SHADERS = %i[vertex fragment].to_set.freeze
 
 def forge_shader(shader, imported_files, successful_imports)
   src = nil
@@ -64,6 +66,9 @@ shaders = Set.new
 cfg.each do |entry|
   files = entry[1]
   files.each do |kvp|
+    type = kvp[0]
+    next unless SUPPORTED_SHADERS.include?(type)
+
     file = kvp[1]
     shaders << file
   end

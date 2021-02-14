@@ -6,6 +6,14 @@ namespace ExpGame
 {
   namespace Util
   {
+    template <class T, typename value_type = T::value_type>
+    concept Joinable = requires(const T& t)
+    {
+      t.begin();
+      t.end();
+      t.back();
+    };
+
     struct Void
     {};
 
@@ -65,5 +73,23 @@ namespace ExpGame
 
       Result() = default;
     };
+
+    template <Joinable T, typename value_type_t = T::value_type>
+    auto join(const T& items, const char* tok = ", ") -> std::string
+    {
+      std::ostringstream oss;
+      if (!items.empty()) {
+        std::copy(items.begin(), std::prev(items.end()), std::ostream_iterator<value_type_t>(oss, tok));
+        oss << items.back();
+      }
+      return oss.str();
+    }
+
+    template <typename T>
+    auto join(const std::set<T>& items, const char* tok = ", ") -> std::string
+    {
+      std::vector<T> v(items.begin(), items.end());
+      return join(v, tok);
+    }
   }  // namespace Util
 }  // namespace ExpGame

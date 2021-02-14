@@ -34,24 +34,31 @@ namespace ExpGame
         attempted_loads.emplace(id);
 
         auto shader_json = shader_item.value();
-        ShaderProgramMeta shader(id, shader_json);
+        ShaderProgramMeta shader_program(id, shader_json);
 
-        if (!shader.is_valid()) {
+        if (!shader_program.is_valid()) {
           LOG(WARNING) << "shader " << id << " is not valid";
           continue;
         }
 
         bool should_continue = false;
 
-        if (!this->load_shader<GL::Shader::Type::VERTEX>(shader.vertex)) {
+        if (!this->load_shader<GL::Shader::Type::VERTEX>(shader_program.vertex)) {
           should_continue = true;
         }
 
-        if (!this->load_shader<GL::Shader::Type::FRAGMENT>(shader.fragment)) {
+        if (!this->load_shader<GL::Shader::Type::FRAGMENT>(shader_program.fragment)) {
           should_continue = true;
         }
 
-        this->cache[id] = shader;
+        auto uniforms = shader_json[SHADER_UNIFORM_KEY];
+        if (uniforms.is_array()) {
+          for (const auto& uniform : uniforms) { shader_program.uniforms.emplace(uniform); }
+        } else if (!uniforms.is_null()) {
+          LOG(WARNING) << "detected uniforms but was not of type array";
+        }
+
+        this->cache[id] = shader_program;
 
         if (should_continue) {
           continue;
@@ -179,6 +186,10 @@ namespace ExpGame
     ShaderProgramMeta::ShaderProgramMeta(std::string st, json& sj)
      : type(st)
     {
+      static const std::set<std::string> KEYS_TO_SKIP = {
+        "uniforms",
+      };
+
       if (!sj.is_object()) {
         LOG(WARNING) << "shader is not object, skipping: " << sj.dump(2);
         return;
@@ -187,6 +198,10 @@ namespace ExpGame
       for (const auto& item : sj.items()) {
         auto shader_type    = item.key();
         auto filename_value = item.value();
+
+        if (KEYS_TO_SKIP.contains(shader_type)) {
+          continue;
+        }
 
         if (!filename_value.is_string()) {
           LOG(INFO) << "could not load shader: " << filename_value.dump(2);
@@ -210,7 +225,6 @@ namespace ExpGame
 
           shader = &this->fragment;
         } else {
-          LOG(WARNING) << "unsupported shader type " << shader_type << ", not loading";
           continue;
         }
 
@@ -222,7 +236,8 @@ namespace ExpGame
           continue;
         }
 
-        auto src_file   = src_res.ok_val();
+        auto src_file = src_res.ok_val();
+
         shader->source  = src_file.data;
         shader->present = true;
       }

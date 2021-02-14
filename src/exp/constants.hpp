@@ -7,6 +7,7 @@ namespace ExpGame
   constexpr const char* SHADER_DIR          = "assets/shaders/out";
   constexpr const char* SHADER_FRAGMENT_KEY = "fragment";
   constexpr const char* SHADER_VERTEX_KEY   = "vertex";
+  constexpr const char* SHADER_UNIFORM_KEY  = "uniforms";
   constexpr const char* UI_DIRECTORY        = "assets/ui";
   constexpr const char* UI_EL_WINDOW        = "window";
   constexpr const char* GAME_OBJECT_DIR     = "assets/game";

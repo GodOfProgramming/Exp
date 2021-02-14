@@ -5,6 +5,9 @@
   },
   "color": {
     "vertex": "basic.vertex.glsl",
-    "fragment": "color.fragment.glsl"
+    "fragment": "color.fragment.glsl",
+    "uniforms": [
+      "u_color"
+    ]
   }
 }
