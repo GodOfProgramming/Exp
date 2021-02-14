@@ -32,11 +32,11 @@ namespace Exp
       }
     }
 
-    void Object::prerender(const GL::Program& program)
+    void Object::prerender()
     {
       for (const auto& kvp : this->uniforms) {
         auto& uniform = kvp.second;
-        if (!uniform.enable(program)) {
+        if (!uniform.enable(*this->meta.shader)) {
           LOG(WARNING) << "unable to enable uniform " << uniform.name << " on object " << this->meta.id;
         }
       }

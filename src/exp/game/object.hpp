@@ -20,7 +20,7 @@ namespace Exp
 
       void update();
 
-      void prerender(const GL::Program& program);
+      void prerender();
 
       static void add_usertype(sol::state& state);
 

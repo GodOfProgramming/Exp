@@ -28,6 +28,8 @@ namespace Exp
           continue;
         }
 
+        object->prerender();
+
         if (!object->meta.model->vao->draw(object->meta.drawdesc)) {
           LOG(WARNING) << "unable to draw game object, vao not bound";
           continue;
