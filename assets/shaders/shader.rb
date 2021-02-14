@@ -9,7 +9,7 @@ SRC_DIR = "#{__dir__}/src"
 OUT_DIR = "#{__dir__}/out"
 SHADER_CFG = 'shaders.json'
 
-IMPORT_REGEX = /#import\s+"[\-\w.]+"/
+IMPORT_REGEX = %r{//\s*import\s*"[\-\w.]+"}.freeze
 
 def forge_shader(shader, imported_files, successful_imports)
   src = nil
@@ -72,8 +72,8 @@ end
 shaders.each do |shader|
   forge_shader("#{SRC_DIR}/#{shader}", [], Set.new) do |code|
     File.open("#{OUT_DIR}/#{shader}", 'w') do |f|
-      f.write(code)
       f.write("/** Auto-Generated on #{Time.now} **/\n")
+      f.write(code)
     end
   end
 end

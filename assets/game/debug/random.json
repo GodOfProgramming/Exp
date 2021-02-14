@@ -1,6 +1,6 @@
 {
   "square": {
-    "shader": "basic",
+    "shader": "color",
     "model": "exp.basic.sprite_square",
     "draw_description": {
       "wireframe": true,
