@@ -6,7 +6,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     struct ObjectMeta
     {
@@ -18,5 +18,5 @@ namespace Exp
 
       static void add_usertype(sol::state& state);
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

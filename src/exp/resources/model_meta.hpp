@@ -6,7 +6,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     struct ModelMeta
     {
@@ -14,5 +14,5 @@ namespace Exp
       std::shared_ptr<GL::VBO> vbo;
       std::shared_ptr<GL::EBO> ebo;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

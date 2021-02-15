@@ -11,7 +11,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     class Shaders: public IResource
     {
@@ -115,5 +115,5 @@ namespace Exp
 
       return true;
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

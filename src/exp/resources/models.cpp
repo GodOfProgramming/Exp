@@ -6,7 +6,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     auto Models::instance() noexcept -> Models&
     {
@@ -163,5 +163,5 @@ namespace Exp
     {
       return this->models.end();
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

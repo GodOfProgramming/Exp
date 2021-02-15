@@ -4,7 +4,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     class Scripts
     {
@@ -33,5 +33,5 @@ namespace Exp
      private:
       ScriptMap scripts;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

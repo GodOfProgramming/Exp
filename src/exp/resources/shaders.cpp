@@ -4,7 +4,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     auto Shaders::instance() -> Shaders&
     {
@@ -204,5 +204,5 @@ namespace Exp
     {
       return this->cache.end();
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

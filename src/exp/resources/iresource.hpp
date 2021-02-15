@@ -2,12 +2,12 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     class IResource
     {
      public:
       virtual void release() = 0;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

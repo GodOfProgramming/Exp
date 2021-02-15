@@ -61,7 +61,7 @@ namespace Exp
       {
         using Game::Info;
         using Render::AppWindow;
-        using Resources::Scripts;
+        using R::Scripts;
 
         auto element = self->ToElement();
         if (element == nullptr) {

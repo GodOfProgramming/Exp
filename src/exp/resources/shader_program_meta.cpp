@@ -5,7 +5,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     ShaderProgramMeta::ShaderProgramMeta(std::string st, json& sj)
      : type(st)
@@ -81,5 +81,5 @@ namespace Exp
     {
       return this->fragment.present;
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

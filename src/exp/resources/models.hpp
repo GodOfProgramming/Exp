@@ -4,7 +4,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     class Models
     {
@@ -31,5 +31,5 @@ namespace Exp
      private:
       ModelMap models;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

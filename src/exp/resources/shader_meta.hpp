@@ -2,7 +2,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     struct ShaderMeta
     {
@@ -11,5 +11,5 @@ namespace Exp
       std::string error;
       bool present = false;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

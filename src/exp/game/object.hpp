@@ -10,7 +10,7 @@ namespace Exp
   {
     class Object
     {
-      using ObjectMeta = Resources::ObjectMeta;
+      using ObjectMeta = R::ObjectMeta;
       using Uniform    = GL::Uniform;
 
      public:

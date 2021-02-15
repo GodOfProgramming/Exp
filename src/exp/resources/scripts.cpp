@@ -6,7 +6,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     auto Scripts::instance() noexcept -> Scripts&
     {
@@ -99,5 +99,5 @@ namespace Exp
 
       state = std::move(lua);
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

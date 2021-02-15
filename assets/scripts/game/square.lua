@@ -3,9 +3,10 @@ function Instantiate(self)
 end
 
 function Update(self)
-  local r = math.sin(GameInfo.frames * 0.1) / 2.0 + 0.5
-  local g = math.sin(GameInfo.frames * 0.1) / 2.0 + 0.5
-  local b = math.sin(GameInfo.frames * 0.1) / 2.0 + 0.5
+  local scale = 0.05
+  local r = math.sin(GameInfo.frames * scale) / 2.0 + 0.5
+  local g = math.sin(GameInfo.frames * scale) / 2.0 + 0.5
+  local b = math.sin(GameInfo.frames * scale) / 2.0 + 0.5
   local rgb = math.sin(r + g + b) / 2.0 + 0.5
 
   local colors = {

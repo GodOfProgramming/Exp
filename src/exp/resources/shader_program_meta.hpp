@@ -4,7 +4,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     class ShaderProgramMeta
     {
@@ -26,5 +26,5 @@ namespace Exp
       ShaderMeta fragment;
       std::set<std::string> uniforms;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

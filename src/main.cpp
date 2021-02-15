@@ -22,10 +22,10 @@ int main(int, char* argv[])
   using Exp::IO::File;
   using Exp::Render::AppWindow;
   using Exp::Render::Renderer;
-  using Exp::Resources::GameObjects;
-  using Exp::Resources::Models;
-  using Exp::Resources::Scripts;
-  using Exp::Resources::Shaders;
+  using Exp::R::GameObjects;
+  using Exp::R::Models;
+  using Exp::R::Scripts;
+  using Exp::R::Shaders;
   using Exp::Settings::SettingsManager;
   using Exp::Ui::UiManager;
   using nlohmann::json;

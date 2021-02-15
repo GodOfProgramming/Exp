@@ -6,7 +6,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     class GameObjects: public IResource
     {
@@ -36,5 +36,5 @@ namespace Exp
 
       auto parse_drawdesc(const json&, GL::DrawDescription& desc) -> bool;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

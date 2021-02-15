@@ -2,11 +2,11 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     void ObjectMeta::add_usertype(sol::state& state)
     {
       state.new_usertype<ObjectMeta>("ObjectMeta", "id", &ObjectMeta::id);
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

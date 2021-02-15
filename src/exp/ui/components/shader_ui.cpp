@@ -12,7 +12,7 @@ namespace Exp
       void ShaderUi::render()
       {
         using Render::AppWindow;
-        auto& shaders = Resources::Shaders::instance();
+        auto& shaders = R::Shaders::instance();
 
         if (!this->initial_render) {
           auto& window = AppWindow::instance();
@@ -22,7 +22,7 @@ namespace Exp
           this->initial_render = true;
         }
 
-        auto print_shader_info = [&](float indent, const char* shader_type, const Resources::ShaderMeta& meta) {
+        auto print_shader_info = [&](float indent, const char* shader_type, const R::ShaderMeta& meta) {
           ImGui::Indent(indent);
           ImGui::Text("%s: %s", shader_type, meta.file.c_str());
           {

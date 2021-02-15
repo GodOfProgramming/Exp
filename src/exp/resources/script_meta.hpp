@@ -2,11 +2,11 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     struct ScriptMeta
     {
       std::string src;
     };
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp

@@ -11,7 +11,7 @@ namespace Exp
      : meta(m)
     {
       if (m.script_id.has_value()) {
-        using Resources::Scripts;
+        using R::Scripts;
 
         auto& scripts = Scripts::instance();
         scripts.make_script(m.script_id.value(), this->script, [](sol::state& state) {

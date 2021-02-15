@@ -6,7 +6,7 @@
 
 namespace Exp
 {
-  namespace Resources
+  namespace R
   {
     auto GameObjects::instance() noexcept -> GameObjects&
     {
@@ -128,5 +128,5 @@ namespace Exp
 
       return true;
     }
-  }  // namespace Resources
+  }  // namespace R
 }  // namespace Exp
