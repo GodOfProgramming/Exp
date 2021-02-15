@@ -18,7 +18,7 @@ namespace Exp
     {
       auto& shaders = Shaders::instance();
       auto& models  = Models::instance();
-      IO::iterate_dir_with_namespace(GAME_OBJECT_DIR, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+      IO::iterate_dir_with_namespace(CFG_DIR_GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         auto file_res = IO::File::load(path);
         if (!file_res) {
           LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();

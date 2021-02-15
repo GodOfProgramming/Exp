@@ -2,16 +2,18 @@
 
 namespace Exp
 {
-  constexpr const char* GAME_MODEL_DIR      = "assets/models";
-  constexpr const char* GAME_OBJECT_DIR     = "assets/game";
-  constexpr const char* GAME_SCRIPT_DIR     = "assets/scripts";
-  constexpr const char* SETTINGS_FILE       = "assets/settings.json";
-  constexpr const char* SHADER_CFG_FILE     = "assets/shaders/shaders.json";
-  constexpr const char* SHADER_DIR          = "assets/shaders/out";
-  constexpr const char* SHADER_FRAGMENT_KEY = "fragment";
-  constexpr const char* SHADER_UNIFORM_KEY  = "uniforms";
-  constexpr const char* SHADER_VERTEX_KEY   = "vertex";
-  constexpr const char* UI_DIRECTORY        = "assets/ui";
-  constexpr const char* UI_EL_TEXT_BOX      = "text";
-  constexpr const char* UI_EL_WINDOW        = "window";
+  constexpr const char* CFG_DIR_GAME_MODELS      = "assets/json/models";
+  constexpr const char* CFG_DIR_GAME_OBJECTS     = "assets/json/game";
+  constexpr const char* CFG_DIR_SHADERS          = "assets/json/shaders";
+  constexpr const char* CFG_DIR_TEXTURES         = "assets/json/textures";
+  constexpr const char* CFG_FILE_SETTINGS        = "assets/settings.json";
+  constexpr const char* DIR_GAME_SCRIPTS         = "assets/scripts";
+  constexpr const char* DIR_SHADER_OUTPUT        = "assets/shaders/out";
+  constexpr const char* DIR_TEXTURES             = "assets/textures";
+  constexpr const char* DIR_UI                   = "assets/ui";
+  constexpr const char* JSON_KEY_SHADER_FRAGMENT = "fragment";
+  constexpr const char* JSON_KEY_SHADER_UNIFORM  = "uniforms";
+  constexpr const char* JSON_KEY_SHADER_VERTEX   = "vertex";
+  constexpr const char* UI_EL_TEXT_BOX           = "text";
+  constexpr const char* UI_EL_WINDOW             = "window";
 }  // namespace Exp

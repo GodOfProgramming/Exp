@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'filesystem'
 require 'json'
 require 'set'
 require 'date'
 
-SRC_DIR = "#{__dir__}/src"
-OUT_DIR = "#{__dir__}/out"
-SHADER_CFG = 'shaders.json'
+SRC_DIR = "#{__dir__}/shaders/src"
+OUT_DIR = "#{__dir__}/shaders/out"
+SHADER_DIR = "#{__dir__}/json/shaders"
 
 IMPORT_REGEX = /^#\s*import\s*"[\-\w.]+"$/.freeze
 
@@ -54,23 +55,26 @@ ensure
   imported_files.pop
 end
 
-cfg = nil
-
-File.open("#{__dir__}/#{SHADER_CFG}") do |f|
-  data = f.read
-  cfg = JSON.parse(data, symbolize_names: true)
-end
-
 shaders = Set.new
 
-cfg.each do |entry|
-  files = entry[1]
-  files.each do |kvp|
-    type = kvp[0]
-    next unless SUPPORTED_SHADERS.include?(type)
+FileSystem.traverse(SHADER_DIR, '.json') do |fn|
+  cfg = nil
+  File.open(fn) do |f|
+    data = f.read
+    cfg = JSON.parse(data, symbolize_names: true)
+  end
 
-    file = kvp[1]
-    shaders << file
+  unless cfg&.nil?
+    cfg.each do |entry|
+      files = entry[1]
+      files.each do |kvp|
+        type = kvp[0]
+        next unless SUPPORTED_SHADERS.include?(type)
+
+        file = kvp[1]
+        shaders << file
+      end
+    end
   end
 end
 

@@ -42,6 +42,6 @@ target_include_directories(${EXE} PUBLIC "${CMAKE_SOURCE_DIR}/src")
 
 target_include_directories(${EXE_TEST} PUBLIC "${CMAKE_SOURCE_DIR}/src")
 
-add_dependencies(${EXE} SHADERS)
+add_dependencies(${EXE} shaders)
 
-add_dependencies(${EXE_TEST} SHADERS)
+add_dependencies(${EXE_TEST} shaders)

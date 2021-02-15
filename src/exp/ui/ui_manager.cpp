@@ -4,6 +4,7 @@
 #include "components/shader_ui.hpp"
 #include "components/window_ui.hpp"
 #include "exp/constants.hpp"
+#include "exp/io.hpp"
 #include "exp/io/file.hpp"
 #include "exp/render/app_window.hpp"
 
@@ -38,21 +39,19 @@ namespace Exp
     {
       using IO::File;
 
-      std::filesystem::directory_iterator iter(UI_DIRECTORY);
-
-      for (auto dir : iter) {
-        LOG(INFO) << "loading ui " << dir;
-        auto res = File::load(dir);
+      IO::iterate_dir_with_namespace(DIR_UI, "exp", [&](std::filesystem::path path, std::string) {
+        LOG(INFO) << "loading ui " << path;
+        auto res = File::load(path);
 
         if (!res) {
-          LOG(WARNING) << "unable to load Ui Xml " << dir;
-          continue;
+          LOG(WARNING) << "unable to load Ui Xml " << path;
+          return;
         }
 
         auto file = res.ok_val();
 
         this->parse(std::move(file.data));
-      }
+      });
 
       this->debug_elements.push_back(std::make_unique<Components::ShaderUi>());
       this->debug_elements.push_back(std::make_unique<Components::GlErrorsUi>());

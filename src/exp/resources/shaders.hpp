@@ -20,7 +20,6 @@ namespace Exp
       using ShaderMap   = std::map<std::string, std::shared_ptr<GL::Shader>>;
       using ProgramMap  = std::map<std::string, std::shared_ptr<GL::Program>>;
       using ConfigCache = std::map<std::string, ShaderProgramMeta>;
-      using json        = nlohmann::json;
 
      public:
       Shaders(const Shaders&) = delete;
@@ -30,7 +29,7 @@ namespace Exp
 
       static auto instance() -> Shaders&;
 
-      void load_all(const json& cfg);
+      void load_all();
 
       void release() final;
 
@@ -95,7 +94,7 @@ namespace Exp
     {
       LOG(INFO) << "reloading shader " << meta.file;
 
-      auto abs_path = std::string(SHADER_DIR) + "/" + meta.file;
+      auto abs_path = std::string(CFG_DIR_SHADERS) + "/" + meta.file;
       auto src_res  = IO::File::load(abs_path);
       if (!src_res) {
         LOG(ERROR) << "unable to load shader";

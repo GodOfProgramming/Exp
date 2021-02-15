@@ -1,0 +1,11 @@
+{
+  "square": {
+    "shader": "exp.test.random.colors",
+    "model": "exp.test.random.sprite_square",
+    "spritesheet": "exp.test.random.wall",
+    "script": "exp.game.square",
+    "draw_description": {
+      "wireframe": false
+    }
+  }
+}

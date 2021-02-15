@@ -16,7 +16,7 @@ namespace Exp
 
     void Models::load_all()
     {
-      IO::iterate_dir_with_namespace(GAME_MODEL_DIR, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+      IO::iterate_dir_with_namespace(CFG_DIR_GAME_MODELS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         using nlohmann::json;
 
         auto file_res = IO::File::load(path);
@@ -32,7 +32,12 @@ namespace Exp
         try {
           objects = json::parse(file.data);
         } catch (std::exception& e) {
-          LOG(WARNING) << "could not parse json: " << e.what();
+          LOG(WARNING) << "could not parse json (path = " << path << "): " << e.what();
+          return;
+        }
+
+        if (!objects.is_object()) {
+          LOG(WARNING) << "object json is not in proper format, first type is not object";
           return;
         }
 

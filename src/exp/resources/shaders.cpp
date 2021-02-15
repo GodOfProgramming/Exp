@@ -1,5 +1,7 @@
 #include "shaders.hpp"
 
+#include "exp/io.hpp"
+
 namespace Exp
 {
   namespace Resources
@@ -10,60 +12,82 @@ namespace Exp
       return shaders;
     }
 
-    void Shaders::load_all(const json& cfg)
+    void Shaders::load_all()
     {
       LOG(INFO) << "loading shaders";
-
-      if (!cfg.is_object()) {
-        LOG(FATAL) << "shader json is not in proper format, first type is not object";
-      }
 
       std::set<std::string> valid_programs;
       std::set<std::string> attempted_loads;
 
-      for (const auto& shader_item : cfg.items()) {
-        auto id = shader_item.key();
+      IO::iterate_dir_with_namespace(CFG_DIR_SHADERS, "exp", [&](std::filesystem::path path, std::string nspace) {
+        using nlohmann::json;
 
-        if (attempted_loads.find(id) != attempted_loads.end()) {
-          LOG(WARNING) << "already loaded shader program: " << id << ", skipping...";
-          continue;
+        auto file_res = IO::File::load(path);
+        if (!file_res) {
+          LOG(FATAL) << "unable to load shader configuration file: " << file_res.err_val();
         }
 
-        attempted_loads.emplace(id);
+        auto file = file_res.ok_val();
 
-        auto shader_json = shader_item.value();
-        ShaderProgramMeta shader_program(id, shader_json);
+        json shader_json;
 
-        if (!shader_program.is_valid()) {
-          LOG(WARNING) << "shader " << id << " is not valid";
-          continue;
+        try {
+          shader_json = json::parse(file.data);
+        } catch (std::exception& e) {
+          LOG(WARNING) << "could not parse json (path = " << path << "): " << e.what();
         }
 
-        bool should_continue = false;
-
-        if (!this->load_shader<GL::Shader::Type::VERTEX>(shader_program.vertex)) {
-          should_continue = true;
+        if (!shader_json.is_object()) {
+          LOG(WARNING) << "shader json is not in proper format, first type is not object";
+          return;
         }
 
-        if (!this->load_shader<GL::Shader::Type::FRAGMENT>(shader_program.fragment)) {
-          should_continue = true;
+        for (const auto& shader_item : shader_json.items()) {
+          auto id = nspace + "." + shader_item.key();
+
+          LOG(INFO) << "loading shader " << id;
+
+          if (attempted_loads.find(id) != attempted_loads.end()) {
+            LOG(WARNING) << "already loaded shader program: " << id << ", skipping...";
+            continue;
+          }
+
+          attempted_loads.emplace(id);
+
+          auto shader_json = shader_item.value();
+          ShaderProgramMeta shader_program(id, shader_json);
+
+          if (!shader_program.is_valid()) {
+            LOG(WARNING) << "shader " << id << " is not valid";
+            continue;
+          }
+
+          bool should_continue = false;
+
+          if (!this->load_shader<GL::Shader::Type::VERTEX>(shader_program.vertex)) {
+            should_continue = true;
+          }
+
+          if (!this->load_shader<GL::Shader::Type::FRAGMENT>(shader_program.fragment)) {
+            should_continue = true;
+          }
+
+          auto uniforms = shader_json[JSON_KEY_SHADER_UNIFORM];
+          if (uniforms.is_array()) {
+            for (const auto& uniform : uniforms) { shader_program.uniforms.emplace(uniform); }
+          } else if (!uniforms.is_null()) {
+            LOG(WARNING) << "detected uniforms but was not of type array";
+          }
+
+          this->cache[id] = shader_program;
+
+          if (should_continue) {
+            continue;
+          }
+
+          valid_programs.emplace(id);
         }
-
-        auto uniforms = shader_json[SHADER_UNIFORM_KEY];
-        if (uniforms.is_array()) {
-          for (const auto& uniform : uniforms) { shader_program.uniforms.emplace(uniform); }
-        } else if (!uniforms.is_null()) {
-          LOG(WARNING) << "detected uniforms but was not of type array";
-        }
-
-        this->cache[id] = shader_program;
-
-        if (should_continue) {
-          continue;
-        }
-
-        valid_programs.emplace(id);
-      }
+      });
 
       for (const auto& id : valid_programs) { this->load_program(id); }
     }

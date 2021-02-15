@@ -36,7 +36,7 @@ int main(int, char* argv[])
 
   auto& settings = SettingsManager::instance();
   {
-    auto file_res = File::load(Exp::SETTINGS_FILE);
+    auto file_res = File::load(Exp::CFG_FILE_SETTINGS);
     if (!file_res) {
       LOG(FATAL) << "unable to load game settings: " << file_res.err_val();
     }
@@ -59,22 +59,7 @@ int main(int, char* argv[])
 
   auto& shaders = Shaders::instance();
   {
-    auto file_res = File::load(Exp::SHADER_CFG_FILE);
-    if (!file_res) {
-      LOG(FATAL) << "unable to load shader configuration file: " << file_res.err_val();
-    }
-
-    auto file = file_res.ok_val();
-
-    json shader_json;
-
-    try {
-      shader_json = json::parse(file.data);
-    } catch (std::exception& e) {
-      LOG(FATAL) << "could not parse json: " << e.what();
-    }
-
-    shaders.load_all(shader_json);
+    shaders.load_all();
   }
 
   auto& models = Models::instance();
@@ -104,7 +89,7 @@ int main(int, char* argv[])
   auto stats_update_timer = std::chrono::system_clock::now();
 
   std::vector<std::shared_ptr<Object>> objects;
-  auto obj = game_objects.find("exp.debug.random.square");
+  auto obj = game_objects.find("exp.test.random.square");
   if (obj == game_objects.end()) {
     LOG(FATAL) << "could not even load the friggen debug object, nice job dumbass";
   }
