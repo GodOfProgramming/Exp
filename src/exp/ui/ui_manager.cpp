@@ -19,8 +19,6 @@ namespace Exp
 
     UiManager::UiManager()
      : show_demo_window(false)
-     , show_shader_window(false)
-     , show_gl_window(false)
      , show_menu_bar(false)
     {
       using Render::AppWindow;
@@ -55,6 +53,9 @@ namespace Exp
 
         this->parse(std::move(file.data));
       }
+
+      this->debug_elements.push_back(std::make_unique<Components::ShaderUi>());
+      this->debug_elements.push_back(std::make_unique<Components::GlErrorsUi>());
     }
 
     auto UiManager::parse(std::string&& xml) -> bool
@@ -93,44 +94,53 @@ namespace Exp
 
       if (this->show_menu_bar) {
         if (ImGui::BeginMainMenuBar()) {
+          if (ImGui::BeginMenu("Windows")) {
+            for (auto& el : this->elements) {
+              if (ImGui::MenuItem(el->text().c_str())) {
+                el->enable(!el->is_enabled());
+              }
+            }
+            ImGui::EndMenu();
+          }
+
           if (ImGui::BeginMenu("Debug")) {
-            if (ImGui::MenuItem("Demo Window")) {
+            for (auto& el : this->debug_elements) {
+              if (ImGui::MenuItem(el->text().c_str())) {
+                el->enable(!el->is_enabled());
+              }
+            }
+
+            if (ImGui::MenuItem("Ui Demo Window")) {
               this->show_demo_window = !this->show_demo_window;
             }
 
-            if (ImGui::MenuItem("Shaders")) {
-              this->show_shader_window = !this->show_shader_window;
-            }
+            ImGui::EndMenu();
+          }
 
-            if (ImGui::MenuItem("OpenGL Errors")) {
-              this->show_gl_window = !this->show_gl_window;
-            }
-
-            if (ImGui::MenuItem("Exit")) {
-              auto& window = AppWindow::instance();
-              window.close();
-            }
+          if (ImGui::BeginMenu("Exit")) {
+            auto& window = AppWindow::instance();
+            window.close();
             ImGui::EndMenu();
           }
           ImGui::EndMainMenuBar();
         }
       }
 
+      for (auto& el : this->elements) {
+        if (el->is_enabled()) {
+          el->render();
+        }
+      }
+
+      for (auto& el : this->debug_elements) {
+        if (el->is_enabled()) {
+          el->render();
+        }
+      }
+
       if (this->show_demo_window) {
         ImGui::ShowDemoWindow();
       }
-
-      if (this->show_shader_window) {
-        static Components::ShaderUi ui;
-        ui.render();
-      }
-
-      if (this->show_gl_window) {
-        static Components::GlErrorsUi ui;
-        ui.render();
-      }
-
-      for (auto& element : this->elements) { element->render(); }
 
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

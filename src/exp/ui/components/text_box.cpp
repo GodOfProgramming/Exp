@@ -9,8 +9,10 @@ namespace Exp
       TextBox::TextBox(std::optional<sol::state>& s, std::string f, std::string t)
        : script(s)
        , function(f)
-       , text(t)
-      {}
+       , display_text(t)
+      {
+        this->enable(true);
+      }
 
       void TextBox::render()
       {
@@ -22,12 +24,18 @@ namespace Exp
           }
         }
 
-        ImGui::Text("%s", this->text.c_str());
+        ImGui::Text("%s", this->display_text.c_str());
       }
 
       void TextBox::add_usertype(sol::state& state)
       {
-        state.new_usertype<TextBox>("TextBox", "text", &TextBox::text);
+        state.new_usertype<TextBox>(
+         "TextBox", "display_text", &TextBox::display_text, "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
+      }
+
+      auto TextBox::text() noexcept -> std::string
+      {
+        return this->display_text;
       }
     }  // namespace Components
   }    // namespace Ui

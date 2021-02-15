@@ -36,9 +36,8 @@ namespace Exp
      private:
       ImGuiContext* context;
       std::vector<std::unique_ptr<UiComponent>> elements;
+      std::vector<std::unique_ptr<UiComponent>> debug_elements;
       bool show_demo_window;
-      bool show_shader_window;
-      bool show_gl_window;
       bool show_menu_bar;
     };
   }  // namespace Ui

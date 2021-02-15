@@ -1,7 +1,7 @@
 function FpsText(self)
-  self.text = string.format("fps = %d", GameInfo.fps);
+  self.display_text = string.format("fps = %d", GameInfo.fps);
 end
 
 function FrameCountText(self)
-  self.text = string.format("frames = %d", GameInfo.frames);
+  self.display_text = string.format("frames = %d", GameInfo.frames);
 end

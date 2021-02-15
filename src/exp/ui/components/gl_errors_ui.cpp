@@ -22,7 +22,8 @@ namespace Exp
 
         auto& errors = GL::ErrorMap::instance();
 
-        ImGui::Begin("OpenGL Errors");
+        bool is_open = this->is_enabled();
+        ImGui::Begin("OpenGL Errors", &is_open);
 
         if (errors.error_count() == 0) {
           ImGui::Text("No Errors Detected");
@@ -61,6 +62,13 @@ namespace Exp
         }
 
         ImGui::End();
+
+        this->enable(is_open);
+      }
+
+      auto GlErrorsUi::text() noexcept -> std::string
+      {
+        return "Debug GL Errors";
       }
     }  // namespace Components
   }    // namespace Ui

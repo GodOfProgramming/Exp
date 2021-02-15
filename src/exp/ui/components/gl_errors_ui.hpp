@@ -15,6 +15,8 @@ namespace Exp
 
         void render() final;
 
+        auto text() noexcept -> std::string final;
+
        private:
         bool initial_render = false;
       };

@@ -38,7 +38,8 @@ namespace Exp
           ImGui::Indent(-indent);
         };
 
-        ImGui::Begin("Shaders");
+        bool is_open = this->is_enabled();
+        ImGui::Begin("Shaders", &is_open);
 
         std::size_t id = 0;
         for (auto cfg_iter = shaders.cache_begin(); cfg_iter != shaders.cache_end(); cfg_iter++, id++) {
@@ -87,6 +88,13 @@ namespace Exp
         }
 
         ImGui::End();
+
+        this->enable(is_open);
+      }
+
+      auto ShaderUi::text() noexcept -> std::string
+      {
+        return "Debug Shaders";
       }
     }  // namespace Components
   }    // namespace Ui

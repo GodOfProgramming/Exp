@@ -17,10 +17,12 @@ namespace Exp
 
         static void add_usertype(sol::state& state);
 
+        auto text() noexcept -> std::string final;
+
        private:
         std::optional<sol::state>& script;
         std::string function;
-        std::string text;
+        std::string display_text;
       };
     }  // namespace Components
   }    // namespace Ui

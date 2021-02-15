@@ -16,17 +16,17 @@ namespace Exp
        : title(t)
        , dim({ 0, 0 })
        , pos({ 0, 0 })
-       , hide(false)
        , initial_render(false)
        , is_collapsed(false)
       {}
 
+      void WindowUi::add_usertype(sol::state& state)
+      {
+        state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
+      }
+
       void WindowUi::render()
       {
-        if (this->hide) {
-          return;
-        }
-
         ImGuiWindowFlags flags = 0;
         flags |= ImGuiWindowFlags_NoResize;
 
@@ -48,7 +48,7 @@ namespace Exp
         ImGui::End();
 
         if (!is_open && this->lua.has_value()) {
-          this->hide   = true;
+          this->enable(false);
           auto& script = this->lua.value();
           auto fn      = script["OnClose"];
           if (fn.get_type() == sol::type::function) {
@@ -202,9 +202,9 @@ namespace Exp
         return true;
       }
 
-      void WindowUi::add_usertype(sol::state& state)
+      auto WindowUi::text() noexcept -> std::string
       {
-        state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
+        return this->title;
       }
     }  // namespace Components
   }    // namespace Ui
