@@ -30,14 +30,36 @@ namespace Exp
       this->value = glm::vec4{ x, y, z, w };
     }
 
+    void Uniform::set_v_float(std::vector<float> v)
+    {
+      this->value = v;
+    }
+
+    void Uniform::set_v_vec2(std::vector<glm::vec2> v)
+    {
+      this->value = v;
+    }
+
+    void Uniform::set_v_vec3(std::vector<glm::vec3> v)
+    {
+      this->value = v;
+    }
+
+    void Uniform::set_v_vec4(std::vector<glm::vec4> v)
+    {
+      this->value = v;
+    }
+
     auto Uniform::enable(const GL::Program& program) const -> bool
     {
       auto loc = glGetUniformLocation(program.program_id(), this->name.c_str());
       if (!GL_CHECK()) {
+        LOG(WARNING) << "uniform location returnied invalid";
         return false;
       }
 
       if (loc < 0) {
+        LOG(WARNING) << "uniform location invalid";
         return false;
       }
 
@@ -54,10 +76,44 @@ namespace Exp
         case Type::Vec4: {
           glUniform4fv(loc, 1, glm::value_ptr(std::get<glm::vec4>(this->value)));
         } break;
+        case Type::FloatV: {
+          auto& v = std::get<std::vector<float>>(this->value);
+          if (v.size() > 0) {
+            glUniform1fv(loc, v.size(), v.data());
+          } else {
+            return false;
+          }
+        } break;
+        case Type::Vec2V: {
+          auto& vecs = std::get<std::vector<glm::vec2>>(this->value);
+          if (vecs.size() > 0) {
+            glUniform2fv(loc, vecs.size(), glm::value_ptr(vecs[0]));
+          } else {
+            return false;
+          }
+        } break;
+        case Type::Vec3V: {
+          auto& vecs = std::get<std::vector<glm::vec3>>(this->value);
+          if (vecs.size() > 0) {
+            glUniform3fv(loc, vecs.size(), glm::value_ptr(vecs[0]));
+          } else {
+            return false;
+          }
+        } break;
+        case Type::Vec4V: {
+          auto& vecs = std::get<std::vector<glm::vec4>>(this->value);
+          if (vecs.size() > 0) {
+            glUniform4fv(loc, vecs.size(), glm::value_ptr(vecs[0]));
+          } else {
+            return false;
+          }
+        } break;
         default: {
+          LOG(WARNING) << "invalid shader datatype";
           return false;
         }
       }
+
       return GL_CHECK();
     }
 
@@ -73,7 +129,15 @@ namespace Exp
        "set_vec3",
        &Uniform::set_vec3,
        "set_vec4",
-       &Uniform::set_vec4);
+       &Uniform::set_vec4,
+       "set_v_float",
+       &Uniform::set_v_float,
+       "set_v_vec2",
+       &Uniform::set_v_vec2,
+       "set_v_vec3",
+       &Uniform::set_v_vec3,
+       "set_v_vec4",
+       &Uniform::set_v_vec4);
     }
 
     auto Uniform::type() const noexcept -> Type

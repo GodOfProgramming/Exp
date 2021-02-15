@@ -160,7 +160,6 @@ namespace Exp
             auto& scripts          = Scripts::instance();
 
             scripts.make_script(script_key, this->lua, [](sol::state& state) {
-              state.new_usertype<glm::ivec2>("ivec2", "x", &glm::ivec2::x, "y", &glm::ivec2::y);
               WindowUi::add_usertype(state);
               TextBox::add_usertype(state);
               Info::add_usertype(state);

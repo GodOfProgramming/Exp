@@ -64,6 +64,25 @@ namespace Exp
 
       lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
+      lua.new_usertype<glm::vec2>("Vec2", sol::constructors<glm::vec2(), glm::vec2(float, float)>(), "x", &glm::vec2::x, "y", &glm::vec2::y);
+
+      lua.new_usertype<glm::vec3>(
+       "Vec3", sol::constructors<glm::vec3(), glm::vec3(float, float, float)>(), "x", &glm::vec3::x, "y", &glm::vec3::y, "z", &glm::vec3::z);
+
+      lua.new_usertype<glm::vec4>(
+       "Vec4",
+       sol::constructors<glm::vec4(), glm::vec4(float, float, float, float)>(),
+       "x",
+       &glm::vec4::x,
+       "y",
+       &glm::vec4::y,
+       "z",
+       &glm::vec4::z,
+       "w",
+       &glm::vec4::w);
+
+      lua.new_usertype<glm::ivec2>("ivec2", sol::constructors<glm::ivec2(), glm::ivec2(int, int)>(), "x", &glm::ivec2::x, "y", &glm::ivec2::y);
+
       if (!callback(lua)) {
         return;
       }

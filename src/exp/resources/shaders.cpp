@@ -102,7 +102,7 @@ namespace Exp
       }
 
       if (!program->link(cache_entry.link_error)) {
-        LOG(WARNING) << "unable to link program";
+        LOG(WARNING) << "unable to link program:\n" << cache_entry.link_error;
         return;
       }
 
@@ -134,7 +134,7 @@ namespace Exp
       }
 
       if (!program->link(cache_entry.link_error)) {
-        LOG(WARNING) << "unable to link program";
+        LOG(WARNING) << "unable to link program:\n" << cache_entry.link_error;
         return false;
       }
 

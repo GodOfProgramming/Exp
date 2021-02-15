@@ -1,10 +1,10 @@
 #import "version_directive.glsl"
 
-out vec4 o_frag_color;
+in vec3 io_color;
 
-uniform vec4 u_color;
+out vec4 o_frag_color;
 
 void main()
 {
-  o_frag_color = u_color;
+  o_frag_color = vec4(io_color, 1.0);
 }

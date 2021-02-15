@@ -3,11 +3,11 @@
     "vertex": "basic.vertex.glsl",
     "fragment": "basic.fragment.glsl"
   },
-  "color": {
-    "vertex": "basic.vertex.glsl",
+  "colors": {
+    "vertex": "color.vertex.glsl",
     "fragment": "color.fragment.glsl",
     "uniforms": [
-      "u_color"
+      "u_colors"
     ]
   }
 }
