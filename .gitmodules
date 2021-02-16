@@ -40,6 +40,3 @@
 [submodule "lib/xml/upstream"]
 	path = lib/xml/upstream
 	url = git@github.com:leethomason/tinyxml2
-[submodule "lib/boost/upstream"]
-	path = lib/boost/upstream
-	url = git@github.com:boostorg/boost
