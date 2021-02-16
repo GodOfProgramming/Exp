@@ -44,7 +44,7 @@ namespace Exp
             ss << DIR_TEXTURES << '/' << filename;
 
             auto meta = std::make_shared<TextureMeta>();
-            meta->tex = ss.str();
+            meta->tex->load(ss.str().c_str());
 
             this->textures.emplace(id, meta);
           }

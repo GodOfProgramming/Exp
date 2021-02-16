@@ -22,9 +22,6 @@
 [submodule "lib/assimp/upstream"]
 	path = lib/assimp/upstream
 	url = git@github.com:assimp/assimp
-[submodule "lib/gli/upstream"]
-	path = lib/gli/upstream
-	url = git@github.com:g-truc/gli
 [submodule "lib/json/upstream"]
 	path = lib/json/upstream
 	url = git@github.com:nlohmann/json
@@ -40,3 +37,6 @@
 [submodule "lib/xml/upstream"]
 	path = lib/xml/upstream
 	url = git@github.com:leethomason/tinyxml2
+[submodule "lib/cimg/upstream"]
+	path = lib/cimg/upstream
+	url = git@github.com:dtschump/CImg

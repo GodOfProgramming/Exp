@@ -13,6 +13,8 @@
 #include "exp/settings/settings_manager.hpp"
 #include "exp/ui/ui_manager.hpp"
 
+#include <CImg.h>
+
 int main(int, char* argv[])
 {
   constexpr const bool PRINT_GL_ERRORS = false;
