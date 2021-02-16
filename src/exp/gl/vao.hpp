@@ -26,19 +26,15 @@ namespace Exp
        GlDraw draw_type_t,
        typename vertex_type_t,
        typename index_type_t,
-
-       typename pos_t  = vertex_type_t::pos_t,
-       typename norm_t = vertex_type_t::norm_t,
-       typename uv_t   = vertex_type_t::uv_t,
-
-       typename pos_dt  = pos_t::value_type,
-       typename norm_dt = norm_t::value_type,
-       typename uv_dt   = uv_t::value_type,
-
-       typename pos_len_t  = pos_t::length_type,
-       typename norm_len_t = norm_t::length_type,
-       typename uv_len_t   = uv_t::length_type,
-
+       typename pos_t             = vertex_type_t::pos_t,
+       typename norm_t            = vertex_type_t::norm_t,
+       typename uv_t              = vertex_type_t::uv_t,
+       typename pos_dt            = pos_t::value_type,
+       typename norm_dt           = norm_t::value_type,
+       typename uv_dt             = uv_t::value_type,
+       typename pos_len_t         = pos_t::length_type,
+       typename norm_len_t        = norm_t::length_type,
+       typename uv_len_t          = uv_t::length_type,
        pos_len_t pos_stride_len   = pos_t::length(),
        norm_len_t norm_stride_len = norm_t::length(),
        uv_len_t uv_stride_len     = uv_t::length(),

@@ -36,9 +36,7 @@ namespace Exp
     {
       for (const auto& kvp : this->uniforms) {
         auto& uniform = kvp.second;
-        if (!uniform.enable(*this->meta.shader)) {
-          LOG(WARNING) << "unable to enable uniform " << uniform.name << " on object " << this->meta.id;
-        }
+        uniform.enable(*this->meta.shader);
       }
     }
 

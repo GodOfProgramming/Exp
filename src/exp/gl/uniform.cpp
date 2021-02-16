@@ -54,12 +54,10 @@ namespace Exp
     {
       auto loc = glGetUniformLocation(program.program_id(), this->name.c_str());
       if (!GL_CHECK()) {
-        LOG(WARNING) << "uniform location returnied invalid";
         return false;
       }
 
       if (loc < 0) {
-        LOG(WARNING) << "uniform location invalid";
         return false;
       }
 

@@ -1,6 +1,5 @@
 #import "version_directive.glsl"
-
-layout(location = 0) in vec3 i_pos;
+#import "vertex_layout.glsl"
 
 void main()
 {
