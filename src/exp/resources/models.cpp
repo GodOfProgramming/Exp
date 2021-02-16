@@ -3,6 +3,7 @@
 #include "exp/constants.hpp"
 #include "exp/io.hpp"
 #include "exp/io/file.hpp"
+#include "exp/math/vertex.hpp"
 
 namespace Exp
 {
@@ -42,22 +43,50 @@ namespace Exp
               continue;
             }
 
-            std::optional<std::vector<glm::vec3>> vertices_container;
+            std::optional<std::vector<Math::Vertex>> vertices_container;
 
-            if (obj["vertices"].is_array()) {
-              std::vector<float> list = obj["vertices"];
-              if (list.size() % 3 != 0) {
-                LOG(WARNING) << "cannot load item " << id << ", invalid number of vertices";
+            auto vertices_json = obj["vertices"];
+            if (vertices_json.is_object()) {
+              auto point_json  = vertices_json["points"];
+              auto normal_json = vertices_json["normals"];
+              auto uv_json     = vertices_json["uvs"];
+
+              if (!point_json.is_array() || !normal_json.is_array() || !uv_json.is_array()) {
+                LOG(WARNING) << "could not load model, vertex components are not all arrays";
                 continue;
               }
-              std::vector<glm::vec3> vertices(list.size() / 3);
 
-              for (std::size_t i = 0; i < list.size(); i += 3) {
-                glm::vec3 vertex{};
-                vertex.x        = list[i + 0];
-                vertex.y        = list[i + 1];
-                vertex.z        = list[i + 2];
-                vertices[i / 3] = vertex;
+              std::vector<float> point_list  = point_json;
+              std::vector<float> normal_list = normal_json;
+              std::vector<float> uv_list     = uv_json;
+
+              if (point_list.size() % 3 != 0 || point_list.size() != normal_list.size()) {
+                LOG(WARNING) << "could not load model, point/normal length out of sync";
+                continue;
+              }
+
+              auto vertex_count = point_list.size() / 3;
+
+              if (uv_list.size() != vertex_count * 2) {
+                LOG(WARNING) << "could not load model, uv size out of sync";
+                continue;
+              }
+
+              std::vector<Math::Vertex> vertices(vertex_count);
+
+              for (std::size_t i = 0; i < vertex_count; i++) {
+                auto& vertex = vertices[i];
+                auto& pt     = vertex.position;
+                pt.x         = point_list[i * 3 + 0];
+                pt.y         = point_list[i * 3 + 1];
+                pt.z         = point_list[i * 3 + 2];
+                auto& nrm    = vertex.normal;
+                nrm.x        = normal_list[i * 3 + 0];
+                nrm.y        = normal_list[i * 3 + 1];
+                nrm.z        = normal_list[i * 3 + 2];
+                auto& uv     = vertex.uv;
+                uv.x         = uv_list[i * 2 + 0];
+                uv.y         = uv_list[i * 2 + 1];
               }
 
               vertices_container = std::move(vertices);
@@ -104,8 +133,8 @@ namespace Exp
               continue;
             }
 
-            std::vector<glm::vec3> vertices = std::move(vertices_container.value());
-            std::vector<GLuint> indices     = std::move(indices_container.value());
+            std::vector<Math::Vertex> vertices = std::move(vertices_container.value());
+            std::vector<GLuint> indices        = std::move(indices_container.value());
 
             if (!vao->set<GL::GlDraw::STATIC>(vertices, indices)) {
               LOG(WARNING) << "unable to set vertices to object";
