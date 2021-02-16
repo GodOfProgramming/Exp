@@ -27,7 +27,7 @@ namespace Exp
 
       void shutdown();
 
-      auto parse(std::string&& xml) -> bool;
+      auto parse(const std::string_view& xml) -> bool;
 
       auto handle(Input::KeyEvent) -> IHandler* override;
       auto handle(Input::MouseButtonEvent) -> IHandler* override;

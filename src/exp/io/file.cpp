@@ -14,19 +14,17 @@ namespace Exp
       return true;
     }
 
-    auto File::load(std::filesystem::path path) -> LoadResult
+    void File::load(std::filesystem::path path, std::function<void(std::string_view)> fn)
     {
       if (!std::filesystem::exists(path)) {
-        std::stringstream ss;
-        ss << "unable to load " << path << ", current working directory is " << std::filesystem::current_path();
-        return LoadResult::err(ss.str());
+        return;
       }
       std::string contents;
       std::ifstream istr(path);
       std::istreambuf_iterator<char> input_iter(istr), empty_iter;
       std::back_insert_iterator<std::string> string_inserter(contents);
       std::copy(input_iter, empty_iter, string_inserter);
-      return LoadResult::ok(File(contents));
+      fn(contents);
     }
 
     auto File::dirname(std::filesystem::path path) -> std::filesystem::path

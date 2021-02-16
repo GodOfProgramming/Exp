@@ -54,15 +54,18 @@ namespace Exp
 
         shader->file  = filename_value;
         auto abs_path = std::string(DIR_SHADER_OUTPUT) + "/" + shader->file;
-        auto src_res  = IO::File::load(abs_path);
-        if (!src_res) {
-          LOG(ERROR) << "unable to load shader: " << src_res.err_val();
+        bool loaded   = false;
+
+        IO::File::load(abs_path, [&](const std::string_view& src) {
+          shader->source = src;
+          loaded         = true;
+        });
+
+        if (!loaded) {
+          LOG(WARNING) << "unable to load shader source";
           continue;
         }
 
-        auto src_file = src_res.ok_val();
-
-        shader->source  = src_file.data;
         shader->present = true;
       }
     }

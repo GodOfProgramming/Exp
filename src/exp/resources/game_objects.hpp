@@ -23,7 +23,7 @@ namespace Exp
 
       static auto instance() noexcept -> GameObjects&;
 
-      void load_all();
+      void load_all() final;
 
       void release() final;
 

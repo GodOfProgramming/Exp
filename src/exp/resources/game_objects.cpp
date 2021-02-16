@@ -19,80 +19,70 @@ namespace Exp
       auto& shaders = Shaders::instance();
       auto& models  = Models::instance();
       IO::iterate_dir_with_namespace(CFG_DIR_GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
-        auto file_res = IO::File::load(path);
-        if (!file_res) {
-          LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
-          return;
-        }
-
-        auto file = file_res.ok_val();
-
-        json objects;
-
-        try {
-          objects = json::parse(file.data);
-        } catch (std::exception& e) {
-          LOG(WARNING) << "could not parse json: " << e.what();
-          return;
-        }
-
-        for (const auto item : objects.items()) {
-          auto id  = nspace + "." + item.key();
-          auto obj = item.value();
-
-          LOG(INFO) << "loading game object " << id;
-
-          std::string shader_id = obj["shader"];
-          auto shader_iter      = shaders.find_program(shader_id);
-          if (shader_iter == shaders.program_end()) {
-            LOG(WARNING) << "cannot find shader with id " << shader_id;
-            continue;
+        this->load_json_file(path, [&](const json& objects) {
+          if (!objects.is_object()) {
+            LOG(WARNING) << "shader json is not in proper format, first type is not object";
+            return;
           }
 
-          auto shader = shader_iter->second;
+          for (const auto item : objects.items()) {
+            auto id  = nspace + "." + item.key();
+            auto obj = item.value();
 
-          if (!shader->is_valid()) {
-            LOG(WARNING) << "cannot load item, shader " << shader_id << " not valid";
-            continue;
-          }
+            LOG(INFO) << "loading game object " << id;
 
-          std::string model_id = obj["model"];
-          auto model_iter      = models.find(model_id);
-          if (model_iter == models.end()) {
-            LOG(WARNING) << "cannot find model with id " << model_id;
-            continue;
-          }
-
-          GL::DrawDescription desc;
-
-          auto drawdesc_json = obj["draw_description"];
-          if (drawdesc_json.is_object()) {
-            if (!this->parse_drawdesc(drawdesc_json, desc)) {
-              LOG(WARNING) << "unable to parse partial or full draw desc on object, using what was valid";
+            std::string shader_id = obj["shader"];
+            auto shader_iter      = shaders.find_program(shader_id);
+            if (shader_iter == shaders.program_end()) {
+              LOG(WARNING) << "cannot find shader with id " << shader_id;
+              continue;
             }
-          } else if (!drawdesc_json.is_null()) {
-            LOG(WARNING) << "detected draw description in config but desc was not of type object";
-            continue;
+
+            auto shader = shader_iter->second;
+
+            if (!shader->is_valid()) {
+              LOG(WARNING) << "cannot load item, shader " << shader_id << " not valid";
+              continue;
+            }
+
+            std::string model_id = obj["model"];
+            auto model_iter      = models.find(model_id);
+            if (model_iter == models.end()) {
+              LOG(WARNING) << "cannot find model with id " << model_id;
+              continue;
+            }
+
+            GL::DrawDescription desc;
+
+            auto drawdesc_json = obj["draw_description"];
+            if (drawdesc_json.is_object()) {
+              if (!this->parse_drawdesc(drawdesc_json, desc)) {
+                LOG(WARNING) << "unable to parse partial or full draw desc on object, using what was valid";
+              }
+            } else if (!drawdesc_json.is_null()) {
+              LOG(WARNING) << "detected draw description in config but desc was not of type object";
+              continue;
+            }
+
+            auto model = model_iter->second;
+
+            ObjectMeta meta;
+            meta.id       = id;
+            meta.shader   = shader;
+            meta.model    = model;
+            meta.drawdesc = desc;
+
+            auto script_json = obj["script"];
+            if (script_json.is_string()) {
+              meta.script_id = script_json;
+            } else if (!script_json.is_null()) {
+              LOG(WARNING) << "detected script in config but was not of type string";
+              continue;
+            }
+
+            this->objects.emplace(id, meta);
           }
-
-          auto model = model_iter->second;
-
-          ObjectMeta meta;
-          meta.id       = id;
-          meta.shader   = shader;
-          meta.model    = model;
-          meta.drawdesc = desc;
-
-          auto script_json = obj["script"];
-          if (script_json.is_string()) {
-            meta.script_id = script_json;
-          } else if (!script_json.is_null()) {
-            LOG(WARNING) << "detected script in config but was not of type string";
-            continue;
-          }
-
-          this->objects.emplace(id, meta);
-        }
+        });
       });
     }
 

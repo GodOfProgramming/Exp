@@ -16,7 +16,7 @@ namespace Exp
 
       auto save(std::filesystem::path p) -> bool;
 
-      static auto load(std::filesystem::path filename) -> LoadResult;
+      static void load(std::filesystem::path path, std::function<void(std::string_view)> fn);
 
       static auto dirname(std::filesystem::path path) -> std::filesystem::path;
 

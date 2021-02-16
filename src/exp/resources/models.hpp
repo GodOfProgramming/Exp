@@ -1,12 +1,13 @@
 #pragma once
 
+#include "iresource.hpp"
 #include "model_meta.hpp"
 
 namespace Exp
 {
   namespace R
   {
-    class Models
+    class Models: public IResource
     {
       Models() = default;
 
@@ -20,9 +21,8 @@ namespace Exp
 
       static auto instance() noexcept -> Models&;
 
-      void load_all();
-
-      void release();
+      void load_all() final;
+      void release() final;
 
       auto find(std::string id) const noexcept -> ModelMap::const_iterator;
       auto begin() const noexcept -> ModelMap::const_iterator;

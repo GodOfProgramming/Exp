@@ -38,31 +38,21 @@ namespace Exp
     void UiManager::load_all()
     {
       using IO::File;
-
       IO::iterate_dir_with_namespace(DIR_UI, "exp", [&](std::filesystem::path path, std::string) {
         LOG(INFO) << "loading ui " << path;
-        auto res = File::load(path);
-
-        if (!res) {
-          LOG(WARNING) << "unable to load Ui Xml " << path;
-          return;
-        }
-
-        auto file = res.ok_val();
-
-        this->parse(std::move(file.data));
+        File::load(path, [&](const std::string_view& src) { this->parse(src); });
       });
 
       this->debug_elements.push_back(std::make_unique<Components::ShaderUi>());
       this->debug_elements.push_back(std::make_unique<Components::GlErrorsUi>());
     }
 
-    auto UiManager::parse(std::string&& xml) -> bool
+    auto UiManager::parse(const std::string_view& xml) -> bool
     {
       using Components::WindowUi;
 
       tinyxml2::XMLDocument document;
-      auto res = document.Parse(xml.c_str(), xml.size());
+      auto res = document.Parse(xml.data(), xml.length());
       if (res != tinyxml2::XML_SUCCESS) {
         LOG(WARNING) << "unable to parse Ui Xml: " << res;
       }

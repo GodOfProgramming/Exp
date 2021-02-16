@@ -17,19 +17,20 @@ namespace Exp
     void Scripts::load_all()
     {
       IO::iterate_dir_with_namespace(DIR_GAME_SCRIPTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
-        auto file_res = IO::File::load(path);
-        if (!file_res) {
-          LOG(WARNING) << "unable to load game object configuration file: " << file_res.err_val();
-          return;
-        }
-
-        auto file = file_res.ok_val();
-
         LOG(INFO) << "loading script " << nspace;
+        bool loaded = false;
 
-        ScriptMeta meta;
-        meta.src = file.data;
-        this->scripts.emplace(nspace, std::move(meta));
+        this->load_src_file(path, [&](const std::string_view& src) {
+          ScriptMeta meta;
+          meta.src = src;
+
+          this->scripts.emplace(nspace, std::move(meta));
+          loaded = true;
+        });
+
+        if (!loaded) {
+          LOG(WARNING) << "unable to load script";
+        }
       });
     }
 

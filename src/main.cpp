@@ -20,12 +20,12 @@ int main(int, char* argv[])
   using Exp::Game::Object;
   using Exp::Input::Dispatcher;
   using Exp::IO::File;
-  using Exp::Render::AppWindow;
-  using Exp::Render::Renderer;
   using Exp::R::GameObjects;
   using Exp::R::Models;
   using Exp::R::Scripts;
   using Exp::R::Shaders;
+  using Exp::Render::AppWindow;
+  using Exp::Render::Renderer;
   using Exp::Settings::SettingsManager;
   using Exp::Ui::UiManager;
   using nlohmann::json;
@@ -36,14 +36,14 @@ int main(int, char* argv[])
 
   auto& settings = SettingsManager::instance();
   {
-    auto file_res = File::load(Exp::CFG_FILE_SETTINGS);
-    if (!file_res) {
-      LOG(FATAL) << "unable to load game settings: " << file_res.err_val();
+    bool loaded = false;
+    File::load(Exp::CFG_FILE_SETTINGS, [&](const std::string_view src) {
+      settings.deserialize(src);
+      loaded = true;
+    });
+    if (!loaded) {
+      LOG(FATAL) << "unable to load settings";
     }
-
-    auto file = file_res.ok_val();
-
-    settings.deserialize(file.data);
   }
 
   auto& window = AppWindow::instance();

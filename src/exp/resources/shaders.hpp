@@ -29,7 +29,7 @@ namespace Exp
 
       static auto instance() -> Shaders&;
 
-      void load_all();
+      void load_all() final;
 
       void release() final;
 
@@ -95,14 +95,16 @@ namespace Exp
       LOG(INFO) << "reloading shader " << meta.file;
 
       auto abs_path = std::string(CFG_DIR_SHADERS) + "/" + meta.file;
-      auto src_res  = IO::File::load(abs_path);
-      if (!src_res) {
+      bool loaded   = false;
+      IO::File::load(abs_path, [&](const std::string_view& src) {
+        meta.source = src;
+        loaded      = true;
+      });
+
+      if (!loaded) {
         LOG(ERROR) << "unable to load shader";
         return false;
       }
-
-      auto src_file = src_res.ok_val();
-      meta.source   = src_file.data;
 
       auto shader = std::make_shared<GL::Shader>();
 

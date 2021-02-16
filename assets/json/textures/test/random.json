@@ -1,3 +1,5 @@
 {
-  "wall": "wall.jpg"
+  "wall": {
+    "file": "wall.jpg"
+  }
 }

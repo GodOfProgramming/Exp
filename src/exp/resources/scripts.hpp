@@ -1,12 +1,13 @@
 #pragma once
 
+#include "iresource.hpp"
 #include "script_meta.hpp"
 
 namespace Exp
 {
   namespace R
   {
-    class Scripts
+    class Scripts: public IResource
     {
       Scripts() = default;
 
@@ -20,9 +21,8 @@ namespace Exp
 
       static auto instance() noexcept -> Scripts&;
 
-      void load_all();
-
-      void release();
+      void load_all() final;
+      void release() final;
 
       auto find(std::string id) const noexcept -> ScriptMap::const_iterator;
       auto begin() const noexcept -> ScriptMap::const_iterator;
