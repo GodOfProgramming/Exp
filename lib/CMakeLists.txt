@@ -1,4 +1,3 @@
-add_subdirectory(boost)
 add_subdirectory(fmt)
 add_subdirectory(gflags)
 add_subdirectory(glog)
@@ -15,7 +14,6 @@ add_subdirectory(xml)
 add_subdirectory(gtest)
 
 set(LIBS
-  boost
   fmt
   gflags
   glog
