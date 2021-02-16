@@ -114,6 +114,12 @@ BUILD_TESTS:BOOL=ON
 //Path to a program.
 BZRCOMMAND:FILEPATH=BZRCOMMAND-NOTFOUND
 
+//Value Computed by CMake
+Boost_BINARY_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/build/lib/boost/upstream
+
+//Value Computed by CMake
+Boost_SOURCE_DIR:STATIC=/media/jdizzle/BigLinux/workspace/Exp/lib/boost/upstream
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/bin/addr2line
 
@@ -1201,7 +1207,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=46
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=48
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
