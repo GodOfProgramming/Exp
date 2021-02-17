@@ -11,8 +11,7 @@ namespace Exp
         if (iter.is_directory()) {
           iterate_dir_with_namespace(iter, nspace + "." + iter.path().filename().string(), fn);
         } else if (iter.is_regular_file()) {
-          nspace += "." + iter.path().stem().string();
-          fn(iter, nspace);
+          fn(iter, nspace + "." + iter.path().stem().string());
         }
       }
     }

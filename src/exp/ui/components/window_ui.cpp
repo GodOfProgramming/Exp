@@ -4,6 +4,7 @@
 #include "exp/game/info.hpp"
 #include "exp/render/app_window.hpp"
 #include "exp/resources/scripts.hpp"
+#include "repeat_component.hpp"
 #include "text_box.hpp"
 
 namespace Exp
@@ -12,9 +13,8 @@ namespace Exp
   {
     namespace Components
     {
-      WindowUi::WindowUi(std::string t)
-       : title(t)
-       , dim({ 0, 0 })
+      WindowUi::WindowUi()
+       : dim({ 0, 0 })
        , pos({ 0, 0 })
        , initial_render(false)
        , is_collapsed(false)
@@ -57,23 +57,25 @@ namespace Exp
         }
       }
 
-      auto WindowUi::parse(tinyxml2::XMLNode* self) -> bool
+      auto WindowUi::from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>
       {
         using Game::Info;
-        using Render::AppWindow;
         using R::Scripts;
+        using Render::AppWindow;
+
+        auto window = std::make_shared<WindowUi>();
 
         auto element = self->ToElement();
         if (element == nullptr) {
           LOG(WARNING) << "unable to convert window to element type";
-          return false;
+          return nullptr;
         }
 
         auto title_attr = element->FindAttribute("title");
 
         if (title_attr == nullptr) {
           LOG(WARNING) << "unable to get title value of window";
-          return false;
+          return nullptr;
         }
 
         auto collapsed_attr = element->FindAttribute("collapsed");
@@ -83,73 +85,73 @@ namespace Exp
           auto res       = collapsed_attr->QueryBoolValue(&collapsed);
           if (res != tinyxml2::XML_SUCCESS) {
             LOG(WARNING) << "unable to parse width: " << res;
-            return false;
+            return nullptr;
           }
-          this->is_collapsed = collapsed;
+          window->is_collapsed = collapsed;
         }
 
-        this->title = title_attr->Value();
+        window->title = title_attr->Value();
 
-        auto& window = AppWindow::instance();
-        auto size    = window.get_size();
+        auto& app_window = AppWindow::instance();
+        auto size        = app_window.get_size();
 
         {
           auto width_attr = element->FindAttribute("width");
           if (width_attr == nullptr) {
-            this->dim.x = size.x / 2;
+            window->dim.x = size.x / 2;
           } else {
             float percent{ 0.0 };
             auto res = width_attr->QueryFloatValue(&percent);
             if (res != tinyxml2::XML_SUCCESS) {
               LOG(WARNING) << "unable to parse width: " << res;
-              return false;
+              return nullptr;
             }
-            this->dim.x = size.x * percent / 100.0;
+            window->dim.x = size.x * percent / 100.0;
           }
         }
 
         {
           auto height_attr = element->FindAttribute("height");
           if (height_attr == nullptr) {
-            this->dim.y = size.y / 2;
+            window->dim.y = size.y / 2;
           } else {
             float percent{ 0.0 };
             auto res = height_attr->QueryFloatValue(&percent);
             if (res != tinyxml2::XML_SUCCESS) {
               LOG(WARNING) << "unable to parse height: " << res;
-              return false;
+              return nullptr;
             }
-            this->dim.y = size.y * percent / 100.0;
+            window->dim.y = size.y * percent / 100.0;
           }
         }
 
         {
           auto x_attr = element->FindAttribute("x");
           if (x_attr == nullptr) {
-            this->pos.x = 0;
+            window->pos.x = 0;
           } else {
             float percent{ 0.0 };
             auto res = x_attr->QueryFloatValue(&percent);
             if (res != tinyxml2::XML_SUCCESS) {
               LOG(WARNING) << "unable to parse x pos: " << res;
-              return false;
+              return nullptr;
             }
-            this->pos.x = size.x * percent / 100.0;
+            window->pos.x = size.x * percent / 100.0;
           }
         }
 
         {
           auto y_attr = element->FindAttribute("y");
           if (y_attr == nullptr) {
-            this->pos.y = 0;
+            window->pos.y = 0;
           } else {
             float percent{ 0.0 };
             auto res = y_attr->QueryFloatValue(&percent);
             if (res != tinyxml2::XML_SUCCESS) {
               LOG(WARNING) << "unable to parse y pos: " << res;
-              return false;
+              return nullptr;
             }
-            this->pos.y = size.y * percent / 100.0;
+            window->pos.y = size.y * percent / 100.0;
           }
         }
 
@@ -159,46 +161,48 @@ namespace Exp
             std::string script_key = script_attr->Value();
             auto& scripts          = Scripts::instance();
 
-            scripts.make_script(script_key, this->lua, [](sol::state& state) {
+            scripts.make_script(script_key, window->lua, [](sol::state& state) {
               WindowUi::add_usertype(state);
               TextBox::add_usertype(state);
               Info::add_usertype(state);
               return true;
             });
 
-            if (!this->lua.has_value()) {
+            if (!window->lua.has_value()) {
               LOG(WARNING) << "unable to load script " << script_key;
-              return false;
+              return nullptr;
             }
           }
         }
 
-        {
-          auto child = self->FirstChild();
-          while (child != nullptr) {
-            std::string type = child->Value();
+        decltype(window->elements) potential_elements;
 
-            if (type == UI_EL_TEXT_BOX) {
-              std::string fn;
-              auto child_el = child->ToElement();
-              auto text     = child_el->GetText();
-              auto fn_attr  = child_el->FindAttribute("fn");
-              if (fn_attr != nullptr) {
-                fn = fn_attr->Value();
-              }
+        for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
+          std::string type = child->Value();
 
-              auto text_box = std::make_unique<TextBox>(this->lua, fn, text == nullptr ? "" : text);
-              this->elements.push_back(std::move(text_box));
+          if (type == UI_EL_TEXT_BOX) {
+            auto el = TextBox::from_node(child, window->lua);
+            if (el) {
+              potential_elements.push_back(el);
             } else {
-              LOG(WARNING) << "invalid type detected " << type;
-              return false;
+              return nullptr;
             }
-
-            child = child->NextSibling();
+          } else if (type == UI_EL_REPEAT) {
+            auto el = RepeatComponent::from_node(child, window->lua);
+            if (el) {
+              potential_elements.push_back(el);
+            } else {
+              return nullptr;
+            }
+          } else {
+            LOG(WARNING) << "invalid type detected " << type;
+            return nullptr;
           }
         }
 
-        return true;
+        window->elements = std::move(potential_elements);
+
+        return window;
       }
 
       auto WindowUi::text() noexcept -> std::string

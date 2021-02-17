@@ -11,25 +11,25 @@ namespace Exp
       class WindowUi: public UiComponent
       {
        public:
-        WindowUi() = default;
-        WindowUi(std::string title);
+        WindowUi();
+
+        static auto from_node(tinyxml2::XMLNode* child) -> std::shared_ptr<UiComponent>;
 
         static void add_usertype(sol::state& state);
-
-        auto parse(tinyxml2::XMLNode* self) -> bool;
 
         void render() final;
 
         auto text() noexcept -> std::string final;
 
        private:
+        std::vector<std::shared_ptr<UiComponent>> elements;
+        std::optional<sol::state> lua;
+
         std::string title;
         glm::ivec2 dim;
         glm::ivec2 pos;
         bool initial_render;
         bool is_collapsed;
-        std::vector<std::unique_ptr<UiComponent>> elements;
-        std::optional<sol::state> lua;
       };
     }  // namespace Components
   }    // namespace Ui

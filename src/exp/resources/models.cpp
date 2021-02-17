@@ -17,6 +17,7 @@ namespace Exp
 
     void Models::load_all()
     {
+      LOG(INFO) << "loading models";
       IO::iterate_dir_with_namespace(CFG_DIR_GAME_MODELS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         using nlohmann::json;
         this->load_json_file(path, [&](const json& objects) {

@@ -23,6 +23,8 @@ namespace Exp
 
       static auto instance() noexcept -> GameObjects&;
 
+      static void add_usertype(sol::state& state);
+
       void load_all() final;
 
       void release() final;
@@ -30,6 +32,10 @@ namespace Exp
       auto find(std::string id) const noexcept -> ObjectMap::const_iterator;
       auto begin() const noexcept -> ObjectMap::const_iterator;
       auto end() const noexcept -> ObjectMap::const_iterator;
+
+      auto keys() const noexcept -> std::vector<ObjectMap::key_type>;
+
+      auto get(std::string id) const noexcept -> std::unique_ptr<ObjectMap::mapped_type>;
 
      private:
       ObjectMap objects;

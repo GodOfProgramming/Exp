@@ -37,14 +37,15 @@ namespace Exp
 
     void UiManager::load_all()
     {
+      LOG(INFO) << "loading ui";
       using IO::File;
       IO::iterate_dir_with_namespace(DIR_UI, "exp", [&](std::filesystem::path path, std::string) {
         LOG(INFO) << "loading ui " << path;
         File::load(path, [&](const std::string_view& src) { this->parse(src); });
       });
 
-      this->debug_elements.push_back(std::make_unique<Components::ShaderUi>());
-      this->debug_elements.push_back(std::make_unique<Components::GlErrorsUi>());
+      this->debug_elements.push_back(std::make_shared<Components::ShaderUi>());
+      this->debug_elements.push_back(std::make_shared<Components::GlErrorsUi>());
     }
 
     auto UiManager::parse(const std::string_view& xml) -> bool
@@ -61,16 +62,18 @@ namespace Exp
       std::string element_type = first->Value();
 
       if (element_type == UI_EL_WINDOW) {
-        auto window = std::make_unique<WindowUi>();
-        if (window->parse(first)) {
-          this->elements.push_back(std::move(window));
-          return true;
+        auto window = WindowUi::from_node(first);
+        if (window) {
+          this->elements.push_back(window);
         } else {
+          LOG(WARNING) << "was not able to create window";
           return false;
         }
       } else {
+        LOG(WARNING) << "first node of xml is not a recognized or valid type";
         return false;
       }
+      return true;
     }
 
     void UiManager::render()

@@ -3,6 +3,7 @@
 #include "exp/constants.hpp"
 #include "exp/io.hpp"
 #include "exp/io/file.hpp"
+#include "game_objects.hpp"
 
 namespace Exp
 {
@@ -16,6 +17,7 @@ namespace Exp
 
     void Scripts::load_all()
     {
+      LOG(INFO) << "loading scripts";
       IO::iterate_dir_with_namespace(DIR_GAME_SCRIPTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         LOG(INFO) << "loading script " << nspace;
         bool loaded = false;
@@ -84,17 +86,26 @@ namespace Exp
 
       lua.new_usertype<glm::ivec2>("ivec2", sol::constructors<glm::ivec2(), glm::ivec2(int, int)>(), "x", &glm::ivec2::x, "y", &glm::ivec2::y);
 
+      GL::DrawDescription::add_usertype(lua);
+      ObjectMeta::add_usertype(lua);
+      GameObjects::add_usertype(lua);
+
       if (!callback(lua)) {
         return;
       }
 
       auto res = lua.load(iter->second.src);
       if (!res.valid()) {
+        sol::error err = res;
+        LOG(WARNING) << "bad script load result:\n" << err.what();
         return;
       }
 
       auto exec_res = res();
       if (!exec_res.valid()) {
+        sol::error err = exec_res;
+        res.status();
+        LOG(WARNING) << "bad script exec result:\n" << err.what();
         return;
       }
 

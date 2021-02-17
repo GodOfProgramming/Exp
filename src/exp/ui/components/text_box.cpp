@@ -14,6 +14,25 @@ namespace Exp
         this->enable(true);
       }
 
+      auto TextBox::from_node(tinyxml2::XMLNode* child, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>
+      {
+        std::string fn;
+        auto child_el = child->ToElement();
+        auto text     = child_el->GetText();
+        auto fn_attr  = child_el->FindAttribute("fn");
+        if (fn_attr != nullptr) {
+          fn = fn_attr->Value();
+        }
+
+        return std::make_shared<TextBox>(script, fn, text == nullptr ? "" : text);
+      }
+
+      void TextBox::add_usertype(sol::state& state)
+      {
+        state.new_usertype<TextBox>(
+         "TextBox", "display_text", &TextBox::display_text, "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
+      }
+
       void TextBox::render()
       {
         if (this->script.has_value()) {
@@ -25,12 +44,6 @@ namespace Exp
         }
 
         ImGui::Text("%s", this->display_text.c_str());
-      }
-
-      void TextBox::add_usertype(sol::state& state)
-      {
-        state.new_usertype<TextBox>(
-         "TextBox", "display_text", &TextBox::display_text, "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
       }
 
       auto TextBox::text() noexcept -> std::string

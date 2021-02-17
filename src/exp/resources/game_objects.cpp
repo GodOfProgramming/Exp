@@ -14,8 +14,14 @@ namespace Exp
       return objs;
     }
 
+    void GameObjects::add_usertype(sol::state& state)
+    {
+      state.new_usertype<GameObjects>("GameObjects", "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
+    }
+
     void GameObjects::load_all()
     {
+      LOG(INFO) << "loading game objects";
       auto& shaders = Shaders::instance();
       auto& models  = Models::instance();
       IO::iterate_dir_with_namespace(CFG_DIR_GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
@@ -104,6 +110,23 @@ namespace Exp
     auto GameObjects::end() const noexcept -> ObjectMap::const_iterator
     {
       return this->objects.end();
+    }
+
+    auto GameObjects::keys() const noexcept -> std::vector<ObjectMap::key_type>
+    {
+      std::vector<ObjectMap::key_type> k;
+      std::transform(std::begin(this->objects), std::end(this->objects), std::back_inserter(k), [](const auto& kvp) { return kvp.first; });
+      return k;
+    }
+
+    auto GameObjects::get(std::string id) const noexcept -> std::unique_ptr<ObjectMap::mapped_type>
+    {
+      auto iter = this->find(id);
+      if (iter == this->end()) {
+        return nullptr;
+      } else {
+        return std::make_unique<ObjectMap::mapped_type>(iter->second);
+      }
     }
 
     auto GameObjects::parse_drawdesc(const json& desc_json, GL::DrawDescription& desc) -> bool

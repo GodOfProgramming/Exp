@@ -6,7 +6,7 @@ namespace Exp
   {
     void ObjectMeta::add_usertype(sol::state& state)
     {
-      state.new_usertype<ObjectMeta>("ObjectMeta", "id", &ObjectMeta::id);
+      state.new_usertype<ObjectMeta>("ObjectMeta", "id", &ObjectMeta::id, "draw_desc", &ObjectMeta::drawdesc);
     }
   }  // namespace R
 }  // namespace Exp
