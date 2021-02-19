@@ -14,12 +14,12 @@ namespace Exp
         this->enable(true);
       }
 
-      auto TextBox::from_node(tinyxml2::XMLNode* child, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>
+      auto TextBox::from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>
       {
         std::string fn;
-        auto child_el = child->ToElement();
-        auto text     = child_el->GetText();
-        auto fn_attr  = child_el->FindAttribute("fn");
+        auto self_el = self->ToElement();
+        auto text    = self_el->GetText();
+        auto fn_attr = self_el->FindAttribute("fn");
         if (fn_attr != nullptr) {
           fn = fn_attr->Value();
         }

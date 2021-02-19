@@ -2,4 +2,7 @@
   <repeat while="GetNextObject">
     <text fn="ObjectText"></text>
   </repeat>
+  <frame>
+    <text fn="TestText"></text>
+  </frame>
 </window>

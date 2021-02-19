@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exp/ui/ui_component.hpp"
+#include "repeat_component.ipp"
 
 namespace Exp
 {
@@ -8,12 +8,12 @@ namespace Exp
   {
     namespace Components
     {
-      class RepeatComponent: public UiComponent
+      class RepeatComponent: public IRepeatComponent
       {
        public:
         RepeatComponent(std::optional<sol::state>& script, std::string fn);
 
-        static auto from_node(tinyxml2::XMLNode* child, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
 
         void render() final;
 

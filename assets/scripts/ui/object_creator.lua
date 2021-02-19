@@ -6,10 +6,6 @@ Obj = nil;
 
 Keys = Objects:keys();
 
-for i,v in ipairs(Keys) do
-  print(i, v);
-end
-
 function GetNextObject()
   local id = Keys[Index];
 
@@ -35,4 +31,8 @@ function ObjectText(self)
   else
     self.display_text = "Nil object detected";
   end
+end
+
+function TestText(self)
+  self.display_text = "TEST";
 end

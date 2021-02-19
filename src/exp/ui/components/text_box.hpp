@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exp/ui/ui_component.hpp"
+#include "text_box.ipp"
 
 namespace Exp
 {
@@ -8,12 +8,12 @@ namespace Exp
   {
     namespace Components
     {
-      class TextBox: public UiComponent
+      class TextBox: public ITextBox
       {
        public:
         TextBox(std::optional<sol::state>& script, std::string fn, std::string text);
 
-        static auto from_node(tinyxml2::XMLNode* child, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
 
         static void add_usertype(sol::state& state);
 

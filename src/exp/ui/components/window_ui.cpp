@@ -4,6 +4,7 @@
 #include "exp/game/info.hpp"
 #include "exp/render/app_window.hpp"
 #include "exp/resources/scripts.hpp"
+#include "frame.hpp"
 #include "repeat_component.hpp"
 #include "text_box.hpp"
 
@@ -65,20 +66,20 @@ namespace Exp
 
         auto window = std::make_shared<WindowUi>();
 
-        auto element = self->ToElement();
-        if (element == nullptr) {
+        auto self_el = self->ToElement();
+        if (self_el == nullptr) {
           LOG(WARNING) << "unable to convert window to element type";
           return nullptr;
         }
 
-        auto title_attr = element->FindAttribute("title");
+        auto title_attr = self_el->FindAttribute("title");
 
         if (title_attr == nullptr) {
           LOG(WARNING) << "unable to get title value of window";
           return nullptr;
         }
 
-        auto collapsed_attr = element->FindAttribute("collapsed");
+        auto collapsed_attr = self_el->FindAttribute("collapsed");
 
         if (collapsed_attr != nullptr) {
           bool collapsed = false;
@@ -96,7 +97,7 @@ namespace Exp
         auto size        = app_window.get_size();
 
         {
-          auto width_attr = element->FindAttribute("width");
+          auto width_attr = self_el->FindAttribute("width");
           if (width_attr == nullptr) {
             window->dim.x = size.x / 2;
           } else {
@@ -111,7 +112,7 @@ namespace Exp
         }
 
         {
-          auto height_attr = element->FindAttribute("height");
+          auto height_attr = self_el->FindAttribute("height");
           if (height_attr == nullptr) {
             window->dim.y = size.y / 2;
           } else {
@@ -126,7 +127,7 @@ namespace Exp
         }
 
         {
-          auto x_attr = element->FindAttribute("x");
+          auto x_attr = self_el->FindAttribute("x");
           if (x_attr == nullptr) {
             window->pos.x = 0;
           } else {
@@ -141,7 +142,7 @@ namespace Exp
         }
 
         {
-          auto y_attr = element->FindAttribute("y");
+          auto y_attr = self_el->FindAttribute("y");
           if (y_attr == nullptr) {
             window->pos.y = 0;
           } else {
@@ -156,7 +157,7 @@ namespace Exp
         }
 
         {
-          auto script_attr = element->FindAttribute("script");
+          auto script_attr = self_el->FindAttribute("script");
           if (script_attr != nullptr) {
             std::string script_key = script_attr->Value();
             auto& scripts          = Scripts::instance();
@@ -189,6 +190,13 @@ namespace Exp
             }
           } else if (type == UI_EL_REPEAT) {
             auto el = RepeatComponent::from_node(child, window->lua);
+            if (el) {
+              potential_elements.push_back(el);
+            } else {
+              return nullptr;
+            }
+          } else if (type == UI_EL_FRAME) {
+            auto el = Frame::from_node(child, window->lua);
             if (el) {
               potential_elements.push_back(el);
             } else {

@@ -14,7 +14,8 @@ namespace Exp
   constexpr const char* JSON_KEY_SHADER_FRAGMENT = "fragment";
   constexpr const char* JSON_KEY_SHADER_UNIFORM  = "uniforms";
   constexpr const char* JSON_KEY_SHADER_VERTEX   = "vertex";
-  constexpr const char* UI_EL_TEXT_BOX           = "text";
+  constexpr const char* UI_EL_FRAME              = "frame";
   constexpr const char* UI_EL_REPEAT             = "repeat";
+  constexpr const char* UI_EL_TEXT_BOX           = "text";
   constexpr const char* UI_EL_WINDOW             = "window";
 }  // namespace Exp

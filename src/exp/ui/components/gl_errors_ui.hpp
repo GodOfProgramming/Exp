@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exp/ui/ui_component.hpp"
+#include "ui_component.hpp"
 
 namespace Exp
 {

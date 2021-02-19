@@ -1,7 +1,7 @@
 #pragma once
 
+#include "components/ui_component.hpp"
 #include "exp/input/ihandler.hpp"
-#include "ui_component.hpp"
 
 namespace Exp
 {
