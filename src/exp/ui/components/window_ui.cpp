@@ -14,7 +14,7 @@ namespace Exp
   {
     namespace Components
     {
-      void WindowUi::add_usertype(sol::state& state)
+      void WindowUi::add_usertype(sol::state_view& state)
       {
         state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
       }
@@ -83,7 +83,7 @@ namespace Exp
         if (UiComponent::has_attr_script(self_el, script_key)) {
           auto& scripts = Scripts::instance();
 
-          scripts.make_script(script_key, window->script, [](sol::state& state) {
+          scripts.make_script(script_key, window->script, [](sol::state_view& state) {
             WindowUi::add_usertype(state);
             TextBox::add_usertype(state);
             Info::add_usertype(state);

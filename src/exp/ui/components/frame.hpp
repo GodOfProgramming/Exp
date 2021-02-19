@@ -17,7 +17,7 @@ namespace Exp
 
         static auto from_node(tinyxml2::XMLNode* self, const Container& container, std::optional<sol::state>& parent_script) -> std::shared_ptr<UiComponent>;
 
-        static void add_usertype(sol::state& state);
+        static void add_usertype(sol::state_view& state);
 
         auto width() const noexcept -> int final;
 

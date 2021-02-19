@@ -78,7 +78,7 @@ namespace Exp
         if (UiComponent::has_attr_script(self_el, script_key)) {
           auto& scripts = Scripts::instance();
 
-          scripts.make_script(script_key, frame->script, [](sol::state& state) {
+          scripts.make_script(script_key, frame->script, [](sol::state_view& state) {
             Frame::add_usertype(state);
             TextBox::add_usertype(state);
             Info::add_usertype(state);
@@ -123,7 +123,7 @@ namespace Exp
         return frame;
       }
 
-      void Frame::add_usertype(sol::state& state)
+      void Frame::add_usertype(sol::state_view& state)
       {
         state.new_usertype<Frame>("Frame");
       }

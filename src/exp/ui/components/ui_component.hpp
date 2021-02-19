@@ -35,6 +35,8 @@ namespace Exp
 
       std::optional<std::string> if_fn;
 
+      sol::table userdata;
+
      private:
       bool enabled = false;
     };

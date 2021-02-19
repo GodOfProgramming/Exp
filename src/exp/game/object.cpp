@@ -14,7 +14,7 @@ namespace Exp
         using R::Scripts;
 
         auto& scripts = Scripts::instance();
-        scripts.make_script(m.script_id.value(), this->script, [](sol::state& state) {
+        scripts.make_script(m.script_id.value(), this->script, [](sol::state_view& state) {
           ObjectMeta::add_usertype(state);
           Uniform::add_usertype(state);
           Object::add_usertype(state);
@@ -51,7 +51,7 @@ namespace Exp
       }
     }
 
-    void Object::add_usertype(sol::state& state)
+    void Object::add_usertype(sol::state_view& state)
     {
       state.new_usertype<Object>("Object", "meta", &Object::meta, "uniforms", &Object::uniforms);
     }

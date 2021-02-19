@@ -45,10 +45,20 @@ namespace Exp
         return text_box;
       }
 
-      void TextBox::add_usertype(sol::state& state)
+      void TextBox::add_usertype(sol::state_view& state)
       {
         state.new_usertype<TextBox>(
-         "TextBox", "text", &TextBox::text, "btn_text", &TextBox::btn_text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
+         "TextBox",
+         "userdata",
+         &TextBox::userdata,
+         "text",
+         &TextBox::text,
+         "btn_text",
+         &TextBox::btn_text,
+         "is_enabled",
+         &TextBox::is_enabled,
+         "enable",
+         &TextBox::enable);
       }
 
       void TextBox::render()

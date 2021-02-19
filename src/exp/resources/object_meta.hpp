@@ -16,7 +16,7 @@ namespace Exp
       GL::DrawDescription drawdesc;
       std::optional<std::string> script_id;
 
-      static void add_usertype(sol::state& state);
+      static void add_usertype(sol::state_view& state);
     };
   }  // namespace R
 }  // namespace Exp

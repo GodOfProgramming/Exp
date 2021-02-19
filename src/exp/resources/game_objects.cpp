@@ -14,7 +14,7 @@ namespace Exp
       return objs;
     }
 
-    void GameObjects::add_usertype(sol::state& state)
+    void GameObjects::add_usertype(sol::state_view& state)
     {
       state.new_usertype<GameObjects>("GameObjects", "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
     }
@@ -121,7 +121,6 @@ namespace Exp
 
     auto GameObjects::get(std::string id) const noexcept -> std::unique_ptr<ObjectMap::mapped_type>
     {
-      LOG(INFO) << "looking up '" << id << '\'';
       auto iter = this->find(id);
       if (iter == this->end()) {
         return nullptr;

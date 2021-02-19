@@ -115,7 +115,7 @@ namespace Exp
       return GL_CHECK();
     }
 
-    void Uniform::add_usertype(sol::state& state)
+    void Uniform::add_usertype(sol::state_view& state)
     {
       state.new_usertype<Uniform>(
        "Uniform",

@@ -23,7 +23,7 @@ namespace Exp
 
       static auto instance() noexcept -> GameObjects&;
 
-      static void add_usertype(sol::state& state);
+      static void add_usertype(sol::state_view& state);
 
       void load_all() final;
 

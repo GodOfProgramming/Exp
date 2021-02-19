@@ -1,34 +1,36 @@
-Index = 1;
+require("inspect");
+local inspect = require "assets.scripts.inspect"
+index = 1;
 
-Objects = GameObjects.instance();
+objects = GameObjects.instance();
 
-Obj = nil;
-SelectedObj = nil;
+obj = nil;
+selected_obj = nil;
 
-Keys = Objects:keys();
+keys = objects:keys();
 
-function GetNextObject()
-  local id = Keys[Index];
+function get_next_object()
+  local id = keys[index];
 
   if id == nil then
-    Index = 1;
+    index = 1;
     return false;
   end
 
-  Obj = Objects:get(id);
+  obj = objects:get(id);
 
-  if Obj == nil then
-    Index = 1;
+  if obj == nil then
+    index = 1;
     return false;
   else
-    Index = Index + 1;
+    index = index + 1;
     return true;
   end
 end
 
-function ObjectText(self)
-  if Obj ~= nil then
-    self.text = string.format("ID: %s", Obj.id);
+function object_text(self)
+  if obj ~= nil then
+    self.text = string.format("ID: %s", obj.id);
   else
     self.text = "Nil object detected";
   end
@@ -36,14 +38,14 @@ function ObjectText(self)
   self.btn_text = "Set";
 end
 
-function SetObject(self)
-  SelectedObj = Objects:get(self.text);
+function set_object(self)
+  print(inspect(self));
 end
 
-function ObjHasValue()
-  return SelectedObj ~= nil;
+function did_select_object()
+  return selected_obj ~= nil;
 end
 
-function GetWireframeValue(self)
-  self.text = "Wireframe: "..tostring(SelectedObj.draw_desc.wireframe);
+function get_wireframe_value(self)
+  self.text = "Wireframe: "..tostring(selected_obj.draw_desc.wireframe);
 end

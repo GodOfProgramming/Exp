@@ -34,7 +34,7 @@ namespace Exp
 
       auto enable(const Program& shader) const -> bool;
 
-      static void add_usertype(sol::state& state);
+      static void add_usertype(sol::state_view& state);
 
       const std::string name;
 

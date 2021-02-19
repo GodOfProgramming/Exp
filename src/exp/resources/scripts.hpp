@@ -28,7 +28,7 @@ namespace Exp
       auto begin() const noexcept -> ScriptMap::const_iterator;
       auto end() const noexcept -> ScriptMap::const_iterator;
 
-      void make_script(std::string id, std::optional<sol::state>& state, std::function<bool(sol::state&)> callback);
+      void make_script(std::string id, std::optional<sol::state>& state, std::function<bool(sol::state_view&)> callback);
 
      private:
       ScriptMap scripts;

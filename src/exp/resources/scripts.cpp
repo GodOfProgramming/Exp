@@ -56,7 +56,7 @@ namespace Exp
       return this->scripts.end();
     }
 
-    void Scripts::make_script(std::string id, std::optional<sol::state>& state, std::function<bool(sol::state&)> callback)
+    void Scripts::make_script(std::string id, std::optional<sol::state>& state, std::function<bool(sol::state_view&)> callback)
     {
       auto iter = this->find(id);
       if (iter == this->end()) {
@@ -64,8 +64,10 @@ namespace Exp
       }
 
       sol::state lua;
+      lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math, sol::lib::table, sol::lib::package);
 
-      lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
+      const std::string package_path = lua["package"]["path"];
+      lua["package"]["path"]         = package_path + ";" + DIR_GAME_SCRIPTS + "/?.lua";
 
       lua.new_usertype<glm::vec2>("Vec2", sol::constructors<glm::vec2(), glm::vec2(float, float)>(), "x", &glm::vec2::x, "y", &glm::vec2::y);
 

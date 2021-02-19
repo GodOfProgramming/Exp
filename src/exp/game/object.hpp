@@ -22,7 +22,7 @@ namespace Exp
 
       void prerender();
 
-      static void add_usertype(sol::state& state);
+      static void add_usertype(sol::state_view& state);
 
      private:
       std::optional<sol::state> script;
