@@ -92,7 +92,7 @@ namespace Exp
         this->enable(is_open);
       }
 
-      auto ShaderUi::text() noexcept -> std::string
+      auto ShaderUi::display_text() noexcept -> std::string
       {
         return "Debug Shaders";
       }

@@ -1,4 +1,4 @@
-<window title="info" fixed="true" collapsed="true" x="2" y="5" width="20" height="30" script="exp.ui.info_menu">
+<window title="Info" fixed="true" collapsed="true" x="2" y="5" width="20" height="30" script="exp.ui.info_menu">
   <text fn="FpsText"></text>
   <text fn="FrameCountText"></text>
 </window>

@@ -88,7 +88,7 @@ namespace Exp
         if (ImGui::BeginMainMenuBar()) {
           if (ImGui::BeginMenu("Windows")) {
             for (auto& el : this->elements) {
-              if (ImGui::MenuItem(el->text().c_str())) {
+              if (ImGui::MenuItem(el->display_text().c_str())) {
                 el->enable(!el->is_enabled());
               }
             }
@@ -97,7 +97,7 @@ namespace Exp
 
           if (ImGui::BeginMenu("Debug")) {
             for (auto& el : this->debug_elements) {
-              if (ImGui::MenuItem(el->text().c_str())) {
+              if (ImGui::MenuItem(el->display_text().c_str())) {
                 el->enable(!el->is_enabled());
               }
             }

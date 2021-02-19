@@ -108,7 +108,7 @@ namespace Exp
         ImGui::EndChildFrame();
       }
 
-      auto Frame::text() noexcept -> std::string
+      auto Frame::display_text() noexcept -> std::string
       {
         return std::string();
       }

@@ -239,7 +239,7 @@ namespace Exp
         }
       }
 
-      auto WindowUi::text() noexcept -> std::string
+      auto WindowUi::display_text() noexcept -> std::string
       {
         return this->title;
       }

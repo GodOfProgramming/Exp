@@ -9,7 +9,7 @@ namespace Exp
       TextBox::TextBox(std::optional<sol::state>& s, std::string f, std::string t)
        : script(s)
        , function(f)
-       , display_text(t)
+       , text(t)
       {
         this->enable(true);
       }
@@ -24,13 +24,20 @@ namespace Exp
           fn = fn_attr->Value();
         }
 
-        return std::make_shared<TextBox>(script, fn, text == nullptr ? "" : text);
+        auto text_box = std::make_shared<TextBox>(script, fn, text == nullptr ? "" : text);
+
+        auto button_attr = self_el->FindAttribute("button");
+        if (button_attr != nullptr) {
+          text_box->button_fn = button_attr->Value();
+        }
+
+        return text_box;
       }
 
       void TextBox::add_usertype(sol::state& state)
       {
         state.new_usertype<TextBox>(
-         "TextBox", "display_text", &TextBox::display_text, "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
+         "TextBox", "text", &TextBox::text, "btn_text", &TextBox::btn_text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
       }
 
       void TextBox::render()
@@ -43,12 +50,27 @@ namespace Exp
           }
         }
 
-        ImGui::Text("%s", this->display_text.c_str());
+        ImGui::Text("%s", this->display_text().c_str());
+        if (this->button_fn.has_value()) {
+          ImGui::SameLine();
+          ImGui::PushID(this->btn_id.value());
+          if (ImGui::SmallButton(this->btn_text.c_str())) {
+            if (this->script.has_value() && this->button_fn.has_value()) {
+              auto& lua   = this->script.value();
+              auto& btnfn = this->button_fn.value();
+              auto fn     = lua[btnfn];
+              if (fn.get_type() == sol::type::function) {
+                fn.call(this);
+              }
+            }
+          }
+          ImGui::PopID();
+        }
       }
 
-      auto TextBox::text() noexcept -> std::string
+      auto TextBox::display_text() noexcept -> std::string
       {
-        return this->display_text;
+        return this->text;
       }
     }  // namespace Components
   }    // namespace Ui

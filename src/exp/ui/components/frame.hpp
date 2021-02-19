@@ -25,7 +25,7 @@ namespace Exp
 
         void render() final;
 
-        auto text() noexcept -> std::string final;
+        auto display_text() noexcept -> std::string final;
 
        private:
         std::vector<std::shared_ptr<UiComponent>> elements;

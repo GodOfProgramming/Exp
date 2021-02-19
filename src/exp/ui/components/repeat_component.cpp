@@ -78,7 +78,7 @@ namespace Exp
         }
       }
 
-      auto RepeatComponent::text() noexcept -> std::string
+      auto RepeatComponent::display_text() noexcept -> std::string
       {
         return std::string();
       }

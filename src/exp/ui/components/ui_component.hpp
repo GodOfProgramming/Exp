@@ -11,7 +11,7 @@ namespace Exp
 
       virtual void render() = 0;
 
-      virtual auto text() noexcept -> std::string = 0;
+      virtual auto display_text() noexcept -> std::string = 0;
 
       void enable(bool) noexcept;
 

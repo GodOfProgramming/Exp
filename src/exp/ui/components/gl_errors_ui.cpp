@@ -66,7 +66,7 @@ namespace Exp
         this->enable(is_open);
       }
 
-      auto GlErrorsUi::text() noexcept -> std::string
+      auto GlErrorsUi::display_text() noexcept -> std::string
       {
         return "Debug GL Errors";
       }

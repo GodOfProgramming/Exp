@@ -3,6 +3,7 @@ Index = 1;
 Objects = GameObjects.instance();
 
 Obj = nil;
+SelectedObj = nil;
 
 Keys = Objects:keys();
 
@@ -27,12 +28,18 @@ end
 
 function ObjectText(self)
   if Obj ~= nil then
-    self.display_text = string.format("ID: %s", Obj.id);
+    self.text = string.format("ID: %s", Obj.id);
   else
-    self.display_text = "Nil object detected";
+    self.text = "Nil object detected";
   end
+
+  self.btn_text = "Set";
 end
 
-function TestText(self)
-  self.display_text = "TEST";
+function SetObject(self)
+  SelectedObj = Objects:get(self.text);
+  print(self.text);
+end
+
+function DisplayObject()
 end

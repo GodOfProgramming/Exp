@@ -1,8 +1,8 @@
 <window title="Objects" x="20" y="20" width="80" height="80" script="exp.ui.object_creator">
-  <repeat while="GetNextObject">
-    <text fn="ObjectText"></text>
-  </repeat>
   <frame>
-    <text fn="TestText"></text>
+    <repeat while="GetNextObject">
+      <text fn="ObjectText" button="SetObject"></text>
+    </repeat>
   </frame>
+  <frame fn="DisplayObject"></frame>
 </window>

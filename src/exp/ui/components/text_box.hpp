@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exp/resources/id.hpp"
 #include "text_box.ipp"
 
 namespace Exp
@@ -20,13 +21,16 @@ namespace Exp
 
         void render() final;
 
-        auto text() noexcept -> std::string final;
+        auto display_text() noexcept -> std::string final;
 
        private:
         std::optional<sol::state>& script;
 
         std::string function;
-        std::string display_text;
+        std::string text;
+        std::string btn_text;
+        R::ID<int> btn_id;
+        std::optional<std::string> button_fn;
       };
     }  // namespace Components
   }    // namespace Ui
