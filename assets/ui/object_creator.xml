@@ -4,5 +4,8 @@
       <text fn="ObjectText" button="SetObject"></text>
     </repeat>
   </frame>
-  <frame fn="DisplayObject"></frame>
+  <frame if="ObjHasValue">
+    <text>Draw Description</text>
+    <text fn="GetWireframeValue"></text>
+  </frame>
 </window>

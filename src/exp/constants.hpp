@@ -18,4 +18,16 @@ namespace Exp
   constexpr const char* UI_EL_REPEAT             = "repeat";
   constexpr const char* UI_EL_TEXT_BOX           = "text";
   constexpr const char* UI_EL_WINDOW             = "window";
+  constexpr const char* UI_ATTR_BUTTON           = "button";
+  constexpr const char* UI_ATTR_COLLAPSED        = "collapsed";
+  constexpr const char* UI_ATTR_FIXED            = "fixed";
+  constexpr const char* UI_ATTR_FN               = "fn";
+  constexpr const char* UI_ATTR_HEIGHT           = "height";
+  constexpr const char* UI_ATTR_IF               = "if";
+  constexpr const char* UI_ATTR_SCRIPT           = "script";
+  constexpr const char* UI_ATTR_TITLE            = "title";
+  constexpr const char* UI_ATTR_WHILE            = "while";
+  constexpr const char* UI_ATTR_WIDTH            = "width";
+  constexpr const char* UI_ATTR_X                = "x";
+  constexpr const char* UI_ATTR_Y                = "y";
 }  // namespace Exp

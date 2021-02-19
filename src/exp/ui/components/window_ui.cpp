@@ -25,134 +25,74 @@ namespace Exp
         using R::Scripts;
         using Render::AppWindow;
 
-        auto window = std::make_shared<WindowUi>();
-
         auto self_el = self->ToElement();
         if (self_el == nullptr) {
           LOG(WARNING) << "unable to convert window to element type";
           return nullptr;
         }
 
+        auto window = std::make_shared<WindowUi>();
+
+        std::string if_func;
+        if (UiComponent::has_attr_if(self_el, if_func)) {
+          window->if_fn = if_func;
+        }
+
         // TODO change this to a function name, similar to how text boxes work
-        {
-          auto title_attr = self_el->FindAttribute("title");
-
-          if (title_attr == nullptr) {
-            LOG(WARNING) << "unable to get title value of window";
-            return nullptr;
-          }
-
-          window->title = title_attr->Value();
+        if (!UiComponent::has_attr_title(self_el, window->title)) {
+          LOG(WARNING) << "unable to get title value of window";
+          return nullptr;
         }
 
-        {
-          auto collapsed_attr = self_el->FindAttribute("collapsed");
+        UiComponent::has_attr_collapsed(self_el, window->is_collapsed);
 
-          if (collapsed_attr != nullptr) {
-            bool collapsed = false;
-            auto res       = collapsed_attr->QueryBoolValue(&collapsed);
-            if (res != tinyxml2::XML_SUCCESS) {
-              LOG(WARNING) << "unable to parse width: " << res;
-              return nullptr;
-            }
-            window->is_collapsed = collapsed;
-          }
-        }
-
-        {
-          auto fixed_attr = self_el->FindAttribute("fixed");
-
-          if (fixed_attr != nullptr) {
-            bool fixed = false;
-            auto res   = fixed_attr->QueryBoolValue(&fixed);
-            if (res != tinyxml2::XML_SUCCESS) {
-              LOG(WARNING) << "unable to parse width: " << res;
-              return nullptr;
-            }
-            window->is_fixed = fixed;
-          }
-        }
+        UiComponent::has_attr_fixed(self_el, window->is_fixed);
 
         auto& app_window = AppWindow::instance();
         auto size        = app_window.get_size();
 
-        {
-          auto width_attr = self_el->FindAttribute("width");
-          if (width_attr == nullptr) {
-            window->dim.x = size.x / 2;
-          } else {
-            float percent{ 0.0 };
-            auto res = width_attr->QueryFloatValue(&percent);
-            if (res != tinyxml2::XML_SUCCESS) {
-              LOG(WARNING) << "unable to parse width: " << res;
-              return nullptr;
-            }
-            window->dim.x = size.x * percent / 100.0;
-          }
+        float width_percent;
+        if (UiComponent::has_attr_width(self_el, width_percent)) {
+          window->dim.x = static_cast<int>(size.x * width_percent / 100.0);
+        } else {
+          window->dim.x = static_cast<int>(size.x / 2);
         }
 
-        {
-          auto height_attr = self_el->FindAttribute("height");
-          if (height_attr == nullptr) {
-            window->dim.y = size.y / 2;
-          } else {
-            float percent{ 0.0 };
-            auto res = height_attr->QueryFloatValue(&percent);
-            if (res != tinyxml2::XML_SUCCESS) {
-              LOG(WARNING) << "unable to parse height: " << res;
-              return nullptr;
-            }
-            window->dim.y = size.y * percent / 100.0;
-          }
+        float height_percent;
+        if (UiComponent::has_attr_height(self_el, height_percent)) {
+          window->dim.y = static_cast<int>(size.y * height_percent / 100.0);
+        } else {
+          window->dim.y = static_cast<int>(size.y / 2);
         }
 
-        {
-          auto x_attr = self_el->FindAttribute("x");
-          if (x_attr == nullptr) {
-            window->pos.x = 0;
-          } else {
-            float percent{ 0.0 };
-            auto res = x_attr->QueryFloatValue(&percent);
-            if (res != tinyxml2::XML_SUCCESS) {
-              LOG(WARNING) << "unable to parse x pos: " << res;
-              return nullptr;
-            }
-            window->pos.x = size.x * percent / 100.0;
-          }
+        float x_percent;
+        if (UiComponent::has_attr_x(self_el, x_percent)) {
+          window->pos.x = size.x * x_percent / 100.0;
+        } else {
+          window->pos.x = 0;
         }
 
-        {
-          auto y_attr = self_el->FindAttribute("y");
-          if (y_attr == nullptr) {
-            window->pos.y = 0;
-          } else {
-            float percent{ 0.0 };
-            auto res = y_attr->QueryFloatValue(&percent);
-            if (res != tinyxml2::XML_SUCCESS) {
-              LOG(WARNING) << "unable to parse y pos: " << res;
-              return nullptr;
-            }
-            window->pos.y = size.y * percent / 100.0;
-          }
+        float y_percent;
+        if (UiComponent::has_attr_y(self_el, y_percent)) {
+          window->pos.y = size.y * y_percent / 100.0;
+        } else {
+          window->pos.y = 0;
         }
 
-        {
-          auto script_attr = self_el->FindAttribute("script");
-          if (script_attr != nullptr) {
-            std::string script_key = script_attr->Value();
-            auto& scripts          = Scripts::instance();
+        std::string script_key;
+        if (UiComponent::has_attr_script(self_el, script_key)) {
+          auto& scripts = Scripts::instance();
 
-            scripts.make_script(script_key, window->script, [](sol::state& state) {
-              WindowUi::add_usertype(state);
-              TextBox::add_usertype(state);
-              Info::add_usertype(state);
-              return true;
-            });
+          scripts.make_script(script_key, window->script, [](sol::state& state) {
+            WindowUi::add_usertype(state);
+            TextBox::add_usertype(state);
+            Info::add_usertype(state);
+            return true;
+          });
 
-            if (!window->script.has_value()) {
-              LOG(WARNING) << "unable to load script " << script_key;
-              return nullptr;
-            }
+          if (!window->script.has_value()) {
+            LOG(WARNING) << "unable to load script " << script_key;
+            return nullptr;
           }
         }
 
@@ -205,6 +145,10 @@ namespace Exp
 
       void WindowUi::render()
       {
+        if (!this->eval_if(this->script)) {
+          return;
+        }
+
         ImGuiWindowFlags flags = 0;
         if (this->is_fixed) {
           flags |= ImGuiWindowFlags_NoResize;

@@ -1,16 +1,28 @@
 #pragma once
 
-#include "producable.hpp"
-
 namespace Exp
 {
   namespace R
   {
-    template <class T>
+    template <typename T>
+    struct PassthroughFieldSelector
+    {
+      using field_t = T;
+
+      static constexpr void set(T& t, const field_t& product)
+      {
+        t = product;
+      }
+
+      static constexpr auto get(const T& t) -> const field_t&
+      {
+        return t;
+      }
+    };
+
+    template <class T, class F = PassthroughFieldSelector<T>, typename V = typename F::field_t>
     class Producer
     {
-      using value_type = Producable<typename T::value_type>::value_type;
-
       Producer() = default;
 
      public:
@@ -19,31 +31,36 @@ namespace Exp
       auto operator=(const Producer&) -> Producer& = delete;
       auto operator=(Producer&&) -> Producer& = delete;
 
-      static auto instance() noexcept -> Producer<T>&
+      static auto instance() noexcept -> Producer&
       {
-        static Producer<T> producer;
+        static Producer producer;
         return producer;
       }
 
-      auto produce() -> value_type
+      auto produce() -> T
       {
-        if (this->free_items.empty()) {
-          return ++next_item;
+        V product;
+        if (this->reclaimed_products.empty()) {
+          product = ++next_item;
         } else {
-          auto first = this->free_items.begin();
-          this->free_items.erase(first);
-          return *first;
+          auto first = this->reclaimed_products.begin();
+          this->reclaimed_products.erase(first);
+          product = *first;
         }
+
+        T t;
+        F::set(t, product);
+        return t;
       }
 
-      auto reclaim(const Producable<value_type>& item)
+      auto reclaim(const T& product)
       {
-        this->free_items.emplace(item.value());
+        this->reclaimed_products.emplace(F::get(product));
       }
 
      private:
-      value_type next_item;
-      std::set<value_type> free_items;
+      V next_item;
+      std::set<V> reclaimed_products;
     };
   }  // namespace R
 }  // namespace Exp

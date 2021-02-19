@@ -54,7 +54,7 @@ namespace Exp
                 auto str = Util::join(line_info);
                 ImGui::Indent(indent);
                 ImGui::Text("%s", str.c_str());
-                ImGui::Indent(-indent);
+                ImGui::Unindent(indent);
               }
             }
             ImGui::EndChild();

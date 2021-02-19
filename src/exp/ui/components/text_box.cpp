@@ -6,29 +6,40 @@ namespace Exp
   {
     namespace Components
     {
-      TextBox::TextBox(std::optional<sol::state>& s, std::string f, std::string t)
+      TextBox::TextBox(std::optional<sol::state>& s)
        : script(s)
-       , function(f)
-       , text(t)
       {
         this->enable(true);
       }
 
       auto TextBox::from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>
       {
-        std::string fn;
         auto self_el = self->ToElement();
-        auto text    = self_el->GetText();
-        auto fn_attr = self_el->FindAttribute("fn");
-        if (fn_attr != nullptr) {
-          fn = fn_attr->Value();
+        if (self_el == nullptr) {
+          LOG(WARNING) << "unable to convert text box to element type";
+          return nullptr;
         }
 
-        auto text_box = std::make_shared<TextBox>(script, fn, text == nullptr ? "" : text);
+        auto text_box = std::make_shared<TextBox>(script);
 
-        auto button_attr = self_el->FindAttribute("button");
-        if (button_attr != nullptr) {
-          text_box->button_fn = button_attr->Value();
+        auto el_text = self_el->GetText();
+        if (el_text != nullptr) {
+          text_box->text = el_text;
+        }
+
+        std::string if_func;
+        if (UiComponent::has_attr_if(self_el, if_func)) {
+          text_box->if_fn = if_func;
+        }
+
+        std::string text_func;
+        if (UiComponent::has_attr_fn(self_el, text_func)) {
+          text_box->text_fn = text_func;
+        }
+
+        std::string btn_func;
+        if (UiComponent::has_attr_button(self_el, btn_func)) {
+          text_box->btn_fn = btn_func;
         }
 
         return text_box;
@@ -42,29 +53,31 @@ namespace Exp
 
       void TextBox::render()
       {
-        if (this->script.has_value()) {
-          auto& lua = this->script.value();
-          auto fn   = lua[this->function];
+        if (!this->eval_if(this->script)) {
+          return;
+        }
+
+        if (this->script.has_value() && this->text_fn.has_value()) {
+          auto& lua       = this->script.value();
+          auto& text_func = this->text_fn.value();
+          auto fn         = lua[text_func];
           if (fn.get_type() == sol::type::function) {
             fn.call(this);
           }
         }
 
         ImGui::Text("%s", this->display_text().c_str());
-        if (this->button_fn.has_value()) {
+
+        if (this->script.has_value() && this->btn_fn.has_value()) {
           ImGui::SameLine();
-          ImGui::PushID(this->btn_id.value());
           if (ImGui::SmallButton(this->btn_text.c_str())) {
-            if (this->script.has_value() && this->button_fn.has_value()) {
-              auto& lua   = this->script.value();
-              auto& btnfn = this->button_fn.value();
-              auto fn     = lua[btnfn];
-              if (fn.get_type() == sol::type::function) {
-                fn.call(this);
-              }
+            auto& lua      = this->script.value();
+            auto& btn_func = this->btn_fn.value();
+            auto fn        = lua[btn_func];
+            if (fn.get_type() == sol::type::function) {
+              fn.call(this);
             }
           }
-          ImGui::PopID();
         }
       }
 

@@ -121,6 +121,7 @@ namespace Exp
 
     auto GameObjects::get(std::string id) const noexcept -> std::unique_ptr<ObjectMap::mapped_type>
     {
+      LOG(INFO) << "looking up '" << id << '\'';
       auto iter = this->find(id);
       if (iter == this->end()) {
         return nullptr;

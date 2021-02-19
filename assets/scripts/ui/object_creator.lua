@@ -38,8 +38,12 @@ end
 
 function SetObject(self)
   SelectedObj = Objects:get(self.text);
-  print(self.text);
 end
 
-function DisplayObject()
+function ObjHasValue()
+  return SelectedObj ~= nil;
+end
+
+function GetWireframeValue(self)
+  self.text = "Wireframe: "..tostring(SelectedObj.draw_desc.wireframe);
 end

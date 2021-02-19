@@ -14,7 +14,7 @@
     "spritesheet": "exp.test.random.wall",
     "script": "exp.game.square",
     "draw_description": {
-      "wireframe": false
+      "wireframe": true
     }
   }
 }

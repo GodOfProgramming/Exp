@@ -33,9 +33,9 @@ namespace Exp
             if (!shader->is_valid()) {
               ImGui::Text("%s", meta.error.c_str());
             }
-            ImGui::Indent(-indent);
+            ImGui::Unindent(indent);
           }
-          ImGui::Indent(-indent);
+          ImGui::Unindent(indent);
         };
 
         bool is_open = this->is_enabled();

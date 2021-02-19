@@ -12,7 +12,7 @@ namespace Exp
       class TextBox: public ITextBox
       {
        public:
-        TextBox(std::optional<sol::state>& script, std::string fn, std::string text);
+        TextBox(std::optional<sol::state>& script);
         ~TextBox() final = default;
 
         static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
@@ -26,11 +26,10 @@ namespace Exp
        private:
         std::optional<sol::state>& script;
 
-        std::string function;
         std::string text;
+        std::optional<std::string> text_fn;
         std::string btn_text;
-        R::ID<int> btn_id;
-        std::optional<std::string> button_fn;
+        std::optional<std::string> btn_fn;
       };
     }  // namespace Components
   }    // namespace Ui

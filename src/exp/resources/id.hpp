@@ -6,35 +6,58 @@ namespace Exp
 {
   namespace R
   {
-    template <typename T>
-    class ID: public Producable<T>
+    template <typename T, typename V>
+    struct IDFieldSelector
     {
-     public:
-      ID()
-       : internal(Producer<ID>::instance().produce())
-      {}
+      using field_t = V;
 
-      inline ~ID()
+      static void set(T& t, const field_t& f)
       {
-        this->release();
+        t.emplace(f);
       }
 
-      auto value() const noexcept -> ID::value_type final
+      static auto get(const T& t) -> const field_t
+      {
+        return t.value();
+      }
+    };
+
+    template <typename T>
+    class ID
+    {
+     public:
+      using value_type = T;
+
+      using producer_t = Producer<ID, IDFieldSelector<ID, value_type>>;
+
+      ID() = default;
+      ID(value_type v)
+       : internal(v)
+      {}
+
+      auto value() const noexcept -> value_type
       {
         return this->internal;
       }
 
-      void release() final
+      void emplace(const value_type& v)
+      {
+        this->internal = v;
+      }
+
+      void release() noexcept
       {
         if (!this->released) {
-          auto& producer = Producer<ID>::instance();
+          auto& producer = producer_t::instance();
           producer.reclaim(*this);
           this->released = true;
+          this->internal = 0;
         }
       }
 
      private:
-      ID::value_type internal = 0;
+      bool released       = false;
+      value_type internal = 0;
     };
   }  // namespace R
 }  // namespace Exp
