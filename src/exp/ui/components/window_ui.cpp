@@ -26,38 +26,6 @@ namespace Exp
         state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
       }
 
-      void WindowUi::render()
-      {
-        ImGuiWindowFlags flags = 0;
-        flags |= ImGuiWindowFlags_NoResize;
-
-        ImVec2 size{ static_cast<float>(this->dim.x), static_cast<float>(this->dim.y) };
-        ImGui::SetNextWindowSize(size);
-
-        if (!this->initial_render) {
-          ImVec2 pos{ static_cast<float>(this->pos.x), static_cast<float>(this->pos.y) };
-          ImGui::SetNextWindowPos(pos);
-          ImGui::SetNextWindowCollapsed(this->is_collapsed);
-          this->initial_render = true;
-        }
-
-        bool is_open = true;
-        ImGui::Begin(this->title.c_str(), &is_open, flags);
-
-        for (const auto& element : elements) { element->render(); }
-
-        ImGui::End();
-
-        if (!is_open && this->lua.has_value()) {
-          this->enable(false);
-          auto& script = this->lua.value();
-          auto fn      = script["OnClose"];
-          if (fn.get_type() == sol::type::function) {
-            fn.call(this);
-          }
-        }
-      }
-
       auto WindowUi::from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>
       {
         using Game::Info;
@@ -162,14 +130,14 @@ namespace Exp
             std::string script_key = script_attr->Value();
             auto& scripts          = Scripts::instance();
 
-            scripts.make_script(script_key, window->lua, [](sol::state& state) {
+            scripts.make_script(script_key, window->script, [](sol::state& state) {
               WindowUi::add_usertype(state);
               TextBox::add_usertype(state);
               Info::add_usertype(state);
               return true;
             });
 
-            if (!window->lua.has_value()) {
+            if (!window->script.has_value()) {
               LOG(WARNING) << "unable to load script " << script_key;
               return nullptr;
             }
@@ -182,21 +150,21 @@ namespace Exp
           std::string type = child->Value();
 
           if (type == UI_EL_TEXT_BOX) {
-            auto el = TextBox::from_node(child, window->lua);
+            auto el = TextBox::from_node(child, window->script);
             if (el) {
               potential_elements.push_back(el);
             } else {
               return nullptr;
             }
           } else if (type == UI_EL_REPEAT) {
-            auto el = RepeatComponent::from_node(child, window->lua);
+            auto el = RepeatComponent::from_node(child, window->script);
             if (el) {
               potential_elements.push_back(el);
             } else {
               return nullptr;
             }
           } else if (type == UI_EL_FRAME) {
-            auto el = Frame::from_node(child, window->lua);
+            auto el = Frame::from_node(child, *window, window->script);
             if (el) {
               potential_elements.push_back(el);
             } else {
@@ -211,6 +179,48 @@ namespace Exp
         window->elements = std::move(potential_elements);
 
         return window;
+      }
+
+      auto WindowUi::width() const noexcept -> int
+      {
+        return this->dim.x;
+      }
+
+      auto WindowUi::height() const noexcept -> int
+      {
+        return this->dim.y;
+      }
+
+      void WindowUi::render()
+      {
+        ImGuiWindowFlags flags = 0;
+        flags |= ImGuiWindowFlags_NoResize;
+
+        ImVec2 size{ static_cast<float>(this->dim.x), static_cast<float>(this->dim.y) };
+        ImGui::SetNextWindowSize(size);
+
+        if (!this->initial_render) {
+          ImVec2 pos{ static_cast<float>(this->pos.x), static_cast<float>(this->pos.y) };
+          ImGui::SetNextWindowPos(pos);
+          ImGui::SetNextWindowCollapsed(this->is_collapsed);
+          this->initial_render = true;
+        }
+
+        bool is_open = true;
+        ImGui::Begin(this->title.c_str(), &is_open, flags);
+
+        for (const auto& element : elements) { element->render(); }
+
+        ImGui::End();
+
+        if (!is_open && this->script.has_value()) {
+          this->enable(false);
+          auto& script = this->script.value();
+          auto fn      = script["OnClose"];
+          if (fn.get_type() == sol::type::function) {
+            fn.call(this);
+          }
+        }
       }
 
       auto WindowUi::text() noexcept -> std::string

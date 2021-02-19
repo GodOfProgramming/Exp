@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui_component.hpp"
+#include "container.ipp"
 
 namespace Exp
 {
@@ -8,7 +8,7 @@ namespace Exp
   {
     namespace Components
     {
-      class IWindowUi: public UiComponent
+      class IWindowUi: public Container
       {};
     }  // namespace Components
   }    // namespace Ui

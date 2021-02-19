@@ -13,18 +13,19 @@ namespace Exp
   {
     namespace Components
     {
-      Frame::Frame(std::optional<sol::state>& ps)
-       : parent_script(ps)
+      Frame::Frame(const Container& c, std::optional<sol::state>& ps)
+       : container(c)
+       , parent_script(ps)
       {}
 
-      auto Frame::from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& parent_script) -> std::shared_ptr<UiComponent>
+      auto Frame::from_node(tinyxml2::XMLNode* self, const Container& container, std::optional<sol::state>& parent_script) -> std::shared_ptr<UiComponent>
       {
         using Game::Info;
         using R::Scripts;
 
         auto self_el = self->ToElement();
 
-        auto frame = std::make_shared<Frame>(parent_script);
+        auto frame = std::make_shared<Frame>(container, parent_script);
 
         {
           auto script_attr = self_el->FindAttribute("script");
@@ -83,9 +84,22 @@ namespace Exp
         state.new_usertype<Frame>("Frame");
       }
 
+      auto Frame::width() const noexcept -> int
+      {
+        return 0;
+      }
+
+      auto Frame::height() const noexcept -> int
+      {
+        return 0;
+      }
+
       void Frame::render()
       {
-        if (ImGui::BeginChildFrame(id.value(), { 100, 100 })) {
+        float w = this->container.width();
+        float h = this->container.height();
+
+        if (ImGui::BeginChildFrame(id.value(), { w, h / 2.0f })) {
           for (const auto& element : elements) { element->render(); }
         }
         ImGui::EndChildFrame();

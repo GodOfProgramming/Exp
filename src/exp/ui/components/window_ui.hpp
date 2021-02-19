@@ -17,13 +17,17 @@ namespace Exp
 
         static void add_usertype(sol::state& state);
 
+        auto width() const noexcept -> int;
+
+        auto height() const noexcept -> int;
+
         void render() final;
 
         auto text() noexcept -> std::string final;
 
        private:
         std::vector<std::shared_ptr<UiComponent>> elements;
-        std::optional<sol::state> lua;
+        std::optional<sol::state> script;
 
         std::string title;
         glm::ivec2 dim;
