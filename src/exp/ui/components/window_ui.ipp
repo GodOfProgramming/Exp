@@ -9,7 +9,10 @@ namespace Exp
     namespace Components
     {
       class IWindowUi: public Container
-      {};
+      {
+       public:
+        virtual ~IWindowUi() = default;
+      };
     }  // namespace Components
   }    // namespace Ui
 }  // namespace Exp

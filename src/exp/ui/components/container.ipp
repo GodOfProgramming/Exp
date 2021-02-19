@@ -11,6 +11,8 @@ namespace Exp
       class Container: public UiComponent
       {
        public:
+        virtual ~Container() = default;
+
         virtual auto width() const noexcept -> int  = 0;
         virtual auto height() const noexcept -> int = 0;
       };

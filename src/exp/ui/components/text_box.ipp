@@ -9,7 +9,10 @@ namespace Exp
     namespace Components
     {
       class ITextBox: public UiComponent
-      {};
+      {
+       public:
+        virtual ~ITextBox() = default;
+      };
     }  // namespace Components
   }    // namespace Ui
 }  // namespace Exp

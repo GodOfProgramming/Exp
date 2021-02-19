@@ -9,7 +9,10 @@ namespace Exp
     namespace Components
     {
       class IRepeatComponent: public UiComponent
-      {};
+      {
+       public:
+        virtual ~IRepeatComponent() = default;
+      };
     }  // namespace Components
   }    // namespace Ui
 }  // namespace Exp

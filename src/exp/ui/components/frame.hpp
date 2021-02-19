@@ -13,6 +13,7 @@ namespace Exp
       {
        public:
         Frame(const Container& container, std::optional<sol::state>& parent_script);
+        ~Frame() final = default;
 
         static auto from_node(tinyxml2::XMLNode* self, const Container& container, std::optional<sol::state>& parent_script) -> std::shared_ptr<UiComponent>;
 
@@ -32,6 +33,7 @@ namespace Exp
         std::optional<sol::state>& parent_script;
         std::optional<sol::state> script;
         R::ID<ImGuiID> id;
+        glm::ivec2 dim = {};
       };
     }  // namespace Components
   }    // namespace Ui

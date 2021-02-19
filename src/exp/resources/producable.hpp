@@ -10,24 +10,13 @@ namespace Exp
      public:
       using value_type = T;
 
-      ~Producable()
-      {
-        this->release();
-      }
+      virtual ~Producable() = default;
 
       virtual auto value() const noexcept -> T = 0;
 
-      void release()
-      {
-        if (!released) {
-          this->release_impl();
-        }
-      }
+      virtual void release() = 0;
 
      protected:
-      virtual void release_impl() = 0;
-
-     private:
       bool released = false;
     };
   }  // namespace R

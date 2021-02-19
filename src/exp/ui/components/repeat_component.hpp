@@ -12,6 +12,7 @@ namespace Exp
       {
        public:
         RepeatComponent(std::optional<sol::state>& script, std::string fn);
+        ~RepeatComponent() final = default;
 
         static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
 

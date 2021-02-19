@@ -14,18 +14,23 @@ namespace Exp
        : internal(Producer<ID>::instance().produce())
       {}
 
-      ~ID() = default;
+      inline ~ID()
+      {
+        this->release();
+      }
 
       auto value() const noexcept -> ID::value_type final
       {
         return this->internal;
       }
 
-     protected:
-      void release_impl() final
+      void release() final
       {
-        auto& producer = Producer<ID>::instance();
-        producer.reclaim(*this);
+        if (!this->released) {
+          auto& producer = Producer<ID>::instance();
+          producer.reclaim(*this);
+          this->released = true;
+        }
       }
 
      private:

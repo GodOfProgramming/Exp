@@ -14,13 +14,6 @@ namespace Exp
   {
     namespace Components
     {
-      WindowUi::WindowUi()
-       : dim({ 0, 0 })
-       , pos({ 0, 0 })
-       , initial_render(false)
-       , is_collapsed(false)
-      {}
-
       void WindowUi::add_usertype(sol::state& state)
       {
         state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
@@ -40,26 +33,45 @@ namespace Exp
           return nullptr;
         }
 
-        auto title_attr = self_el->FindAttribute("title");
+        // TODO change this to a function name, similar to how text boxes work
+        {
+          auto title_attr = self_el->FindAttribute("title");
 
-        if (title_attr == nullptr) {
-          LOG(WARNING) << "unable to get title value of window";
-          return nullptr;
-        }
-
-        auto collapsed_attr = self_el->FindAttribute("collapsed");
-
-        if (collapsed_attr != nullptr) {
-          bool collapsed = false;
-          auto res       = collapsed_attr->QueryBoolValue(&collapsed);
-          if (res != tinyxml2::XML_SUCCESS) {
-            LOG(WARNING) << "unable to parse width: " << res;
+          if (title_attr == nullptr) {
+            LOG(WARNING) << "unable to get title value of window";
             return nullptr;
           }
-          window->is_collapsed = collapsed;
+
+          window->title = title_attr->Value();
         }
 
-        window->title = title_attr->Value();
+        {
+          auto collapsed_attr = self_el->FindAttribute("collapsed");
+
+          if (collapsed_attr != nullptr) {
+            bool collapsed = false;
+            auto res       = collapsed_attr->QueryBoolValue(&collapsed);
+            if (res != tinyxml2::XML_SUCCESS) {
+              LOG(WARNING) << "unable to parse width: " << res;
+              return nullptr;
+            }
+            window->is_collapsed = collapsed;
+          }
+        }
+
+        {
+          auto fixed_attr = self_el->FindAttribute("fixed");
+
+          if (fixed_attr != nullptr) {
+            bool fixed = false;
+            auto res   = fixed_attr->QueryBoolValue(&fixed);
+            if (res != tinyxml2::XML_SUCCESS) {
+              LOG(WARNING) << "unable to parse width: " << res;
+              return nullptr;
+            }
+            window->is_fixed = fixed;
+          }
+        }
 
         auto& app_window = AppWindow::instance();
         auto size        = app_window.get_size();
@@ -194,7 +206,9 @@ namespace Exp
       void WindowUi::render()
       {
         ImGuiWindowFlags flags = 0;
-        flags |= ImGuiWindowFlags_NoResize;
+        if (this->is_fixed) {
+          flags |= ImGuiWindowFlags_NoResize;
+        }
 
         ImVec2 size{ static_cast<float>(this->dim.x), static_cast<float>(this->dim.y) };
         ImGui::SetNextWindowSize(size);
@@ -207,10 +221,12 @@ namespace Exp
         }
 
         bool is_open = true;
-        ImGui::Begin(this->title.c_str(), &is_open, flags);
+        if (ImGui::Begin(this->title.c_str(), &is_open, flags)) {
+          auto sz   = ImGui::GetWindowSize();
+          this->dim = { sz.x, sz.y };
 
-        for (const auto& element : elements) { element->render(); }
-
+          for (const auto& element : elements) { element->render(); }
+        }
         ImGui::End();
 
         if (!is_open && this->script.has_value()) {

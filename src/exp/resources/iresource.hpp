@@ -7,6 +7,7 @@ namespace Exp
     class IResource
     {
      public:
+      virtual ~IResource()    = default;
       virtual void load_all() = 0;
       virtual void release()  = 0;
 

@@ -29,6 +29,8 @@ namespace Exp
             auto id  = nspace + "." + item.key();
             auto tex = item.value();
 
+            LOG(INFO) << "loading texture " << id;
+
             std::string filename;
             auto file_json = tex["file"];
             if (file_json.is_string()) {
@@ -43,9 +45,10 @@ namespace Exp
 
             std::stringstream ss;
             ss << DIR_TEXTURES << '/' << filename;
+            std::string fn = ss.str();
 
             auto meta = std::make_shared<TextureMeta>();
-            meta->tex->load(ss.str().c_str());
+            meta->tex.load(fn.c_str());
 
             this->textures.emplace(id, meta);
           }

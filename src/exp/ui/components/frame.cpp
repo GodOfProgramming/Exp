@@ -86,12 +86,12 @@ namespace Exp
 
       auto Frame::width() const noexcept -> int
       {
-        return 0;
+        return this->dim.x;
       }
 
       auto Frame::height() const noexcept -> int
       {
-        return 0;
+        return this->dim.y;
       }
 
       void Frame::render()
@@ -100,6 +100,9 @@ namespace Exp
         float h = this->container.height();
 
         if (ImGui::BeginChildFrame(id.value(), { w, h / 2.0f })) {
+          auto sz   = ImGui::GetItemRectSize();
+          this->dim = { sz.x, sz.y };
+
           for (const auto& element : elements) { element->render(); }
         }
         ImGui::EndChildFrame();

@@ -10,6 +10,7 @@
 #include "exp/resources/models.hpp"
 #include "exp/resources/scripts.hpp"
 #include "exp/resources/shaders.hpp"
+#include "exp/resources/textures.hpp"
 #include "exp/settings/settings_manager.hpp"
 #include "exp/ui/ui_manager.hpp"
 
@@ -26,6 +27,7 @@ int main(int, char* argv[])
   using Exp::R::Models;
   using Exp::R::Scripts;
   using Exp::R::Shaders;
+  using Exp::R::Textures;
   using Exp::Render::AppWindow;
   using Exp::Render::Renderer;
   using Exp::Settings::SettingsManager;
@@ -67,6 +69,11 @@ int main(int, char* argv[])
   auto& models = Models::instance();
   {
     models.load_all();
+  }
+
+  auto& textures = Textures::instance();
+  {
+    textures.load_all();
   }
 
   auto& game_objects = GameObjects::instance();
@@ -148,6 +155,8 @@ int main(int, char* argv[])
   scripts.release();
 
   game_objects.release();
+
+  textures.release();
 
   models.release();
 

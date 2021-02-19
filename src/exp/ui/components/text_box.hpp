@@ -12,6 +12,7 @@ namespace Exp
       {
        public:
         TextBox(std::optional<sol::state>& script, std::string fn, std::string text);
+        ~TextBox() final = default;
 
         static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>;
 

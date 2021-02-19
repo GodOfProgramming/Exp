@@ -40,7 +40,7 @@ namespace Exp
       LOG(INFO) << "loading ui";
       using IO::File;
       IO::iterate_dir_with_namespace(DIR_UI, "exp", [&](std::filesystem::path path, std::string) {
-        LOG(INFO) << "loading ui " << path;
+        LOG(INFO) << "loading ui file " << path;
         File::load(path, [&](const std::string_view& src) { this->parse(src); });
       });
 
@@ -140,6 +140,8 @@ namespace Exp
 
     void UiManager::shutdown()
     {
+      this->elements.clear();
+      this->debug_elements.clear();
       ImGui_ImplOpenGL3_Shutdown();
       ImGui_ImplGlfw_Shutdown();
       ImGui::DestroyContext(this->context);

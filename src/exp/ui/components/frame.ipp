@@ -9,7 +9,10 @@ namespace Exp
     namespace Components
     {
       class IFrame: public Container
-      {};
+      {
+       public:
+        virtual ~IFrame() = default;
+      };
     }  // namespace Components
   }    // namespace Ui
 }  // namespace Exp

@@ -11,7 +11,8 @@ namespace Exp
       class WindowUi: public IWindowUi
       {
        public:
-        WindowUi();
+        WindowUi()        = default;
+        ~WindowUi() final = default;
 
         static auto from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>;
 
@@ -30,10 +31,11 @@ namespace Exp
         std::optional<sol::state> script;
 
         std::string title;
-        glm::ivec2 dim;
-        glm::ivec2 pos;
-        bool initial_render;
-        bool is_collapsed;
+        glm::ivec2 dim      = {};
+        glm::ivec2 pos      = {};
+        bool initial_render = false;
+        bool is_collapsed   = false;
+        bool is_fixed       = false;
       };
     }  // namespace Components
   }    // namespace Ui
