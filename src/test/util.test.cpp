@@ -1,7 +1,5 @@
 #include "exp/util.hpp"
 
-#include <gtest/gtest.h>
-
 using Exp::Util::Result;
 
 using TestResult = Result<std::string, std::string>;

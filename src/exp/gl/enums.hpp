@@ -10,5 +10,10 @@ namespace Exp
       STATIC  = GL_STATIC_DRAW,
       DYNAMIC = GL_DYNAMIC_DRAW,
     };
-  }
+
+    enum class TextureWrap
+    {
+      REPEAT = GL_REPEAT,
+    };
+  }  // namespace GL
 }  // namespace Exp

@@ -1,5 +1,9 @@
 {
   "wall": {
-    "file": "wall.jpg"
+    "file": "wall.jpg",
+    "wrap": {
+      "s": "repeat",
+      "t": "repeat"
+    }
   }
 }

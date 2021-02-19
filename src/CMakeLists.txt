@@ -21,6 +21,7 @@ set(PCH_HEADERS
   "<assimp/Importer.hpp>"
   "<assimp/scene.h>"
   "<assimp/postprocess.h>"
+  "<CImg.h>"
   "<chrono>"
   "<filesystem>"
   "<fstream>"
@@ -41,5 +42,9 @@ set(PCH_HEADERS
   "<variant>"
 )
 
+set(TEST_PCH_HEADERS
+  "<gtest/gtest.h>"
+)
+
 target_precompile_headers(${EXE} PUBLIC ${PCH_HEADERS})
-target_precompile_headers(${EXE_TEST} PUBLIC ${PCH_HEADERS})
+target_precompile_headers(${EXE_TEST} PUBLIC ${TEST_PCH_HEADERS} ${PCH_HEADERS})
