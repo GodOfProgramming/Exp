@@ -15,11 +15,12 @@ namespace Exp
 
         auto& scripts = Scripts::instance();
         sol::state lua;
-        if (scripts.make_script(m.script_id.value(), lua, [](sol::state_view& state) {
+        if (scripts.make_script(m.script_id.value(), lua, [this](sol::state_view& state) {
               ObjectMeta::add_usertype(state);
               Uniform::add_usertype(state);
               Object::add_usertype(state);
               Info::add_usertype(state);
+              state.set("self", this);
               return true;
             })) {
           this->script = std::move(lua);
@@ -27,9 +28,9 @@ namespace Exp
 
         if (this->script.has_value()) {
           auto& lua = this->script.value();
-          auto fn   = lua["Instantiate"];
+          auto fn   = lua["construct"];
           if (fn.get_type() == sol::type::function) {
-            fn.call(this);
+            fn.call();
           }
         }
       }
@@ -47,9 +48,9 @@ namespace Exp
     {
       if (this->script.has_value()) {
         auto& lua = this->script.value();
-        auto fn   = lua["Update"];
+        auto fn   = lua["update"];
         if (fn.get_type() == sol::type::function) {
-          fn.call(this);
+          fn.call();
         }
       }
     }

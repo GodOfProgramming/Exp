@@ -1,8 +1,8 @@
-function Instantiate(self)
+function construct()
   self.uniforms:set("colors", Uniform.new("u_colors"));
 end
 
-function Update(self)
+function update()
   local scale = 0.05
   local r = math.sin(game_info.frames * scale) / 2.0 + 0.5
   local g = math.sin(game_info.frames * scale) / 2.0 + 0.5

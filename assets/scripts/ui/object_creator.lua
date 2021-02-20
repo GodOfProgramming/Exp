@@ -1,7 +1,7 @@
 objects = GameObjects.instance();
 
-obj = nil;
-selected_obj = nil;
+meta = nil;
+selected_meta = nil;
 
 keys = objects:keys();
 
@@ -10,7 +10,7 @@ lidx = nil;
 function get_next_object(index)
   if index < #keys then
     local id = keys[index + 1];
-    obj = objects:get(id);
+    meta = objects:get(id);
     return true;
   else
     index = 0;
@@ -19,8 +19,8 @@ function get_next_object(index)
 end
 
 function object_text(self)
-  if obj ~= nil then
-    self.text = string.format("ID: %s", obj.id);
+  if meta ~= nil then
+    self.text = string.format("ID: %s", meta.id);
   else
     self.text = "Nil object detected";
   end
@@ -29,13 +29,13 @@ function object_text(self)
 end
 
 function set_object(self)
-  selected_obj = obj;
+  selected_meta = meta;
 end
 
 function did_select_object()
-  return selected_obj ~= nil;
+  return selected_meta ~= nil;
 end
 
 function get_wireframe_value(self)
-  self.text = "Wireframe: "..tostring(selected_obj.draw_desc.wireframe);
+  self.text = "Wireframe: "..tostring(selected_meta.draw_desc.wireframe);
 end
