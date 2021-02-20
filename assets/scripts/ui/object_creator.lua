@@ -1,5 +1,3 @@
-require("inspect");
-local inspect = require "assets.scripts.inspect"
 index = 1;
 
 objects = GameObjects.instance();
@@ -39,7 +37,7 @@ function object_text(self)
 end
 
 function set_object(self)
-  print(inspect(self));
+  print(window.title);
 end
 
 function did_select_object()

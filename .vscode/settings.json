@@ -63,7 +63,8 @@
     "game_info",
     "GameInfo",
     "Uniform",
-    "GameObjects"
+    "GameObjects",
+    "window"
   ],
   "Lua.diagnostics.disable": [
     "lowercase-global"

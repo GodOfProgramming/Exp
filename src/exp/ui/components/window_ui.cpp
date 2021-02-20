@@ -64,10 +64,11 @@ namespace Exp
           auto& scripts = Scripts::instance();
 
           sol::state lua;
-          if (!scripts.make_script(script_key, lua, [](sol::state_view& state) {
+          if (!scripts.make_script(script_key, lua, [window](sol::state_view& state) {
                 WindowUi::add_usertype(state);
                 TextBox::add_usertype(state);
                 Info::add_usertype(state);
+                state.set("window", window);
                 return true;
               })) {
             LOG(WARNING) << "unable to load script " << script_key;
