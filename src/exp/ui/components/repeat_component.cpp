@@ -92,7 +92,8 @@ namespace Exp
             auto& producer = R::ID<int>::producer_t::instance();
             std::vector<R::ID<int>> ids;
 
-            while (fn.call()) {
+            std::size_t index = 0;
+            while (fn.call(index++)) {
               auto id = producer.produce();
               ids.push_back(id);
               ImGui::PushID(id.value());

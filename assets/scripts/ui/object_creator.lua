@@ -7,7 +7,10 @@ selected_obj = nil;
 
 keys = objects:keys();
 
-function get_next_object()
+lidx = nil;
+
+function get_next_object(loop_index)
+  lidx = loop_index;
   local id = keys[index];
 
   if id == nil then
@@ -37,7 +40,7 @@ function object_text(self)
 end
 
 function set_object(self)
-  print(window.title);
+  print(string.format("idx = %d", lidx));
 end
 
 function did_select_object()
