@@ -30,8 +30,6 @@ namespace Exp
        private:
         const Container& container;
         R::ID<ImGuiID> imgui_id;
-        glm::ivec2 dim = {};
-        glm::ivec2 pos = {};
       };
     }  // namespace Components
   }    // namespace Ui

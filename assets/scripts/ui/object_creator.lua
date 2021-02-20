@@ -1,5 +1,3 @@
-index = 1;
-
 objects = GameObjects.instance();
 
 obj = nil;
@@ -9,23 +7,14 @@ keys = objects:keys();
 
 lidx = nil;
 
-function get_next_object(loop_index)
-  lidx = loop_index;
-  local id = keys[index];
-
-  if id == nil then
-    index = 1;
-    return false;
-  end
-
-  obj = objects:get(id);
-
-  if obj == nil then
-    index = 1;
-    return false;
-  else
-    index = index + 1;
+function get_next_object(index)
+  if index < #keys then
+    local id = keys[index + 1];
+    obj = objects:get(id);
     return true;
+  else
+    index = 0;
+    return false
   end
 end
 
@@ -40,7 +29,7 @@ function object_text(self)
 end
 
 function set_object(self)
-  print(string.format("idx = %d", lidx));
+  selected_obj = obj;
 end
 
 function did_select_object()
