@@ -11,6 +11,7 @@ namespace Exp
       class GlErrorsUi: public UiComponent
       {
        public:
+        GlErrorsUi();
         virtual ~GlErrorsUi() = default;
 
         void render() final;

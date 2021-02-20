@@ -18,6 +18,7 @@ namespace Exp
   constexpr const char* UI_EL_REPEAT             = "repeat";
   constexpr const char* UI_EL_TEXT_BOX           = "text";
   constexpr const char* UI_EL_WINDOW             = "window";
+  constexpr const char* UI_ATTR_ID               = "id";
   constexpr const char* UI_ATTR_BUTTON           = "button";
   constexpr const char* UI_ATTR_COLLAPSED        = "collapsed";
   constexpr const char* UI_ATTR_FIXED            = "fixed";

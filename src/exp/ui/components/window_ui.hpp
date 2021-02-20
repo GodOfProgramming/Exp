@@ -1,6 +1,6 @@
 #pragma once
 
-#include "window_ui.ipp"
+#include "exp/ui/components/container.hpp"
 
 namespace Exp
 {
@@ -8,11 +8,11 @@ namespace Exp
   {
     namespace Components
     {
-      class WindowUi: public IWindowUi
+      class WindowUi: public Container
       {
        public:
-        WindowUi()        = default;
-        ~WindowUi() final = default;
+        WindowUi();
+        ~WindowUi() final;
 
         static auto from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>;
 
@@ -27,12 +27,9 @@ namespace Exp
         auto display_text() noexcept -> std::string final;
 
        private:
-        std::vector<std::shared_ptr<UiComponent>> elements;
-        std::optional<sol::state> script;
+        std::optional<sol::state> doc_script;
 
         std::string title;
-        glm::ivec2 dim      = {};
-        glm::ivec2 pos      = {};
         bool initial_render = false;
         bool is_collapsed   = false;
         bool is_fixed       = false;

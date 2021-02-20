@@ -56,11 +56,11 @@ namespace Exp
       return this->scripts.end();
     }
 
-    void Scripts::make_script(std::string id, std::optional<sol::state>& state, std::function<bool(sol::state_view&)> callback)
+    auto Scripts::make_script(std::string id, sol::state& state, std::function<bool(sol::state_view&)> callback) -> bool
     {
       auto iter = this->find(id);
       if (iter == this->end()) {
-        return;
+        return false;
       }
 
       sol::state lua;
@@ -93,14 +93,14 @@ namespace Exp
       GameObjects::add_usertype(lua);
 
       if (!callback(lua)) {
-        return;
+        return false;
       }
 
       auto res = lua.load(iter->second.src);
       if (!res.valid()) {
         sol::error err = res;
         LOG(WARNING) << "bad script load result:\n" << err.what();
-        return;
+        return false;
       }
 
       auto exec_res = res();
@@ -108,10 +108,11 @@ namespace Exp
         sol::error err = exec_res;
         res.status();
         LOG(WARNING) << "bad script exec result:\n" << err.what();
-        return;
+        return false;
       }
 
       state = std::move(lua);
+      return true;
     }
   }  // namespace R
 }  // namespace Exp

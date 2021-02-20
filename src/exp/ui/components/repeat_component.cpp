@@ -10,11 +10,16 @@ namespace Exp
   {
     namespace Components
     {
-      RepeatComponent::RepeatComponent(std::optional<sol::state>& s)
-       : script(s)
+      RepeatComponent::RepeatComponent(std::optional<sol::state_view> script)
+       : UiComponent(script)
       {}
 
-      auto RepeatComponent::from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>
+      RepeatComponent::~RepeatComponent()
+      {
+        UiComponent::release();
+      }
+
+      auto RepeatComponent::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
       {
         if (!script.has_value()) {
           LOG(WARNING) << "repeat element window missing script";
@@ -27,11 +32,10 @@ namespace Exp
           return nullptr;
         }
 
-        auto repeat = std::make_shared<RepeatComponent>(script);
+        std::shared_ptr<RepeatComponent> repeat(new RepeatComponent(script));
 
-        std::string if_func;
-        if (UiComponent::has_attr_if(self_el, if_func)) {
-          repeat->if_fn = if_func;
+        if (!UiComponent::from_node(self_el, repeat)) {
+          return nullptr;
         }
 
         if (!UiComponent::has_attr_while(self_el, repeat->while_fn)) {
@@ -39,7 +43,7 @@ namespace Exp
           return nullptr;
         }
 
-        decltype(repeat->elements) potential_elements;
+        std::vector<std::shared_ptr<UiComponent>> potential_elements;
 
         for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
           std::string type = child->Value();
@@ -64,14 +68,19 @@ namespace Exp
           }
         }
 
-        repeat->elements = std::move(potential_elements);
+        for (auto el : potential_elements) {
+          if (!repeat->add_element(el)) {
+            LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
+            return nullptr;
+          }
+        }
 
         return repeat;
       }
 
       void RepeatComponent::render()
       {
-        if (!this->eval_if(this->script)) {
+        if (this->script.has_value() && !this->eval_if(this->script.value())) {
           return;
         }
 
@@ -87,7 +96,7 @@ namespace Exp
               auto id = producer.produce();
               ids.push_back(id);
               ImGui::PushID(id.value());
-              for (const auto& element : elements) { element->render(); }
+              UiComponent::render_children();
               ImGui::PopID();
             }
 

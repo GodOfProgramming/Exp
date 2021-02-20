@@ -9,6 +9,10 @@ namespace Exp
   {
     namespace Components
     {
+      GlErrorsUi::GlErrorsUi()
+       : UiComponent(std::nullopt)
+      {}
+
       void GlErrorsUi::render()
       {
         using Render::AppWindow;

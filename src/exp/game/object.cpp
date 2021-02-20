@@ -14,13 +14,16 @@ namespace Exp
         using R::Scripts;
 
         auto& scripts = Scripts::instance();
-        scripts.make_script(m.script_id.value(), this->script, [](sol::state_view& state) {
-          ObjectMeta::add_usertype(state);
-          Uniform::add_usertype(state);
-          Object::add_usertype(state);
-          Info::add_usertype(state);
-          return true;
-        });
+        sol::state lua;
+        if (scripts.make_script(m.script_id.value(), lua, [](sol::state_view& state) {
+              ObjectMeta::add_usertype(state);
+              Uniform::add_usertype(state);
+              Object::add_usertype(state);
+              Info::add_usertype(state);
+              return true;
+            })) {
+          this->script = std::move(lua);
+        }
 
         if (this->script.has_value()) {
           auto& lua = this->script.value();

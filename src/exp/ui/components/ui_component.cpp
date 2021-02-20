@@ -6,6 +6,36 @@ namespace Exp
 {
   namespace Ui
   {
+    UiComponent::UiComponent(std::optional<sol::state_view> s)
+     : script(s)
+    {
+      this->secret_id = R::ID<std::size_t>::producer_t::instance().produce();
+    }
+
+    UiComponent::~UiComponent()
+    {
+      this->secret_id.release();
+    }
+
+    void UiComponent::release()
+    {
+      this->script = std::nullopt;
+      this->elements.clear();
+      this->element_map.clear();
+    }
+
+    auto UiComponent::from_node(tinyxml2::XMLElement* self, std::shared_ptr<UiComponent> cmp) -> bool
+    {
+      UiComponent::has_attr_id(self, cmp->id);
+
+      std::string if_func;
+      if (UiComponent::has_attr_if(self, if_func)) {
+        cmp->if_fn = if_func;
+      }
+
+      return true;
+    }
+
     void UiComponent::enable(bool value) noexcept
     {
       this->enabled = value;
@@ -14,6 +44,19 @@ namespace Exp
     auto UiComponent::is_enabled() const noexcept -> bool
     {
       return this->enabled;
+    }
+
+    auto UiComponent::add_element(std::shared_ptr<UiComponent> el) -> bool
+    {
+      this->elements.push_back(el);
+      if (!el->id.empty()) {
+        if (this->element_map.find(id) == this->element_map.end()) {
+          this->element_map[el->id] = el;
+        } else {
+          return false;
+        }
+      }
+      return true;
     }
 
     auto UiComponent::has_attr_script(tinyxml2::XMLElement* self, std::string& script) -> bool
@@ -25,6 +68,18 @@ namespace Exp
       }
 
       script = script_attr->Value();
+      return true;
+    }
+
+    auto UiComponent::has_attr_id(tinyxml2::XMLElement* self, std::string& id) -> bool
+    {
+      auto id_attr = self->FindAttribute(UI_ATTR_ID);
+
+      if (id_attr == nullptr) {
+        return false;
+      }
+
+      id = id_attr->Value();
       return true;
     }
 
@@ -175,17 +230,21 @@ namespace Exp
       return false;
     }
 
-    auto UiComponent::eval_if(std::optional<sol::state>& scriptopt) const -> bool
+    auto UiComponent::eval_if(sol::state_view lua) const -> bool
     {
-      if (this->if_fn.has_value() && scriptopt.has_value()) {
-        auto& script = scriptopt.value();
-        auto& if_fn  = this->if_fn.value();
-        auto fn      = script[if_fn];
+      if (this->if_fn.has_value()) {
+        auto& if_fn = this->if_fn.value();
+        auto fn     = lua[if_fn];
         if (fn.get_type() == sol::type::function) {
           return fn.call();
         }
       }
       return true;
+    }
+
+    void UiComponent::render_children()
+    {
+      for (const auto& element : this->elements) { element->render(); }
     }
   }  // namespace Ui
 }  // namespace Exp

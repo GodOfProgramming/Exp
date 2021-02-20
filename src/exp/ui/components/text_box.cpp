@@ -6,13 +6,18 @@ namespace Exp
   {
     namespace Components
     {
-      TextBox::TextBox(std::optional<sol::state>& s)
-       : script(s)
+      TextBox::TextBox(std::optional<sol::state_view> s)
+       : UiComponent(s)
       {
         this->enable(true);
       }
 
-      auto TextBox::from_node(tinyxml2::XMLNode* self, std::optional<sol::state>& script) -> std::shared_ptr<UiComponent>
+      TextBox::~TextBox()
+      {
+        UiComponent::release();
+      }
+
+      auto TextBox::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
       {
         auto self_el = self->ToElement();
         if (self_el == nullptr) {
@@ -20,16 +25,15 @@ namespace Exp
           return nullptr;
         }
 
-        auto text_box = std::make_shared<TextBox>(script);
+        std::shared_ptr<TextBox> text_box(new TextBox(script));
+
+        if (!UiComponent::from_node(self_el, text_box)) {
+          return nullptr;
+        }
 
         auto el_text = self_el->GetText();
         if (el_text != nullptr) {
           text_box->text = el_text;
-        }
-
-        std::string if_func;
-        if (UiComponent::has_attr_if(self_el, if_func)) {
-          text_box->if_fn = if_func;
         }
 
         std::string text_func;
@@ -63,7 +67,7 @@ namespace Exp
 
       void TextBox::render()
       {
-        if (!this->eval_if(this->script)) {
+        if (this->script.has_value() && !this->eval_if(this->script.value())) {
           return;
         }
 

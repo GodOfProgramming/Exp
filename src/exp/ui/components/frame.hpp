@@ -1,7 +1,7 @@
 #pragma once
 
 #include "exp/resources/id.hpp"
-#include "frame.ipp"
+#include "exp/ui/components/container.hpp"
 
 namespace Exp
 {
@@ -9,13 +9,13 @@ namespace Exp
   {
     namespace Components
     {
-      class Frame: public IFrame
+      class Frame: public Container
       {
        public:
-        Frame(const Container& container, std::optional<sol::state>& parent_script);
+        Frame(std::optional<sol::state_view> script, const Container& container);
         ~Frame() final;
 
-        static auto from_node(tinyxml2::XMLNode* self, const Container& container, std::optional<sol::state>& parent_script) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script, const Container& container) -> std::shared_ptr<UiComponent>;
 
         static void add_usertype(sol::state_view& state);
 
@@ -28,11 +28,8 @@ namespace Exp
         auto display_text() noexcept -> std::string final;
 
        private:
-        std::vector<std::shared_ptr<UiComponent>> elements;
         const Container& container;
-        std::optional<sol::state>& parent_script;
-        std::optional<sol::state> script;
-        R::ID<ImGuiID> id;
+        R::ID<ImGuiID> imgui_id;
         glm::ivec2 dim = {};
         glm::ivec2 pos = {};
       };

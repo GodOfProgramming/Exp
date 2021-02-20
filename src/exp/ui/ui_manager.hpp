@@ -25,7 +25,7 @@ namespace Exp
 
       void render();
 
-      void shutdown();
+      void release();
 
       auto parse(const std::string_view& xml) -> bool;
 

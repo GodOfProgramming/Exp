@@ -43,7 +43,6 @@ namespace Exp
         LOG(INFO) << "loading ui file " << path;
         File::load(path, [&](const std::string_view& src) { this->parse(src); });
       });
-
       this->debug_elements.push_back(std::make_shared<Components::ShaderUi>());
       this->debug_elements.push_back(std::make_shared<Components::GlErrorsUi>());
     }
@@ -56,6 +55,7 @@ namespace Exp
       auto res = document.Parse(xml.data(), xml.length());
       if (res != tinyxml2::XML_SUCCESS) {
         LOG(WARNING) << "unable to parse Ui Xml: " << res;
+        return false;
       }
 
       auto first               = document.FirstChild();
@@ -138,7 +138,7 @@ namespace Exp
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
-    void UiManager::shutdown()
+    void UiManager::release()
     {
       this->elements.clear();
       this->debug_elements.clear();

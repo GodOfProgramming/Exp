@@ -11,6 +11,7 @@ namespace Exp
       class ShaderUi: public UiComponent
       {
        public:
+        ShaderUi();
         virtual ~ShaderUi() final = default;
 
         void render() final;

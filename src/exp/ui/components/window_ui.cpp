@@ -14,6 +14,15 @@ namespace Exp
   {
     namespace Components
     {
+      WindowUi::WindowUi()
+       : Container(std::nullopt)
+      {}
+
+      WindowUi::~WindowUi()
+      {
+        Container::release();
+      }
+
       void WindowUi::add_usertype(sol::state_view& state)
       {
         state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
@@ -31,11 +40,13 @@ namespace Exp
           return nullptr;
         }
 
-        auto window = std::make_shared<WindowUi>();
+        std::shared_ptr<WindowUi> window(new WindowUi());
 
-        std::string if_func;
-        if (UiComponent::has_attr_if(self_el, if_func)) {
-          window->if_fn = if_func;
+        auto& app_window = AppWindow::instance();
+        auto size        = app_window.get_size();
+
+        if (!Container::from_node(self_el, window, size)) {
+          return nullptr;
         }
 
         // TODO change this to a function name, similar to how text boxes work
@@ -48,55 +59,26 @@ namespace Exp
 
         UiComponent::has_attr_fixed(self_el, window->is_fixed);
 
-        auto& app_window = AppWindow::instance();
-        auto size        = app_window.get_size();
-
-        float width_percent;
-        if (UiComponent::has_attr_width(self_el, width_percent)) {
-          window->dim.x = static_cast<int>(size.x * width_percent / 100.0);
-        } else {
-          window->dim.x = static_cast<int>(size.x / 2);
-        }
-
-        float height_percent;
-        if (UiComponent::has_attr_height(self_el, height_percent)) {
-          window->dim.y = static_cast<int>(size.y * height_percent / 100.0);
-        } else {
-          window->dim.y = static_cast<int>(size.y / 2);
-        }
-
-        float x_percent;
-        if (UiComponent::has_attr_x(self_el, x_percent)) {
-          window->pos.x = size.x * x_percent / 100.0;
-        } else {
-          window->pos.x = 0;
-        }
-
-        float y_percent;
-        if (UiComponent::has_attr_y(self_el, y_percent)) {
-          window->pos.y = size.y * y_percent / 100.0;
-        } else {
-          window->pos.y = 0;
-        }
-
         std::string script_key;
         if (UiComponent::has_attr_script(self_el, script_key)) {
           auto& scripts = Scripts::instance();
 
-          scripts.make_script(script_key, window->script, [](sol::state_view& state) {
-            WindowUi::add_usertype(state);
-            TextBox::add_usertype(state);
-            Info::add_usertype(state);
-            return true;
-          });
-
-          if (!window->script.has_value()) {
+          sol::state lua;
+          if (!scripts.make_script(script_key, lua, [](sol::state_view& state) {
+                WindowUi::add_usertype(state);
+                TextBox::add_usertype(state);
+                Info::add_usertype(state);
+                return true;
+              })) {
             LOG(WARNING) << "unable to load script " << script_key;
             return nullptr;
           }
+
+          window->doc_script = std::move(lua);
+          window->script     = window->doc_script.value();
         }
 
-        decltype(window->elements) potential_elements;
+        std::vector<std::shared_ptr<UiComponent>> potential_elements;
 
         for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
           std::string type = child->Value();
@@ -116,7 +98,7 @@ namespace Exp
               return nullptr;
             }
           } else if (type == UI_EL_FRAME) {
-            auto el = Frame::from_node(child, *window, window->script);
+            auto el = Frame::from_node(child, window->script, *window);
             if (el) {
               potential_elements.push_back(el);
             } else {
@@ -128,7 +110,12 @@ namespace Exp
           }
         }
 
-        window->elements = std::move(potential_elements);
+        for (auto el : potential_elements) {
+          if (!window->add_element(el)) {
+            LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
+            return nullptr;
+          }
+        }
 
         return window;
       }
@@ -145,7 +132,7 @@ namespace Exp
 
       void WindowUi::render()
       {
-        if (!this->eval_if(this->script)) {
+        if (this->script.has_value() && !this->eval_if(this->script.value())) {
           return;
         }
 
@@ -169,7 +156,7 @@ namespace Exp
           auto sz   = ImGui::GetWindowSize();
           this->dim = { sz.x, sz.y };
 
-          for (const auto& element : elements) { element->render(); }
+          UiComponent::render_children();
         }
         ImGui::End();
 

@@ -9,6 +9,10 @@ namespace Exp
   {
     namespace Components
     {
+      ShaderUi::ShaderUi()
+       : UiComponent(std::nullopt)
+      {}
+
       void ShaderUi::render()
       {
         using Render::AppWindow;
