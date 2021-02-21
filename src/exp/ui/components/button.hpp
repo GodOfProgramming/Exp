@@ -1,7 +1,6 @@
 #pragma once
 
-#include "exp/resources/id.hpp"
-#include "exp/ui/components/ui_component.hpp"
+#include "ui_component.hpp"
 
 namespace Exp
 {
@@ -9,15 +8,13 @@ namespace Exp
   {
     namespace Components
     {
-      class TextBox: public UiComponent
+      class Button: public UiComponent
       {
        public:
-        TextBox(std::optional<sol::state_view> script);
-        ~TextBox() final;
+        Button(std::optional<sol::state_view> script);
+        ~Button();
 
         static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>;
-
-        static void add_usertype(sol::state_view& state);
 
         void render() final;
 
@@ -25,7 +22,7 @@ namespace Exp
 
        private:
         std::string text;
-        std::optional<std::string> text_fn;
+        std::string fn;
       };
     }  // namespace Components
   }    // namespace Ui

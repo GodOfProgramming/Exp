@@ -1,8 +1,11 @@
 #include "repeat_component.hpp"
 
+#include "button.hpp"
 #include "exp/constants.hpp"
 #include "exp/resources/id.hpp"
-#include "exp/ui/components/text_box.hpp"
+#include "frame.hpp"
+#include "sameline.hpp"
+#include "text_box.hpp"
 
 namespace Exp
 {
@@ -21,61 +24,71 @@ namespace Exp
 
       auto RepeatComponent::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
       {
-        if (!script.has_value()) {
-          LOG(WARNING) << "repeat element window missing script";
-          return nullptr;
-        }
-
-        auto self_el = self->ToElement();
-        if (self_el == nullptr) {
-          LOG(WARNING) << "unable to convert repeat component to element type";
-          return nullptr;
-        }
-
-        std::shared_ptr<RepeatComponent> repeat(new RepeatComponent(script));
-
-        if (!UiComponent::from_node(self_el, repeat)) {
-          return nullptr;
-        }
-
-        if (!UiComponent::has_attr_while(self_el, repeat->while_fn)) {
-          LOG(WARNING) << "repeat component missing while attrib";
-          return nullptr;
-        }
-
-        std::vector<std::shared_ptr<UiComponent>> potential_elements;
-
-        for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
-          std::string type = child->Value();
-
-          if (type == UI_EL_TEXT_BOX) {
-            auto el = TextBox::from_node(child, repeat->script);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else if (type == UI_EL_REPEAT) {
-            auto el = RepeatComponent::from_node(child, repeat->script);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else {
-            LOG(WARNING) << "invalid type detected " << type;
+        return UiComponent::unwrap_node(self, [script](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+          if (!script.has_value()) {
+            LOG(WARNING) << "repeat element window missing script";
             return nullptr;
           }
-        }
 
-        for (auto el : potential_elements) {
-          if (!repeat->add_element(el)) {
-            LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
+          std::shared_ptr<RepeatComponent> repeat(new RepeatComponent(script));
+
+          if (!UiComponent::from_node(self, repeat)) {
             return nullptr;
           }
-        }
 
-        return repeat;
+          if (!UiComponent::has_attr_while(self, repeat->while_fn)) {
+            LOG(WARNING) << "repeat component missing while attrib";
+            return nullptr;
+          }
+
+          std::vector<std::shared_ptr<UiComponent>> potential_elements;
+
+          for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
+            std::string type = child->Value();
+
+            if (type == UI_EL_TEXT_BOX) {
+              auto el = TextBox::from_node(child, repeat->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_REPEAT) {
+              auto el = RepeatComponent::from_node(child, repeat->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_SAMELINE) {
+              auto el = Sameline::from_node(child, repeat->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_BUTTON) {
+              auto el = Button::from_node(child, repeat->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else {
+              LOG(WARNING) << "invalid type detected " << type;
+              return nullptr;
+            }
+          }
+
+          for (auto el : potential_elements) {
+            if (!repeat->add_element(el)) {
+              LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
+              return nullptr;
+            }
+          }
+
+          return repeat;
+        });
       }
 
       void RepeatComponent::render()

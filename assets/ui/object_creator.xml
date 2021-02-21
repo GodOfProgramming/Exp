@@ -1,7 +1,10 @@
 <window title="Objects" x="10" y="10" width="80" height="80" script="exp.ui.object_creator">
   <frame width="100" height="50">
     <repeat while="get_next_object">
-      <text fn="object_text" button="set_object"></text>
+      <sameline>
+        <text fn="object_text"></text>
+        <button click="set_object">Set</button>
+      </sameline>
     </repeat>
   </frame>
   <frame if="did_select_object" width="100" height="50">

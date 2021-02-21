@@ -1,11 +1,13 @@
 #include "window_ui.hpp"
 
+#include "button.hpp"
 #include "exp/constants.hpp"
 #include "exp/game/info.hpp"
 #include "exp/render/app_window.hpp"
 #include "exp/resources/scripts.hpp"
 #include "frame.hpp"
 #include "repeat_component.hpp"
+#include "sameline.hpp"
 #include "text_box.hpp"
 
 namespace Exp
@@ -30,95 +32,105 @@ namespace Exp
 
       auto WindowUi::from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>
       {
-        using Game::Info;
-        using R::Scripts;
-        using Render::AppWindow;
+        return UiComponent::unwrap_node(self, [](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+          using Game::Info;
+          using R::Scripts;
+          using Render::AppWindow;
 
-        auto self_el = self->ToElement();
-        if (self_el == nullptr) {
-          LOG(WARNING) << "unable to convert window to element type";
-          return nullptr;
-        }
+          std::shared_ptr<WindowUi> window(new WindowUi());
 
-        std::shared_ptr<WindowUi> window(new WindowUi());
+          auto& app_window = AppWindow::instance();
+          auto size        = app_window.get_size();
 
-        auto& app_window = AppWindow::instance();
-        auto size        = app_window.get_size();
-
-        if (!Container::from_node(self_el, window, size)) {
-          return nullptr;
-        }
-
-        // TODO change this to a function name, similar to how text boxes work
-        if (!UiComponent::has_attr_title(self_el, window->title)) {
-          LOG(WARNING) << "unable to get title value of window";
-          return nullptr;
-        }
-
-        UiComponent::has_attr_collapsed(self_el, window->is_collapsed);
-
-        UiComponent::has_attr_fixed(self_el, window->is_fixed);
-
-        std::string script_key;
-        if (UiComponent::has_attr_script(self_el, script_key)) {
-          auto& scripts = Scripts::instance();
-
-          sol::state lua;
-          if (!scripts.make_script(script_key, lua, [window](sol::state_view& state) {
-                WindowUi::add_usertype(state);
-                TextBox::add_usertype(state);
-                Info::add_usertype(state);
-                state.set("window", window);
-                return true;
-              })) {
-            LOG(WARNING) << "unable to load script " << script_key;
+          if (!Container::from_node(self, window, size)) {
             return nullptr;
           }
 
-          window->doc_script = std::move(lua);
-          window->script     = window->doc_script.value();
-        }
-
-        std::vector<std::shared_ptr<UiComponent>> potential_elements;
-
-        for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
-          std::string type = child->Value();
-
-          if (type == UI_EL_TEXT_BOX) {
-            auto el = TextBox::from_node(child, window->script);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else if (type == UI_EL_REPEAT) {
-            auto el = RepeatComponent::from_node(child, window->script);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else if (type == UI_EL_FRAME) {
-            auto el = Frame::from_node(child, window->script, *window);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else {
-            LOG(WARNING) << "invalid type detected " << type;
+          // TODO change this to a function name, similar to how text boxes work
+          if (!UiComponent::has_attr_title(self, window->title)) {
+            LOG(WARNING) << "unable to get title value of window";
             return nullptr;
           }
-        }
 
-        for (auto el : potential_elements) {
-          if (!window->add_element(el)) {
-            LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
-            return nullptr;
+          UiComponent::has_attr_collapsed(self, window->is_collapsed);
+
+          UiComponent::has_attr_fixed(self, window->is_fixed);
+
+          std::string script_key;
+          if (UiComponent::has_attr_script(self, script_key)) {
+            auto& scripts = Scripts::instance();
+
+            sol::state lua;
+            if (!scripts.make_script(script_key, lua, [window](sol::state_view& state) {
+                  WindowUi::add_usertype(state);
+                  TextBox::add_usertype(state);
+                  Info::add_usertype(state);
+                  state.set("window", window);
+                  return true;
+                })) {
+              LOG(WARNING) << "unable to load script " << script_key;
+              return nullptr;
+            }
+
+            window->doc_script = std::move(lua);
+            window->script     = window->doc_script.value();
           }
-        }
 
-        return window;
+          std::vector<std::shared_ptr<UiComponent>> potential_elements;
+
+          for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
+            std::string type = child->Value();
+
+            if (type == UI_EL_TEXT_BOX) {
+              auto el = TextBox::from_node(child, window->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_REPEAT) {
+              auto el = RepeatComponent::from_node(child, window->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_FRAME) {
+              auto el = Frame::from_node(child, window->script, *window);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_SAMELINE) {
+              auto el = Sameline::from_node(child, window->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_BUTTON) {
+              auto el = Button::from_node(child, window->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else {
+              LOG(WARNING) << "invalid type detected " << type;
+              return nullptr;
+            }
+          }
+
+          for (auto el : potential_elements) {
+            if (!window->add_element(el)) {
+              LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
+              return nullptr;
+            }
+          }
+
+          return window;
+        });
       }
 
       auto WindowUi::width() const noexcept -> int

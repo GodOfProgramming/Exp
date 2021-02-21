@@ -1,10 +1,12 @@
 #include "frame.hpp"
 
+#include "button.hpp"
 #include "exp/constants.hpp"
 #include "exp/game/info.hpp"
 #include "exp/resources/producer.hpp"
 #include "exp/resources/scripts.hpp"
 #include "repeat_component.hpp"
+#include "sameline.hpp"
 #include "text_box.hpp"
 
 namespace Exp
@@ -29,55 +31,65 @@ namespace Exp
 
       auto Frame::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script, const Container& container) -> std::shared_ptr<UiComponent>
       {
-        using Game::Info;
-        using R::Scripts;
+        return UiComponent::unwrap_node(self, [script, &container](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+          using Game::Info;
+          using R::Scripts;
 
-        auto self_el = self->ToElement();
-        if (self_el == nullptr) {
-          LOG(WARNING) << "unable to convert frame to element type";
-          return nullptr;
-        }
+          std::shared_ptr<Frame> frame(new Frame(script, container));
+          glm::ivec2 size = { frame->container.width(), frame->container.height() };
 
-        std::shared_ptr<Frame> frame(new Frame(script, container));
-        glm::ivec2 size = { frame->container.width(), frame->container.height() };
-
-        if (!Container::from_node(self_el, frame, size)) {
-          return nullptr;
-        }
-
-        std::vector<std::shared_ptr<UiComponent>> potential_elements;
-
-        for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
-          std::string type = child->Value();
-
-          if (type == UI_EL_TEXT_BOX) {
-            auto el = TextBox::from_node(child, frame->script);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else if (type == UI_EL_REPEAT) {
-            auto el = RepeatComponent::from_node(child, frame->script);
-            if (el) {
-              potential_elements.push_back(el);
-            } else {
-              return nullptr;
-            }
-          } else {
-            LOG(WARNING) << "invalid type detected " << type;
+          if (!Container::from_node(self, frame, size)) {
             return nullptr;
           }
-        }
 
-        for (auto el : potential_elements) {
-          if (!frame->add_element(el)) {
-            LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
-            return nullptr;
+          std::vector<std::shared_ptr<UiComponent>> potential_elements;
+
+          for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
+            std::string type = child->Value();
+
+            if (type == UI_EL_TEXT_BOX) {
+              auto el = TextBox::from_node(child, frame->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_REPEAT) {
+              auto el = RepeatComponent::from_node(child, frame->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_SAMELINE) {
+              auto el = Sameline::from_node(child, frame->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else if (type == UI_EL_BUTTON) {
+              auto el = Button::from_node(child, frame->script);
+              if (el) {
+                potential_elements.push_back(el);
+              } else {
+                return nullptr;
+              }
+            } else {
+              LOG(WARNING) << "invalid type detected " << type;
+              return nullptr;
+            }
           }
-        }
 
-        return frame;
+          for (auto el : potential_elements) {
+            if (!frame->add_element(el)) {
+              LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
+              return nullptr;
+            }
+          }
+
+          return frame;
+        });
       }
 
       void Frame::add_usertype(sol::state_view& state)

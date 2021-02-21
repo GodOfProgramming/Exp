@@ -24,6 +24,18 @@ namespace Exp
       this->element_map.clear();
     }
 
+    auto UiComponent::unwrap_node(tinyxml2::XMLNode* node, std::function<std::shared_ptr<UiComponent>(tinyxml2::XMLElement*)> callback)
+     -> std::shared_ptr<UiComponent>
+    {
+      auto el = node->ToElement();
+      if (el == nullptr) {
+        LOG(WARNING) << "unable to convert xml node to element type";
+        return nullptr;
+      }
+
+      return callback(el);
+    }
+
     auto UiComponent::from_node(tinyxml2::XMLElement* self, std::shared_ptr<UiComponent> cmp) -> bool
     {
       UiComponent::has_attr_id(self, cmp->id);
@@ -92,6 +104,18 @@ namespace Exp
       }
 
       fn = if_attr->Value();
+      return true;
+    }
+
+    auto UiComponent::has_attr_click(tinyxml2::XMLElement* self, std::string& fn) -> bool
+    {
+      auto click_attr = self->FindAttribute(UI_ATTR_CLICK);
+
+      if (click_attr == nullptr) {
+        return false;
+      }
+
+      fn = click_attr->Value();
       return true;
     }
 
@@ -240,6 +264,16 @@ namespace Exp
         }
       }
       return true;
+    }
+
+    auto UiComponent::begin() -> ElementList::iterator
+    {
+      return this->elements.begin();
+    }
+
+    auto UiComponent::end() -> ElementList::iterator
+    {
+      return this->elements.end();
     }
 
     void UiComponent::render_children()

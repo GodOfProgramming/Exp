@@ -8,6 +8,10 @@ namespace Exp
   {
     class UiComponent
     {
+     protected:
+      using ElementList = std::vector<std::shared_ptr<UiComponent>>;
+      using ElementMap  = std::map<std::string, std::shared_ptr<UiComponent>>;
+
      public:
       virtual ~UiComponent();
 
@@ -27,11 +31,18 @@ namespace Exp
 
       std::string id;
 
+      auto begin() -> ElementList::iterator;
+      auto end() -> ElementList::iterator;
+
      protected:
       UiComponent(std::optional<sol::state_view> script);
       void release();
 
+      static auto unwrap_node(tinyxml2::XMLNode* node, std::function<std::shared_ptr<UiComponent>(tinyxml2::XMLElement*)> callback)
+       -> std::shared_ptr<UiComponent>;
+
       static auto has_attr_button(tinyxml2::XMLElement* self, std::string& fn) -> bool;
+      static auto has_attr_click(tinyxml2::XMLElement* self, std::string& fn) -> bool;
       static auto has_attr_collapsed(tinyxml2::XMLElement* self, bool& is_collapsed) -> bool;
       static auto has_attr_fixed(tinyxml2::XMLElement* self, bool& is_fixed) -> bool;
       static auto has_attr_fn(tinyxml2::XMLElement* self, std::string& fn) -> bool;
@@ -51,14 +62,12 @@ namespace Exp
 
       std::optional<std::string> if_fn;
 
-      sol::table userdata;
-
      private:
       static auto has_attr_id(tinyxml2::XMLElement* self, std::string& id) -> bool;
       static auto has_attr_if(tinyxml2::XMLElement* self, std::string& fn) -> bool;
 
-      std::vector<std::shared_ptr<UiComponent>> elements;
-      std::map<std::string, std::shared_ptr<UiComponent>> element_map;
+      ElementList elements;
+      ElementMap element_map;
       bool enabled = false;
       R::ID<std::size_t> secret_id;
     };

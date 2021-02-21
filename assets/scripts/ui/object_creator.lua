@@ -1,3 +1,4 @@
+inspect = require('inspect');
 objects = GameObjects.instance();
 
 meta = nil;
@@ -24,8 +25,6 @@ function object_text(self)
   else
     self.text = "Nil object detected";
   end
-
-  self.btn_text = "Set";
 end
 
 function set_object(self)
