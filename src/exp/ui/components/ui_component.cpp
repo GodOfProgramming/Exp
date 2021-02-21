@@ -71,6 +71,18 @@ namespace Exp
       return true;
     }
 
+    void UiComponent::remove_element(std::shared_ptr<UiComponent> el)
+    {
+      auto entry = std::find_if(
+       this->element_map.begin(), this->element_map.end(), [&](ElementMap::value_type kvp) { return kvp.second->secret_id.value() == el->secret_id.value(); });
+      if (entry != this->element_map.end()) {
+        this->element_map.erase(entry);
+      }
+
+      this->elements.erase(std::remove_if(
+       this->elements.begin(), this->elements.end(), [&](ElementList::value_type item) { return item->secret_id.value() == el->secret_id.value(); }));
+    }
+
     auto UiComponent::has_attr_onparse(tinyxml2::XMLElement* self, std::string& fn) -> bool
     {
       auto onparsed_attr = self->FindAttribute(Attr::ON_PARSED);

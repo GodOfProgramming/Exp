@@ -27,7 +27,7 @@ namespace Exp
 
       auto add_element(std::shared_ptr<UiComponent> el) -> bool;
 
-      auto remove_element(const UiComponent& el);
+      void remove_element(std::shared_ptr<UiComponent> el);
 
       std::string id;
 
