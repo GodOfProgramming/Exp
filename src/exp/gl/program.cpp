@@ -7,9 +7,8 @@ namespace Exp
 {
   namespace GL
   {
-    Program::Program(const std::string i)
-     : id(i)
-     , valid(false)
+    Program::Program()
+     : valid(false)
     {
       this->pid = glCreateProgram();
       if (!GL_CHECK()) {
@@ -23,11 +22,6 @@ namespace Exp
         glDeleteProgram(this->pid);
         GL_CHECK();
       }
-    }
-
-    void Program::add_usertype(sol::state_view state)
-    {
-      state.new_usertype<Program>(Lua::Usertypes::GL::PROGRAM, "id", &Program::id);
     }
 
     auto Program::attach(const Shader& shader) -> bool

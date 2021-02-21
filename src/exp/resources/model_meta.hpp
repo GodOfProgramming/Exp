@@ -10,12 +10,9 @@ namespace Exp
   {
     struct ModelMeta
     {
-      std::string id;
       std::shared_ptr<GL::VAO> vao;
       std::shared_ptr<GL::VBO> vbo;
       std::shared_ptr<GL::EBO> ebo;
-
-      static void add_usertype(sol::state_view state);
     };
   }  // namespace R
 }  // namespace Exp

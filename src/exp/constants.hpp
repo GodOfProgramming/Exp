@@ -33,9 +33,16 @@ namespace Exp
   {
     namespace Keys
     {
-      constexpr const char* SHADER_FRAGMENT = "fragment";
-      constexpr const char* SHADER_UNIFORM  = "uniforms";
-      constexpr const char* SHADER_VERTEX   = "vertex";
+      constexpr const char* SHADER_FRAGMENT          = "fragment";
+      constexpr const char* SHADER_UNIFORM           = "uniforms";
+      constexpr const char* SHADER_VERTEX            = "vertex";
+      constexpr const char* GAME_OBJECT_ON_CONSTRUCT = "on_construct";
+      constexpr const char* GAME_OBJECT_ON_UPDATE    = "on_update";
+      constexpr const char* GAME_OBJECT_SHADER       = "shader";
+      constexpr const char* GAME_OBJECT_MODEL        = "model";
+      constexpr const char* GAME_OBJECT_TEXTURE      = "texture";
+      constexpr const char* GAME_OBJECT_SCRIPT       = "script";
+      constexpr const char* GAME_OBJECT_DRAW_DESC    = "draw_description";
     }  // namespace Keys
   }    // namespace JSON
 

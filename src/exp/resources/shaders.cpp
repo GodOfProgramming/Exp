@@ -100,7 +100,7 @@ namespace Exp
         return;
       }
 
-      auto program = std::make_shared<GL::Program>(id);
+      auto program = std::make_shared<GL::Program>();
 
       if (!program->attach(*this->shader_map[cache_entry.vertex.file])) {
         LOG(ERROR) << "unable to attach vertex shader to program";
@@ -131,7 +131,7 @@ namespace Exp
     {
       auto& cache_entry = this->cache[id];
 
-      auto program          = std::make_shared<GL::Program>(id);
+      auto program          = std::make_shared<GL::Program>();
       this->program_map[id] = program;
 
       if (!program->attach(*this->shader_map[cache_entry.vertex.file])) {

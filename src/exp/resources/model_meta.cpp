@@ -5,10 +5,5 @@
 namespace Exp
 {
   namespace R
-  {
-    void ModelMeta::add_usertype(sol::state_view state)
-    {
-      state.new_usertype<ModelMeta>(Lua::Usertypes::R::META_MODEL, "id", &ModelMeta::id);
-    }
-  }  // namespace R
+  {}  // namespace R
 }  // namespace Exp

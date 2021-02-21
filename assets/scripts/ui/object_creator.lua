@@ -34,12 +34,28 @@ function object_text(self)
 end
 
 function set_object(self)
-  window.title = "Object Viewer";
+  window.title = meta.id;
   selected_meta = meta;
 end
 
 function did_select_object()
   return selected_meta ~= nil;
+end
+
+function get_shader_id(self)
+  self.text = "Shader: "..selected_meta.shader_id;
+end
+
+function get_model_id(self)
+  self.text = "Model: "..selected_meta.model_id;
+end
+
+function get_texture_id(self)
+  self.text = "Texture: "..selected_meta.texture_id;
+end
+
+function get_script_id(self)
+  self.text = "Script: "..selected_meta.script_id;
 end
 
 function get_wireframe_value(self)

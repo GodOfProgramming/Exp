@@ -11,12 +11,12 @@ namespace Exp
     Object::Object(const ObjectMeta m)
      : meta(m)
     {
-      if (m.script_id.has_value()) {
+      if (!m.script_id.empty()) {
         using R::Scripts;
 
         auto& scripts = Scripts::instance();
         sol::state lua;
-        if (scripts.make_script(m.script_id.value(), lua, [this](sol::state_view& state) {
+        if (scripts.make_script(m.script_id, lua, [this](sol::state_view& state) {
               ObjectMeta::add_usertype(state);
               Uniform::add_usertype(state);
               Object::add_usertype(state);
@@ -28,7 +28,7 @@ namespace Exp
 
         if (this->script.has_value()) {
           auto& lua = this->script.value();
-          auto fn   = lua["construct"];
+          auto fn   = lua[this->meta.construct_fn];
           if (fn.get_type() == sol::type::function) {
             fn.call(this);
           }
@@ -48,7 +48,7 @@ namespace Exp
     {
       if (this->script.has_value()) {
         auto& lua = this->script.value();
-        auto fn   = lua["update"];
+        auto fn   = lua[this->meta.update_fn];
         if (fn.get_type() == sol::type::function) {
           fn.call();
         }

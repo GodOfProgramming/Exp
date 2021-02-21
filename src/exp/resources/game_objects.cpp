@@ -39,8 +39,39 @@ namespace Exp
 
             LOG(INFO) << "loading game object " << id;
 
-            std::string shader_id = obj["shader"];
-            auto shader_iter      = shaders.find_program(shader_id);
+            std::string construct_fn;
+            if (!ObjectMeta::has_construct_fn(obj, construct_fn)) {
+              continue;
+            }
+
+            std::string update_fn;
+            if (!ObjectMeta::has_update_fn(obj, update_fn)) {
+              continue;
+            }
+
+            std::string shader_id;
+            if (!ObjectMeta::has_shader_id(obj, shader_id)) {
+              continue;
+            }
+
+            std::string model_id;
+            if (!ObjectMeta::has_model_id(obj, model_id)) {
+              continue;
+            }
+
+            std::string texture_id;
+            if (!ObjectMeta::has_texture_id(obj, texture_id)) {
+              continue;
+            }
+
+            std::string script_id;
+            if (!ObjectMeta::has_script_id(obj, script_id)) {
+              continue;
+            }
+
+            /* Shader */
+
+            auto shader_iter = shaders.find_program(shader_id);
             if (shader_iter == shaders.program_end()) {
               LOG(WARNING) << "cannot find shader with id " << shader_id;
               continue;
@@ -53,16 +84,21 @@ namespace Exp
               continue;
             }
 
-            std::string model_id = obj["model"];
-            auto model_iter      = models.find(model_id);
+            /* Model */
+
+            auto model_iter = models.find(model_id);
             if (model_iter == models.end()) {
               LOG(WARNING) << "cannot find model with id " << model_id;
               continue;
             }
 
+            auto model = model_iter->second;
+
+            /* Draw Description */
+
             Render::DrawDescription desc;
 
-            auto drawdesc_json = obj["draw_description"];
+            auto drawdesc_json = obj[JSON::Keys::GAME_OBJECT_DRAW_DESC];
             if (drawdesc_json.is_object()) {
               if (!this->parse_drawdesc(drawdesc_json, desc)) {
                 LOG(WARNING) << "unable to parse partial or full draw desc on object, using what was valid";
@@ -72,21 +108,21 @@ namespace Exp
               continue;
             }
 
-            auto model = model_iter->second;
+            /* Finalize */
 
             ObjectMeta meta;
-            meta.id       = id;
-            meta.shader   = shader;
-            meta.model    = model;
-            meta.drawdesc = desc;
+            meta.id           = id;
+            meta.construct_fn = construct_fn;
+            meta.update_fn    = update_fn;
+            meta.shader_id    = shader_id;
+            meta.model_id     = model_id;
+            meta.texture_id   = texture_id;
+            meta.script_id    = script_id;
 
-            auto script_json = obj["script"];
-            if (script_json.is_string()) {
-              meta.script_id = script_json;
-            } else if (!script_json.is_null()) {
-              LOG(WARNING) << "detected script in config but was not of type string";
-              continue;
-            }
+            meta.shader = shader;
+            meta.model  = model;
+
+            meta.drawdesc = desc;
 
             this->objects.emplace(id, meta);
           }
