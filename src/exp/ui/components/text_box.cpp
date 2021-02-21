@@ -44,7 +44,7 @@ namespace Exp
 
       void TextBox::add_usertype(sol::state_view state)
       {
-        state.new_usertype<TextBox>(Lua::Usertypes::TEXT_BOX, "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
+        state.new_usertype<TextBox>(Lua::Usertypes::Ui::TEXT_BOX, "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
       }
 
       void TextBox::render()

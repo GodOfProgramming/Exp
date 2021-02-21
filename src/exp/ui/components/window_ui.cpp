@@ -10,6 +10,10 @@
 #include "sameline.hpp"
 #include "text_box.hpp"
 
+// draw basic text using
+// NoTitleBar|NoResize|NoMove|NoScrollbar|NoSavedSettings|NoInputs
+// https://gamedev.stackexchange.com/questions/120964/how-can-i-use-imgui-to-render-simple-text-instead-of-using-stb-truetype-directly
+
 namespace Exp
 {
   namespace Ui
@@ -27,7 +31,7 @@ namespace Exp
 
       void WindowUi::add_usertype(sol::state_view state)
       {
-        state.new_usertype<WindowUi>(Lua::Usertypes::WINDOW_UI, "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
+        state.new_usertype<WindowUi>(Lua::Usertypes::Ui::WINDOW_UI, "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
       }
 
       auto WindowUi::from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>
@@ -56,6 +60,12 @@ namespace Exp
 
           UiComponent::has_attr_fixed(self, window->is_fixed);
 
+          std::string onparse_func;
+          std::optional<std::string> onparse_fn;
+          if (UiComponent::has_attr_onparse(self, onparse_func)) {
+            onparse_fn = onparse_func;
+          }
+
           std::string script_key;
           if (UiComponent::has_attr_script(self, script_key)) {
             auto& scripts = Scripts::instance();
@@ -65,7 +75,6 @@ namespace Exp
                   WindowUi::add_usertype(state);
                   TextBox::add_usertype(state);
                   Info::add_usertype(state);
-                  state.set("window", window);
                   return true;
                 })) {
               LOG(WARNING) << "unable to load script " << script_key;
@@ -126,6 +135,15 @@ namespace Exp
             if (!window->add_element(el)) {
               LOG(WARNING) << "could not add element with id " << el->id << ", duplicate id in document";
               return nullptr;
+            }
+          }
+
+          if (window->script.has_value() && onparse_fn.has_value()) {
+            auto& script = window->script.value();
+            auto& func   = onparse_fn.value();
+            auto fn      = script[func];
+            if (fn.get_type() == sol::type::function) {
+              fn.call(window);
             }
           }
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "draw_description.hpp"
 #include "ebo.hpp"
 #include "enums.hpp"
 #include "error_map.hpp"
+#include "exp/render/draw_description.hpp"
 #include "vbo.hpp"
 
 namespace Exp
@@ -12,6 +12,8 @@ namespace Exp
   {
     class VAO
     {
+      using DrawDescription = Render::DrawDescription;
+
      public:
       VAO(std::shared_ptr<VBO> vbo, std::shared_ptr<EBO> ebo);
       ~VAO();

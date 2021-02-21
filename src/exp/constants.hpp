@@ -43,29 +43,41 @@ namespace Exp
   {
     namespace Usertypes
     {
-      constexpr const char* DRAW_DESCRIPTION = "DrawDescription";
-      constexpr const char* FRAME            = "Frame";
-      constexpr const char* GAME_OBJECTS     = "GameObjects";
-      constexpr const char* GLM_IVEC2        = "ivec2";
-      constexpr const char* GLM_VEC2         = "vec2";
-      constexpr const char* GLM_VEC3         = "vec3";
-      constexpr const char* GLM_VEC4         = "vec4";
-      constexpr const char* INFO             = "Info";
-      constexpr const char* META_MODEL       = "ModelMeta";
-      constexpr const char* META_OBJECT      = "ObjectMeta";
-      constexpr const char* OBJECT           = "Object";
-      constexpr const char* PROGRAM          = "ShaderProgram";
-      constexpr const char* TEXT_BOX         = "TextBox";
-      constexpr const char* UNIFORM          = "Uniform";
-      constexpr const char* WINDOW_UI        = "Window";
-    }  // namespace Usertypes
-
-    namespace Globals
-    {
-      constexpr const char* WINDOW    = "window";
-      constexpr const char* GAME_INFO = "game_info";
-    }  // namespace Globals
-  }    // namespace Lua
+      namespace glm
+      {
+        constexpr const char* IVEC2 = "Geom_IVec2";
+        constexpr const char* VEC2  = "Geom_Vec2";
+        constexpr const char* VEC3  = "Geom_Vec3";
+        constexpr const char* VEC4  = "Geom_Vec4";
+      }  // namespace glm
+      namespace Game
+      {
+        constexpr const char* INFO   = "Game_Info";
+        constexpr const char* OBJECT = "Game_Object";
+      }  // namespace Game
+      namespace GL
+      {
+        constexpr const char* PROGRAM = "GL_Program";
+        constexpr const char* UNIFORM = "GL_Uniform";
+      }  // namespace GL
+      namespace Ui
+      {
+        constexpr const char* FRAME     = "Ui_Frame";
+        constexpr const char* TEXT_BOX  = "Ui_TextBox";
+        constexpr const char* WINDOW_UI = "Ui_Window";
+      }  // namespace Ui
+      namespace R
+      {
+        constexpr const char* GAME_OBJECTS = "R_GameObjects";
+        constexpr const char* META_MODEL   = "R_ModelMeta";
+        constexpr const char* META_OBJECT  = "R_ObjectMeta";
+      }  // namespace R
+      namespace Render
+      {
+        constexpr const char* DRAW_DESCRIPTION = "Render_DrawDescription";
+      }  // namespace Render
+    }    // namespace Usertypes
+  }      // namespace Lua
 
   namespace Ui
   {
@@ -74,6 +86,7 @@ namespace Exp
       constexpr const char* BUTTON    = "button";
       constexpr const char* CLICK     = "click";
       constexpr const char* COLLAPSED = "collapsed";
+      constexpr const char* ON_PARSED = "onparse";
       constexpr const char* FIXED     = "fixed";
       constexpr const char* FN        = "fn";
       constexpr const char* HEIGHT    = "height";

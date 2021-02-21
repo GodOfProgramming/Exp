@@ -21,7 +21,6 @@ namespace Exp
               Uniform::add_usertype(state);
               Object::add_usertype(state);
               Info::add_usertype(state);
-              state.set("self", this);
               return true;
             })) {
           this->script = std::move(lua);
@@ -31,7 +30,7 @@ namespace Exp
           auto& lua = this->script.value();
           auto fn   = lua["construct"];
           if (fn.get_type() == sol::type::function) {
-            fn.call();
+            fn.call(this);
           }
         }
       }
@@ -58,7 +57,7 @@ namespace Exp
 
     void Object::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Object>(Lua::Usertypes::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms);
+      state.new_usertype<Object>(Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms);
     }
   }  // namespace Game
 }  // namespace Exp

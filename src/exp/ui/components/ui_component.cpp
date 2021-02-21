@@ -71,6 +71,18 @@ namespace Exp
       return true;
     }
 
+    auto UiComponent::has_attr_onparse(tinyxml2::XMLElement* self, std::string& fn) -> bool
+    {
+      auto onparsed_attr = self->FindAttribute(Attr::ON_PARSED);
+
+      if (onparsed_attr == nullptr) {
+        return false;
+      }
+
+      fn = onparsed_attr->Value();
+      return true;
+    }
+
     auto UiComponent::has_attr_script(tinyxml2::XMLElement* self, std::string& script) -> bool
     {
       auto script_attr = self->FindAttribute(Attr::SCRIPT);

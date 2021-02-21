@@ -14,8 +14,7 @@ namespace Exp
 
     void Info::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Info>(Lua::Usertypes::INFO, "fps", &Info::fps, "frames", &Info::frames);
-      state.set(Lua::Globals::GAME_INFO, &Info::instance());
+      state.new_usertype<Info>(Lua::Usertypes::Game::INFO, "instance", &Info::instance, "fps", &Info::fps, "frames", &Info::frames);
     }
   }  // namespace Game
 }  // namespace Exp

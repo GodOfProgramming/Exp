@@ -4,11 +4,11 @@
 
 namespace Exp
 {
-  namespace GL
+  namespace Render
   {
     void DrawDescription::add_usertype(sol::state_view state)
     {
-      state.new_usertype<DrawDescription>(Lua::Usertypes::DRAW_DESCRIPTION, "wireframe", &DrawDescription::wireframe);
+      state.new_usertype<DrawDescription>(Lua::Usertypes::Render::DRAW_DESCRIPTION, "wireframe", &DrawDescription::wireframe);
     }
-  }  // namespace GL
+  }  // namespace Render
 }  // namespace Exp

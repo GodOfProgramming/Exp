@@ -1,7 +1,7 @@
 #pragma once
 
-#include "exp/gl/draw_description.hpp"
 #include "exp/gl/program.hpp"
+#include "exp/render/draw_description.hpp"
 #include "model_meta.hpp"
 
 namespace Exp
@@ -13,7 +13,7 @@ namespace Exp
       std::string id;
       std::shared_ptr<GL::Program> shader;
       std::shared_ptr<ModelMeta> model;
-      GL::DrawDescription drawdesc;
+      Render::DrawDescription drawdesc;
       std::optional<std::string> script_id;
 
       static void add_usertype(sol::state_view state);

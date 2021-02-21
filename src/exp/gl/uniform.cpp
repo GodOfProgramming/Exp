@@ -119,7 +119,7 @@ namespace Exp
     void Uniform::add_usertype(sol::state_view state)
     {
       state.new_usertype<Uniform>(
-       Lua::Usertypes::UNIFORM,
+       Lua::Usertypes::GL::UNIFORM,
        sol::constructors<Uniform(std::string)>(),
        "set_float",
        &Uniform::set_float,

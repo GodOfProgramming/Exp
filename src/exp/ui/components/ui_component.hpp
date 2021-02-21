@@ -41,6 +41,7 @@ namespace Exp
       static auto unwrap_node(tinyxml2::XMLNode* node, std::function<std::shared_ptr<UiComponent>(tinyxml2::XMLElement*)> callback)
        -> std::shared_ptr<UiComponent>;
 
+      static auto has_attr_onparse(tinyxml2::XMLElement* self, std::string& fn) -> bool;
       static auto has_attr_button(tinyxml2::XMLElement* self, std::string& fn) -> bool;
       static auto has_attr_click(tinyxml2::XMLElement* self, std::string& fn) -> bool;
       static auto has_attr_collapsed(tinyxml2::XMLElement* self, bool& is_collapsed) -> bool;

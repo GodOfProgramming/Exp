@@ -2,7 +2,7 @@
 
 namespace Exp
 {
-  namespace GL
+  namespace Render
   {
     struct DrawDescription
     {
@@ -10,5 +10,5 @@ namespace Exp
 
       static void add_usertype(sol::state_view state);
     };
-  }  // namespace GL
+  }  // namespace Render
 }  // namespace Exp

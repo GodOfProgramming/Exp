@@ -33,6 +33,8 @@ namespace Exp
         bool initial_render = false;
         bool is_collapsed   = false;
         bool is_fixed       = false;
+
+        std::optional<std::string> onparse_fn;
       };
     }  // namespace Components
   }    // namespace Ui

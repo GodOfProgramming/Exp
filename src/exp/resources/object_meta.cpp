@@ -8,7 +8,7 @@ namespace Exp
   {
     void ObjectMeta::add_usertype(sol::state_view state)
     {
-      state.new_usertype<ObjectMeta>(Lua::Usertypes::META_OBJECT, "id", &ObjectMeta::id, "draw_desc", &ObjectMeta::drawdesc);
+      state.new_usertype<ObjectMeta>(Lua::Usertypes::R::META_OBJECT, "id", &ObjectMeta::id, "draw_desc", &ObjectMeta::drawdesc);
     }
   }  // namespace R
 }  // namespace Exp

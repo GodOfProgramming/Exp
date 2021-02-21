@@ -17,7 +17,8 @@ namespace Exp
 
     void GameObjects::add_usertype(sol::state_view state)
     {
-      state.new_usertype<GameObjects>(Lua::Usertypes::GAME_OBJECTS, "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
+      state.new_usertype<GameObjects>(
+       Lua::Usertypes::R::GAME_OBJECTS, "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
     }
 
     void GameObjects::load_all()
@@ -59,7 +60,7 @@ namespace Exp
               continue;
             }
 
-            GL::DrawDescription desc;
+            Render::DrawDescription desc;
 
             auto drawdesc_json = obj["draw_description"];
             if (drawdesc_json.is_object()) {
@@ -130,7 +131,7 @@ namespace Exp
       }
     }
 
-    auto GameObjects::parse_drawdesc(const json& desc_json, GL::DrawDescription& desc) -> bool
+    auto GameObjects::parse_drawdesc(const json& desc_json, Render::DrawDescription& desc) -> bool
     {
       auto wireframe = desc_json["wireframe"];
       if (wireframe.is_boolean()) {

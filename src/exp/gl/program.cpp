@@ -27,7 +27,7 @@ namespace Exp
 
     void Program::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Program>(Lua::Usertypes::PROGRAM, "id", &Program::id);
+      state.new_usertype<Program>(Lua::Usertypes::GL::PROGRAM, "id", &Program::id);
     }
 
     auto Program::attach(const Shader& shader) -> bool

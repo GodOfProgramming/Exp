@@ -1,5 +1,5 @@
-inspect = require('inspect');
-objects = GameObjects.instance();
+r = require('r');
+objects = r.game_objects.instance();
 
 meta = nil;
 selected_meta = nil;
@@ -7,6 +7,12 @@ selected_meta = nil;
 keys = objects:keys();
 
 lidx = nil;
+
+window = nil;
+
+function save_window(self)
+  window = self;
+end
 
 function get_next_object(index)
   if index < #keys then
@@ -28,6 +34,7 @@ function object_text(self)
 end
 
 function set_object(self)
+  window.title = "Object Viewer";
   selected_meta = meta;
 end
 

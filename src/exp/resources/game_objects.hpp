@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exp/gl/draw_description.hpp"
+#include "exp/render/draw_description.hpp"
 #include "iresource.hpp"
 #include "object_meta.hpp"
 
@@ -40,7 +40,7 @@ namespace Exp
      private:
       ObjectMap objects;
 
-      auto parse_drawdesc(const json&, GL::DrawDescription& desc) -> bool;
+      auto parse_drawdesc(const json&, Render::DrawDescription& desc) -> bool;
     };
   }  // namespace R
 }  // namespace Exp
