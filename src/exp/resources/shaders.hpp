@@ -94,7 +94,7 @@ namespace Exp
     {
       LOG(INFO) << "reloading shader " << meta.file;
 
-      auto abs_path = std::string(CFG_DIR_SHADERS) + "/" + meta.file;
+      auto abs_path = std::string(Assets::Dir::SHADER_OUTPUT) + "/" + meta.file;
       bool loaded   = false;
       IO::File::load(abs_path, [&](const std::string_view& src) {
         meta.source = src;

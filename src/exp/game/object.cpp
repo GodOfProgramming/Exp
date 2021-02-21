@@ -1,5 +1,6 @@
 #include "object.hpp"
 
+#include "exp/constants.hpp"
 #include "exp/resources/scripts.hpp"
 #include "info.hpp"
 
@@ -57,7 +58,7 @@ namespace Exp
 
     void Object::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Object>("Object", "meta", &Object::meta, "uniforms", &Object::uniforms);
+      state.new_usertype<Object>(Lua::Usertypes::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms);
     }
   }  // namespace Game
 }  // namespace Exp

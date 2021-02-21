@@ -1,5 +1,6 @@
 #include "game_objects.hpp"
 
+#include "exp/constants.hpp"
 #include "exp/io.hpp"
 #include "models.hpp"
 #include "shaders.hpp"
@@ -16,7 +17,7 @@ namespace Exp
 
     void GameObjects::add_usertype(sol::state_view state)
     {
-      state.new_usertype<GameObjects>("GameObjects", "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
+      state.new_usertype<GameObjects>(Lua::Usertypes::GAME_OBJECTS, "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
     }
 
     void GameObjects::load_all()
@@ -24,7 +25,7 @@ namespace Exp
       LOG(INFO) << "loading game objects";
       auto& shaders = Shaders::instance();
       auto& models  = Models::instance();
-      IO::iterate_dir_with_namespace(CFG_DIR_GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+      IO::iterate_dir_with_namespace(Cfg::Dir::GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         this->load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
             LOG(WARNING) << "shader json is not in proper format, first type is not object";

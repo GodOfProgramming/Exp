@@ -39,7 +39,7 @@ int main(int, char* argv[])
   auto& settings = SettingsManager::instance();
   {
     bool loaded = false;
-    File::load(Exp::CFG_FILE_SETTINGS, [&](const std::string_view src) {
+    File::load(Exp::Cfg::File::SETTINGS, [&](const std::string_view src) {
       settings.deserialize(src);
       loaded = true;
     });

@@ -36,28 +36,28 @@ namespace Exp
           for (auto child = self->FirstChild(); child != nullptr; child = child->NextSibling()) {
             std::string type = child->Value();
 
-            if (type == UI_EL_TEXT_BOX) {
+            if (type == El::TEXT_BOX) {
               auto el = TextBox::from_node(child, sameline->script);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
-            } else if (type == UI_EL_REPEAT) {
+            } else if (type == El::REPEAT) {
               auto el = RepeatComponent::from_node(child, sameline->script);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
-            } else if (type == UI_EL_SAMELINE) {
+            } else if (type == El::SAMELINE) {
               auto el = Sameline::from_node(child, sameline->script);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
-            } else if (type == UI_EL_BUTTON) {
+            } else if (type == El::BUTTON) {
               auto el = Button::from_node(child, sameline->script);
               if (el) {
                 potential_elements.push_back(el);

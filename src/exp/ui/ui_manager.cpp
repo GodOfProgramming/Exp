@@ -39,7 +39,7 @@ namespace Exp
     {
       LOG(INFO) << "loading ui";
       using IO::File;
-      IO::iterate_dir_with_namespace(DIR_UI, "exp", [&](std::filesystem::path path, std::string) {
+      IO::iterate_dir_with_namespace(Assets::Dir::UI, "exp", [&](std::filesystem::path path, std::string) {
         LOG(INFO) << "loading ui file " << path;
         File::load(path, [&](const std::string_view& src) { this->parse(src); });
       });
@@ -61,7 +61,7 @@ namespace Exp
       auto first               = document.FirstChild();
       std::string element_type = first->Value();
 
-      if (element_type == UI_EL_WINDOW) {
+      if (element_type == El::WINDOW) {
         auto window = WindowUi::from_node(first);
         if (window) {
           this->elements.push_back(window);

@@ -1,5 +1,6 @@
 #include "shaders.hpp"
 
+#include "exp/constants.hpp"
 #include "exp/io.hpp"
 
 namespace Exp
@@ -19,7 +20,7 @@ namespace Exp
       std::set<std::string> valid_programs;
       std::set<std::string> attempted_loads;
 
-      IO::iterate_dir_with_namespace(CFG_DIR_SHADERS, "exp", [&](std::filesystem::path path, std::string nspace) {
+      IO::iterate_dir_with_namespace(Cfg::Dir::SHADERS, "exp", [&](std::filesystem::path path, std::string nspace) {
         using nlohmann::json;
         this->load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
@@ -57,7 +58,7 @@ namespace Exp
               should_continue = true;
             }
 
-            auto uniforms = shader_json[JSON_KEY_SHADER_UNIFORM];
+            auto uniforms = shader_json[JSON::Keys::SHADER_UNIFORM];
             if (uniforms.is_array()) {
               for (const auto& uniform : uniforms) { shader_program.uniforms.emplace(uniform); }
             } else if (!uniforms.is_null()) {

@@ -1,5 +1,6 @@
 #include "uniform.hpp"
 
+#include "exp/constants.hpp"
 #include "exp/gl/error_map.hpp"
 
 namespace Exp
@@ -118,7 +119,7 @@ namespace Exp
     void Uniform::add_usertype(sol::state_view state)
     {
       state.new_usertype<Uniform>(
-       "Uniform",
+       Lua::Usertypes::UNIFORM,
        sol::constructors<Uniform(std::string)>(),
        "set_float",
        &Uniform::set_float,

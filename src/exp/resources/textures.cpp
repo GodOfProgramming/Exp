@@ -17,7 +17,7 @@ namespace Exp
     void Textures::load_all()
     {
       LOG(INFO) << "loading textures";
-      IO::iterate_dir_with_namespace(CFG_DIR_TEXTURES, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+      IO::iterate_dir_with_namespace(Cfg::Dir::TEXTURES, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         using nlohmann::json;
         this->load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
@@ -44,7 +44,7 @@ namespace Exp
             }
 
             std::stringstream ss;
-            ss << DIR_TEXTURES << '/' << filename;
+            ss << Assets::Dir::TEXTURES << '/' << filename;
             std::string fn = ss.str();
 
             auto meta = std::make_shared<TextureMeta>();

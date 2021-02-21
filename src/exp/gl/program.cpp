@@ -1,6 +1,7 @@
 #include "program.hpp"
 
 #include "error_map.hpp"
+#include "exp/constants.hpp"
 
 namespace Exp
 {
@@ -26,7 +27,7 @@ namespace Exp
 
     void Program::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Program>("ShaderProgram", "id", &Program::id);
+      state.new_usertype<Program>(Lua::Usertypes::PROGRAM, "id", &Program::id);
     }
 
     auto Program::attach(const Shader& shader) -> bool

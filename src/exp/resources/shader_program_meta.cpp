@@ -11,7 +11,7 @@ namespace Exp
      : type(st)
     {
       static const std::set<std::string> KEYS_TO_SKIP = {
-        JSON_KEY_SHADER_UNIFORM,
+        JSON::Keys::SHADER_UNIFORM,
       };
 
       if (!sj.is_object()) {
@@ -34,14 +34,14 @@ namespace Exp
 
         ShaderMeta* shader = nullptr;
 
-        if (shader_type == JSON_KEY_SHADER_VERTEX) {
+        if (shader_type == JSON::Keys::SHADER_VERTEX) {
           if (!this->vertex.file.empty()) {
             LOG(WARNING) << "program already has vertex shader linked: " << this->type;
             continue;
           }
 
           shader = &this->vertex;
-        } else if (shader_type == JSON_KEY_SHADER_FRAGMENT) {
+        } else if (shader_type == JSON::Keys::SHADER_FRAGMENT) {
           if (!this->fragment.file.empty()) {
             LOG(WARNING) << "program already has fragment shader linked: " << this->type;
             continue;
@@ -53,7 +53,7 @@ namespace Exp
         }
 
         shader->file  = filename_value;
-        auto abs_path = std::string(DIR_SHADER_OUTPUT) + "/" + shader->file;
+        auto abs_path = std::string(Assets::Dir::SHADER_OUTPUT) + "/" + shader->file;
         bool loaded   = false;
 
         IO::File::load(abs_path, [&](const std::string_view& src) {
