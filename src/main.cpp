@@ -74,14 +74,14 @@ int main(int, char* argv[])
     textures.load_all();
   }
 
-  auto& game_objects = GameObjects::instance();
-  {
-    game_objects.load_all();
-  }
-
   auto& scripts = Scripts::instance();
   {
     scripts.load_all();
+  }
+
+  auto& game_objects = GameObjects::instance();
+  {
+    game_objects.load_all();
   }
 
   auto& ui = UiManager::instance();
@@ -150,9 +150,9 @@ int main(int, char* argv[])
 
   ui.release();
 
-  scripts.release();
-
   game_objects.release();
+
+  scripts.release();
 
   textures.release();
 

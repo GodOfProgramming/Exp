@@ -27,19 +27,15 @@ namespace Exp
 
           for (const auto item : objects.items()) {
             auto id  = nspace + "." + item.key();
-            auto tex = item.value();
+            auto obj = item.value();
 
             LOG(INFO) << "loading texture " << id;
 
+            // TODO parse this
+            GL::TextureDescriptor descriptor;
+
             std::string filename;
-            auto file_json = tex["file"];
-            if (file_json.is_string()) {
-              filename = file_json;
-            } else if (!file_json.is_null()) {
-              LOG(WARNING) << "detected file on texture but was not of type string";
-              continue;
-            } else {
-              LOG(WARNING) << "missing file attribute";
+            if (!TextureMeta::has_file(obj, filename)) {
               continue;
             }
 
@@ -47,8 +43,29 @@ namespace Exp
             ss << Assets::Dir::TEXTURES << '/' << filename;
             std::string fn = ss.str();
 
-            auto meta = std::make_shared<TextureMeta>();
-            meta->tex.load(fn.c_str());
+            auto img = std::make_shared<cimg_library::CImg<uint8_t>>();
+            img->load(fn.c_str());
+
+            auto tex = std::make_shared<GL::Texture>();
+            if (!tex->gen()) {
+              LOG(WARNING) << "could not generate texture";
+              continue;
+            }
+
+            if (!tex->bind()) {
+              LOG(WARNING) << "could not bind texture";
+              continue;
+            }
+
+            if (!tex->configure(descriptor, img)) {
+              continue;
+            }
+
+            auto meta        = std::make_shared<TextureMeta>();
+            meta->file       = filename;
+            meta->descriptor = descriptor;
+            meta->img        = img;
+            meta->tex        = tex;
 
             this->textures.emplace(id, meta);
           }
@@ -60,5 +77,21 @@ namespace Exp
     {
       this->textures.clear();
     }
+
+    auto Textures::find(std::string id) const noexcept -> TextureMap::const_iterator
+    {
+      return this->textures.find(id);
+    }
+
+    auto Textures::begin() const noexcept -> TextureMap::const_iterator
+    {
+      return this->textures.begin();
+    }
+
+    auto Textures::end() const noexcept -> TextureMap::const_iterator
+    {
+      return this->textures.end();
+    }
+
   }  // namespace R
 }  // namespace Exp

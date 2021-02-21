@@ -15,7 +15,7 @@ namespace Exp
 
       using ShaderID = GLuint;
 
-      Shader() noexcept;
+      Shader() = default;
 
       ~Shader() noexcept;
 
@@ -26,8 +26,8 @@ namespace Exp
       auto is_valid() const noexcept -> bool;
 
      private:
-      bool valid;
-      ShaderID id;
+      bool valid  = false;
+      ShaderID id = 0;
     };
   }  // namespace GL
 }  // namespace Exp

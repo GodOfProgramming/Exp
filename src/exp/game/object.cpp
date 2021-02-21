@@ -42,6 +42,10 @@ namespace Exp
         auto& uniform = kvp.second;
         uniform.enable(*this->meta.shader);
       }
+
+      if (!this->meta.texture->tex->bind()) {
+        return;
+      }
     }
 
     void Object::update()

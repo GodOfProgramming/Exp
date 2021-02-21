@@ -24,6 +24,10 @@ namespace Exp
       void load_all() final;
       void release() final;
 
+      auto find(std::string id) const noexcept -> TextureMap::const_iterator;
+      auto begin() const noexcept -> TextureMap::const_iterator;
+      auto end() const noexcept -> TextureMap::const_iterator;
+
      private:
       TextureMap textures;
     };

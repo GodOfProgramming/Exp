@@ -43,6 +43,7 @@ namespace Exp
       constexpr const char* GAME_OBJECT_TEXTURE      = "texture";
       constexpr const char* GAME_OBJECT_SCRIPT       = "script";
       constexpr const char* GAME_OBJECT_DRAW_DESC    = "draw_description";
+      constexpr const char* TEXTURE_FILE             = "file";
     }  // namespace Keys
   }    // namespace JSON
 
@@ -93,7 +94,7 @@ namespace Exp
       constexpr const char* BUTTON    = "button";
       constexpr const char* CLICK     = "click";
       constexpr const char* COLLAPSED = "collapsed";
-      constexpr const char* ON_PARSED = "onparse";
+      constexpr const char* ON_PARSED = "on_construct";
       constexpr const char* FIXED     = "fixed";
       constexpr const char* FN        = "fn";
       constexpr const char* HEIGHT    = "height";

@@ -4,6 +4,7 @@
 #include "exp/io.hpp"
 #include "models.hpp"
 #include "shaders.hpp"
+#include "textures.hpp"
 
 namespace Exp
 {
@@ -24,8 +25,9 @@ namespace Exp
     void GameObjects::load_all()
     {
       LOG(INFO) << "loading game objects";
-      auto& shaders = Shaders::instance();
-      auto& models  = Models::instance();
+      auto& shaders  = Shaders::instance();
+      auto& models   = Models::instance();
+      auto& textures = Textures::instance();
       IO::iterate_dir_with_namespace(Cfg::Dir::GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         this->load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
@@ -94,6 +96,16 @@ namespace Exp
 
             auto model = model_iter->second;
 
+            /* Texture */
+
+            auto texture_iter = textures.find(texture_id);
+            if (texture_iter == textures.end()) {
+              LOG(WARNING) << "cannot find texture with id " << texture_id;
+              continue;
+            }
+
+            auto texture = texture_iter->second;
+
             /* Draw Description */
 
             Render::DrawDescription desc;
@@ -119,8 +131,9 @@ namespace Exp
             meta.texture_id   = texture_id;
             meta.script_id    = script_id;
 
-            meta.shader = shader;
-            meta.model  = model;
+            meta.shader  = shader;
+            meta.model   = model;
+            meta.texture = texture;
 
             meta.drawdesc = desc;
 

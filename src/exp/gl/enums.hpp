@@ -15,5 +15,10 @@ namespace Exp
     {
       REPEAT = GL_REPEAT,
     };
+
+    enum class TextureFilter
+    {
+      LINEAR = GL_LINEAR,
+    };
   }  // namespace GL
 }  // namespace Exp

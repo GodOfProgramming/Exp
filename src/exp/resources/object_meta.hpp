@@ -3,6 +3,7 @@
 #include "exp/gl/program.hpp"
 #include "exp/render/draw_description.hpp"
 #include "model_meta.hpp"
+#include "texture_meta.hpp"
 
 namespace Exp
 {
@@ -20,6 +21,7 @@ namespace Exp
 
       std::shared_ptr<GL::Program> shader;
       std::shared_ptr<ModelMeta> model;
+      std::shared_ptr<TextureMeta> texture;
 
       Render::DrawDescription drawdesc;
 

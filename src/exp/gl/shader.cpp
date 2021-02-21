@@ -6,11 +6,6 @@ namespace Exp
 {
   namespace GL
   {
-    Shader::Shader() noexcept
-     : valid(false)
-     , id(0)
-    {}
-
     Shader::~Shader() noexcept
     {
       if (this->id != 0) {
