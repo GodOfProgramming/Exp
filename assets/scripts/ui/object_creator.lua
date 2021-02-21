@@ -58,6 +58,14 @@ function get_script_id(self)
   self.text = "Script: "..selected_meta.script_id;
 end
 
+function get_construct_fn(self)
+  self.text = "On Construct: "..selected_meta.construct_fn;
+end
+
+function get_update_fn(self)
+  self.text = "On Update: "..selected_meta.update_fn;
+end
+
 function get_wireframe_value(self)
   self.text = "Wireframe: "..tostring(selected_meta.draw_desc.wireframe);
 end

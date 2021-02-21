@@ -12,6 +12,8 @@
     <text fn="get_model_id"></text>
     <text fn="get_texture_id"></text>
     <text fn="get_script_id"></text>
+    <text fn="get_construct_fn"></text>
+    <text fn="get_update_fn"></text>
     <text fn="get_wireframe_value"></text>
   </frame>
 </window>
