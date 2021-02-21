@@ -25,7 +25,7 @@ namespace Exp
         Container::release();
       }
 
-      void WindowUi::add_usertype(sol::state_view& state)
+      void WindowUi::add_usertype(sol::state_view state)
       {
         state.new_usertype<WindowUi>("WindowUi", "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
       }

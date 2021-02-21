@@ -6,10 +6,11 @@ namespace Exp
 {
   namespace GL
   {
-    Program::Program()
-     : valid(false)
+    Program::Program(const std::string i)
+     : id(i)
+     , valid(false)
     {
-      this->id = glCreateProgram();
+      this->pid = glCreateProgram();
       if (!GL_CHECK()) {
         LOG(ERROR) << "unable to create new shader (gl error != GL_NO_ERROR)";
       }
@@ -17,15 +18,20 @@ namespace Exp
 
     Program::~Program()
     {
-      if (this->id != 0) {
-        glDeleteProgram(this->id);
+      if (this->pid != 0) {
+        glDeleteProgram(this->pid);
         GL_CHECK();
       }
     }
 
+    void Program::add_usertype(sol::state_view state)
+    {
+      state.new_usertype<Program>("ShaderProgram", "id", &Program::id);
+    }
+
     auto Program::attach(const Shader& shader) -> bool
     {
-      if (this->id == 0) {
+      if (this->pid == 0) {
         LOG(ERROR) << "unable to link program (program id == 0)";
         return false;
       }
@@ -35,7 +41,7 @@ namespace Exp
         return false;
       }
 
-      glAttachShader(this->id, shader.shader_id());
+      glAttachShader(this->pid, shader.shader_id());
       if (!GL_CHECK()) {
         LOG(ERROR) << "unable to attach shader";
         return false;
@@ -48,14 +54,14 @@ namespace Exp
     {
       bool result = true;
 
-      glLinkProgram(this->id);
+      glLinkProgram(this->pid);
       if (!GL_CHECK()) {
         LOG(ERROR) << "unable to link shader program";
         result = false;
       }
 
       GLint success;
-      glGetProgramiv(this->id, GL_LINK_STATUS, &success);
+      glGetProgramiv(this->pid, GL_LINK_STATUS, &success);
       if (!GL_CHECK()) {
         LOG(ERROR) << "unable to get program iv";
         result = false;
@@ -64,7 +70,7 @@ namespace Exp
       if (success == GL_FALSE) {
         GLsizei len = 0;
         std::array<char, 1024> info_log;
-        glGetProgramInfoLog(this->id, info_log.size(), &len, info_log.data());
+        glGetProgramInfoLog(this->pid, info_log.size(), &len, info_log.data());
         if (!GL_CHECK()) {
           LOG(ERROR) << "unable to get compilation errors for shader";
         }
@@ -77,7 +83,7 @@ namespace Exp
 
     auto Program::program_id() const noexcept -> ProgramID
     {
-      return this->id;
+      return this->pid;
     }
 
     auto Program::is_valid() const noexcept -> bool
@@ -87,7 +93,7 @@ namespace Exp
 
     auto Program::use() -> bool
     {
-      glUseProgram(this->id);
+      glUseProgram(this->pid);
       return GL_CHECK();
     }
   }  // namespace GL

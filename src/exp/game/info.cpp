@@ -10,7 +10,7 @@ namespace Exp
       return info;
     }
 
-    void Info::add_usertype(sol::state_view& state)
+    void Info::add_usertype(sol::state_view state)
     {
       state.new_usertype<Info>("Info", "fps", &Info::fps, "frames", &Info::frames);
       state.set("game_info", &Info::instance());

@@ -4,7 +4,7 @@ namespace Exp
 {
   namespace GL
   {
-    void DrawDescription::add_usertype(sol::state_view& state)
+    void DrawDescription::add_usertype(sol::state_view state)
     {
       state.new_usertype<DrawDescription>("DrawDescription", "wireframe", &DrawDescription::wireframe);
     }

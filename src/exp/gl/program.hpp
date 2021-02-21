@@ -10,8 +10,10 @@ namespace Exp
     {
      public:
       using ProgramID = GLuint;
-      Program();
+      Program(const std::string id);
       ~Program();
+
+      static void add_usertype(sol::state_view state);
 
       auto attach(const Shader& shaders) -> bool;
 
@@ -23,8 +25,10 @@ namespace Exp
 
       auto use() -> bool;
 
+      const std::string id;
+
      private:
-      ProgramID id;
+      ProgramID pid;
       bool valid;
     };
   }  // namespace GL

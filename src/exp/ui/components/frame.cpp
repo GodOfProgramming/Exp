@@ -92,7 +92,7 @@ namespace Exp
         });
       }
 
-      void Frame::add_usertype(sol::state_view& state)
+      void Frame::add_usertype(sol::state_view state)
       {
         state.new_usertype<Frame>("Frame");
       }

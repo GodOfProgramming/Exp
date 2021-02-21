@@ -40,7 +40,7 @@ namespace Exp
         });
       }
 
-      void TextBox::add_usertype(sol::state_view& state)
+      void TextBox::add_usertype(sol::state_view state)
       {
         state.new_usertype<TextBox>("TextBox", "text", &TextBox::text, "is_enabled", &TextBox::is_enabled, "enable", &TextBox::enable);
       }

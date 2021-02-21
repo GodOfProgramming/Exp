@@ -81,7 +81,7 @@ namespace Exp
     void Shaders::reload_program(std::string id)
     {
       LOG(INFO) << "reloading program " << id;
-      auto iter = this->cache.find(id);
+      const auto iter = this->cache.find(id);
       if (iter == this->cache.end()) {
         LOG(WARNING) << "unable to reload program, does not exist";
         return;
@@ -99,7 +99,7 @@ namespace Exp
         return;
       }
 
-      auto program = std::make_shared<GL::Program>();
+      auto program = std::make_shared<GL::Program>(id);
 
       if (!program->attach(*this->shader_map[cache_entry.vertex.file])) {
         LOG(ERROR) << "unable to attach vertex shader to program";
@@ -130,7 +130,7 @@ namespace Exp
     {
       auto& cache_entry = this->cache[id];
 
-      auto program          = std::make_shared<GL::Program>();
+      auto program          = std::make_shared<GL::Program>(id);
       this->program_map[id] = program;
 
       if (!program->attach(*this->shader_map[cache_entry.vertex.file])) {

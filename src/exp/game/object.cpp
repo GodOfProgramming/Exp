@@ -55,7 +55,7 @@ namespace Exp
       }
     }
 
-    void Object::add_usertype(sol::state_view& state)
+    void Object::add_usertype(sol::state_view state)
     {
       state.new_usertype<Object>("Object", "meta", &Object::meta, "uniforms", &Object::uniforms);
     }

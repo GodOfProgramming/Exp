@@ -14,7 +14,7 @@ namespace Exp
       return objs;
     }
 
-    void GameObjects::add_usertype(sol::state_view& state)
+    void GameObjects::add_usertype(sol::state_view state)
     {
       state.new_usertype<GameObjects>("GameObjects", "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
     }
