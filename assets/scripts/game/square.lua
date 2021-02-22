@@ -11,7 +11,7 @@ function construct(square)
   self.uniforms:set("colors", gl.uniform.new("u_colors"));
 end
 
-function update()
+function update(_)
   local scale = 0.05
   local r = math.sin(info.frames * scale) / 2.0 + 0.5
   local g = math.sin(info.frames * scale) / 2.0 + 0.5

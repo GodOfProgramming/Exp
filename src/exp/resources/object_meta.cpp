@@ -24,6 +24,8 @@ namespace Exp
        &ObjectMeta::animation_id,
        "script_id",
        &ObjectMeta::script_id,
+       "animation",
+       &ObjectMeta::animation,
        "draw_desc",
        &ObjectMeta::drawdesc);
     }

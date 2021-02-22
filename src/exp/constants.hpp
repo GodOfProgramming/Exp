@@ -80,9 +80,10 @@ namespace Exp
       }  // namespace Ui
       namespace R
       {
-        constexpr const char* GAME_OBJECTS = "R_GameObjects";
-        constexpr const char* META_MODEL   = "R_ModelMeta";
-        constexpr const char* META_OBJECT  = "R_ObjectMeta";
+        constexpr const char* GAME_OBJECTS   = "R_GameObjects";
+        constexpr const char* META_MODEL     = "R_ModelMeta";
+        constexpr const char* META_OBJECT    = "R_ObjectMeta";
+        constexpr const char* META_ANIMATION = "R_AnimationMeta";
       }  // namespace R
       namespace Render
       {

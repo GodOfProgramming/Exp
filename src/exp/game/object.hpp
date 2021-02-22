@@ -10,8 +10,9 @@ namespace Exp
   {
     class Object
     {
-      using ObjectMeta = R::ObjectMeta;
-      using Uniform    = GL::Uniform;
+      using ObjectMeta    = R::ObjectMeta;
+      using Uniform       = GL::Uniform;
+      using AnimationMeta = R::AnimationMeta;
 
      public:
       Object(const ObjectMeta meta);

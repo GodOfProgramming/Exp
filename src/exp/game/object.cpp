@@ -18,6 +18,7 @@ namespace Exp
         sol::state lua;
         if (scripts.make_script(m.script_id, lua, [this](sol::state_view& state) {
               ObjectMeta::add_usertype(state);
+              AnimationMeta::add_usertype(state);
               Uniform::add_usertype(state);
               Object::add_usertype(state);
               Info::add_usertype(state);
@@ -54,7 +55,7 @@ namespace Exp
         auto& lua = this->script.value();
         auto fn   = lua[this->meta.update_fn];
         if (fn.get_type() == sol::type::function) {
-          fn.call();
+          fn.call(this);
         }
       }
     }

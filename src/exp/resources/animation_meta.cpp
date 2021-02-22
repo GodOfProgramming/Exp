@@ -6,6 +6,32 @@ namespace Exp
 {
   namespace R
   {
+    void AnimationMeta::add_usertype(sol::state_view state)
+    {
+      state.new_usertype<AnimationMeta>(Lua::Usertypes::R::META_ANIMATION, "next", &AnimationMeta::next, "uv", &AnimationMeta::uv);
+    }
+    auto AnimationMeta::next(std::string action, std::size_t current) -> std::size_t
+    {
+      current++;
+      auto& actions = this->action_map[action];
+      if (actions.begin() + current >= actions.end()) {
+        return 0;
+      } else {
+        return current;
+      }
+    }
+
+    auto AnimationMeta::uv(std::string action, std::size_t current) -> glm::vec2
+    {
+      auto& actions   = this->action_map[action];
+      auto frame      = actions[current];
+      float xfract    = 1.0 / this->width;
+      float yfract    = 1.0 / this->height;
+      std::size_t row = frame / this->width;
+      std::size_t col = frame % this->width;
+      return glm::vec2(col * xfract, row * yfract);
+    }
+
     auto AnimationMeta::has_width(const nlohmann::json& json, std::size_t& value) -> bool
     {
       auto width_json = json[JSON::Keys::ANIMATION_WIDTH];
