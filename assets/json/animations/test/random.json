@@ -4,7 +4,17 @@
     "height": 9,
     "texture": "exp.test.random.player",
     "actions": {
-      "run": [
+      "run_up": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "run_down": [
         16,
         17,
         18,
