@@ -8,8 +8,17 @@ namespace Exp
   {
     void AnimationMeta::add_usertype(sol::state_view state)
     {
-      state.new_usertype<AnimationMeta>(Lua::Usertypes::R::META_ANIMATION, "next", &AnimationMeta::next, "uv", &AnimationMeta::uv);
+      state.new_usertype<AnimationMeta>(
+       Lua::Usertypes::R::META_ANIMATION, "ratio", &AnimationMeta::ratio, "next", &AnimationMeta::next, "uv", &AnimationMeta::uv);
     }
+
+    auto AnimationMeta::ratio() -> glm::vec2
+    {
+      float xfract = 1.0 / this->width;
+      float yfract = 1.0 / this->height;
+      return glm::vec2{ xfract, yfract };
+    }
+
     auto AnimationMeta::next(std::string action, std::size_t current) -> std::size_t
     {
       current++;
@@ -25,11 +34,10 @@ namespace Exp
     {
       auto& actions   = this->action_map[action];
       auto frame      = actions[current];
-      float xfract    = 1.0 / this->width;
-      float yfract    = 1.0 / this->height;
+      auto fract      = this->ratio();
       std::size_t row = frame / this->width;
       std::size_t col = frame % this->width;
-      return glm::vec2(col * xfract, row * yfract);
+      return glm::vec2(col * fract.x, row * fract.y);
     }
 
     auto AnimationMeta::has_width(const nlohmann::json& json, std::size_t& value) -> bool

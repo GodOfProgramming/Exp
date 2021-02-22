@@ -22,6 +22,7 @@ namespace Exp
       static auto has_texture_id(const nlohmann::json& json, std::string& value) -> bool;
       static auto parse_actions(const nlohmann::json& json, ActionMap& actions) -> bool;
 
+      auto ratio() -> glm::vec2;
       auto next(std::string action, std::size_t) -> std::size_t;
       auto uv(std::string action, std::size_t current) -> glm::vec2;
     };

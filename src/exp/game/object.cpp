@@ -17,8 +17,8 @@ namespace Exp
         auto& scripts = Scripts::instance();
         sol::state lua;
         if (scripts.make_script(m.script_id, lua, [this](sol::state_view& state) {
-              ObjectMeta::add_usertype(state);
               AnimationMeta::add_usertype(state);
+              ObjectMeta::add_usertype(state);
               Uniform::add_usertype(state);
               Object::add_usertype(state);
               Info::add_usertype(state);
