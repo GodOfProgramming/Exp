@@ -13,7 +13,7 @@ namespace Exp
 
       auto bind() const noexcept -> bool;
 
-      auto configure(const TextureDescriptor desc, std::shared_ptr<cimg_library::CImg<uint8_t>> img) noexcept -> bool;
+      auto configure(const TextureDescriptor desc, int width, int height, std::shared_ptr<uint8_t> img) noexcept -> bool;
 
       auto is_valid() const noexcept -> bool;
 

@@ -10,10 +10,13 @@ namespace Exp
   {
     struct TextureMeta
     {
-      std::string file;
-      GL::TextureDescriptor descriptor;
-      std::shared_ptr<cimg_library::CImg<uint8_t>> img;
+      int width;
+      int height;
+      std::shared_ptr<uint8_t> img;
       std::shared_ptr<GL::Texture> tex;
+      GL::TextureDescriptor descriptor;
+
+      std::string file;
 
       static auto has_file(const nlohmann::json& json, std::string& value) -> bool;
     };

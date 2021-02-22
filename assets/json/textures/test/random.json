@@ -1,9 +1,8 @@
 {
+  "player": {
+    "file": "link.png"
+  },
   "wall": {
-    "file": "wall.jpg",
-    "wrap": {
-      "s": "repeat",
-      "t": "repeat"
-    }
+    "file": "container.jpg"
   }
 }

@@ -24,7 +24,6 @@ namespace Exp
       std::string link_error;
       ShaderMeta vertex;
       ShaderMeta fragment;
-      std::set<std::string> uniforms;
     };
   }  // namespace R
 }  // namespace Exp

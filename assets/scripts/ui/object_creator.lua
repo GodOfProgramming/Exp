@@ -50,8 +50,8 @@ function get_model_id(self)
   self.text = "Model: "..selected_meta.model_id;
 end
 
-function get_texture_id(self)
-  self.text = "Texture: "..selected_meta.texture_id;
+function get_animation_id(self)
+  self.text = "Animation: "..selected_meta.animation_id;
 end
 
 function get_script_id(self)

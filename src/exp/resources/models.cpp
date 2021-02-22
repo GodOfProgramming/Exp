@@ -20,7 +20,7 @@ namespace Exp
       LOG(INFO) << "loading models";
       IO::iterate_dir_with_namespace(Cfg::Dir::GAME_MODELS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         using nlohmann::json;
-        this->load_json_file(path, [&](const json& objects) {
+        IResource::load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
             LOG(WARNING) << "object json is not in proper format, first type is not object";
             return;

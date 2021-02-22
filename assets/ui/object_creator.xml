@@ -10,7 +10,7 @@
   <frame if="did_select_object" width="100" height="50">
     <text fn="get_shader_id"></text>
     <text fn="get_model_id"></text>
-    <text fn="get_texture_id"></text>
+    <text fn="get_animation_id"></text>
     <text fn="get_script_id"></text>
     <text fn="get_construct_fn"></text>
     <text fn="get_update_fn"></text>

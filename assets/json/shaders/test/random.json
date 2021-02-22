@@ -1,13 +1,14 @@
 {
+  "player": {
+    "vertex": "player.vertex.glsl",
+    "fragment": "player.fragment.glsl"
+  },
   "basic": {
     "vertex": "basic.vertex.glsl",
     "fragment": "basic.fragment.glsl"
   },
   "colors": {
     "vertex": "color.vertex.glsl",
-    "fragment": "color.fragment.glsl",
-    "uniforms": [
-      "u_colors"
-    ]
+    "fragment": "color.fragment.glsl"
   }
 }

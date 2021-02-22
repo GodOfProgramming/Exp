@@ -12,8 +12,8 @@ namespace Exp
       virtual void release()  = 0;
 
      protected:
-      void load_src_file(std::filesystem::path path, std::function<void(const std::string_view&)> callback);
-      void load_json_file(std::filesystem::path path, std::function<void(const nlohmann::json&)> callback);
+      static void load_src_file(std::filesystem::path path, std::function<void(const std::string_view&)> callback);
+      static void load_json_file(std::filesystem::path path, std::function<void(const nlohmann::json&)> callback);
     };
   }  // namespace R
 }  // namespace Exp

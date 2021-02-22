@@ -37,6 +37,6 @@
 [submodule "lib/xml/upstream"]
 	path = lib/xml/upstream
 	url = git@github.com:leethomason/tinyxml2
-[submodule "lib/cimg/upstream"]
-	path = lib/cimg/upstream
-	url = git@github.com:dtschump/CImg
+[submodule "lib/stb/upstream"]
+	path = lib/stb/upstream
+	url = git@github.com:nothings/stb.git

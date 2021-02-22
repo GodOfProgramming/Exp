@@ -9,7 +9,7 @@ add_subdirectory(imgui)
 add_subdirectory(lua)
 add_subdirectory(sol)
 add_subdirectory(assimp)
-add_subdirectory(cimg)
+add_subdirectory(stb)
 add_subdirectory(json)
 add_subdirectory(xml)
 

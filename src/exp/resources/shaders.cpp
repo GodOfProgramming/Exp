@@ -22,7 +22,7 @@ namespace Exp
 
       IO::iterate_dir_with_namespace(Cfg::Dir::SHADERS, "exp", [&](std::filesystem::path path, std::string nspace) {
         using nlohmann::json;
-        this->load_json_file(path, [&](const json& objects) {
+        IResource::load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
             LOG(WARNING) << "shader json is not in proper format, first type is not object";
             return;
@@ -56,13 +56,6 @@ namespace Exp
 
             if (!this->load_shader<GL::Shader::Type::FRAGMENT>(shader_program.fragment)) {
               should_continue = true;
-            }
-
-            auto uniforms = shader_json[JSON::Keys::SHADER_UNIFORM];
-            if (uniforms.is_array()) {
-              for (const auto& uniform : uniforms) { shader_program.uniforms.emplace(uniform); }
-            } else if (!uniforms.is_null()) {
-              LOG(WARNING) << "detected uniforms but was not of type array";
             }
 
             this->cache[id] = shader_program;

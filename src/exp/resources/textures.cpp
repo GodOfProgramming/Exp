@@ -4,6 +4,9 @@
 #include "exp/io.hpp"
 #include "exp/io/file.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace Exp
 {
   namespace R
@@ -19,7 +22,7 @@ namespace Exp
       LOG(INFO) << "loading textures";
       IO::iterate_dir_with_namespace(Cfg::Dir::TEXTURES, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         using nlohmann::json;
-        this->load_json_file(path, [&](const json& objects) {
+        IResource::load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
             LOG(WARNING) << "object json is not in proper format, first type is not object";
             return;
@@ -43,8 +46,14 @@ namespace Exp
             ss << Assets::Dir::TEXTURES << '/' << filename;
             std::string fn = ss.str();
 
-            auto img = std::make_shared<cimg_library::CImg<uint8_t>>();
-            img->load(fn.c_str());
+            int width, height, num_chans;
+            auto* dat = stbi_load(fn.c_str(), &width, &height, &num_chans, 0);
+            if (dat == nullptr) {
+              LOG(WARNING) << "could not load image " << id;
+              continue;
+            }
+
+            std::shared_ptr<uint8_t> data(dat);
 
             auto tex = std::make_shared<GL::Texture>();
             if (!tex->gen()) {
@@ -57,15 +66,17 @@ namespace Exp
               continue;
             }
 
-            if (!tex->configure(descriptor, img)) {
+            if (!tex->configure(descriptor, width, height, data)) {
               continue;
             }
 
             auto meta        = std::make_shared<TextureMeta>();
-            meta->file       = filename;
-            meta->descriptor = descriptor;
-            meta->img        = img;
+            meta->width      = width;
+            meta->height     = height;
+            meta->img        = data;
             meta->tex        = tex;
+            meta->descriptor = descriptor;
+            meta->file       = filename;
 
             this->textures.emplace(id, meta);
           }

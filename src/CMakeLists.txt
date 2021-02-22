@@ -21,7 +21,6 @@ set(PCH_HEADERS
   "<assimp/Importer.hpp>"
   "<assimp/scene.h>"
   "<assimp/postprocess.h>"
-  "<CImg.h>"
   "<chrono>"
   "<filesystem>"
   "<fstream>"

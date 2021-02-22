@@ -1,10 +1,10 @@
 #include "game_objects.hpp"
 
+#include "animations.hpp"
 #include "exp/constants.hpp"
 #include "exp/io.hpp"
 #include "models.hpp"
 #include "shaders.hpp"
-#include "textures.hpp"
 
 namespace Exp
 {
@@ -25,11 +25,11 @@ namespace Exp
     void GameObjects::load_all()
     {
       LOG(INFO) << "loading game objects";
-      auto& shaders  = Shaders::instance();
-      auto& models   = Models::instance();
-      auto& textures = Textures::instance();
+      auto& shaders    = Shaders::instance();
+      auto& models     = Models::instance();
+      auto& animations = Animations::instance();
       IO::iterate_dir_with_namespace(Cfg::Dir::GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
-        this->load_json_file(path, [&](const json& objects) {
+        IResource::load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
             LOG(WARNING) << "shader json is not in proper format, first type is not object";
             return;
@@ -61,8 +61,8 @@ namespace Exp
               continue;
             }
 
-            std::string texture_id;
-            if (!ObjectMeta::has_texture_id(obj, texture_id)) {
+            std::string animation_id;
+            if (!ObjectMeta::has_animation_id(obj, animation_id)) {
               continue;
             }
 
@@ -96,15 +96,15 @@ namespace Exp
 
             auto model = model_iter->second;
 
-            /* Texture */
+            /* Animation */
 
-            auto texture_iter = textures.find(texture_id);
-            if (texture_iter == textures.end()) {
-              LOG(WARNING) << "cannot find texture with id " << texture_id;
+            auto animation_iter = animations.find(animation_id);
+            if (animation_iter == animations.end()) {
+              LOG(WARNING) << "cannot find animation " << animation_id;
               continue;
             }
 
-            auto texture = texture_iter->second;
+            auto animation = animation_iter->second;
 
             /* Draw Description */
 
@@ -128,12 +128,12 @@ namespace Exp
             meta.update_fn    = update_fn;
             meta.shader_id    = shader_id;
             meta.model_id     = model_id;
-            meta.texture_id   = texture_id;
+            meta.animation_id = animation_id;
             meta.script_id    = script_id;
 
-            meta.shader  = shader;
-            meta.model   = model;
-            meta.texture = texture;
+            meta.shader    = shader;
+            meta.model     = model;
+            meta.animation = animation;
 
             meta.drawdesc = desc;
 

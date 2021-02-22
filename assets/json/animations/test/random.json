@@ -1,0 +1,23 @@
+{
+  "player": {
+    "width": 8,
+    "height": 9,
+    "texture": "exp.test.random.wall",
+    "actions": {
+      "run": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ]
+    }
+  },
+  "wall": {
+    "width": 1,
+    "height": 1,
+    "texture": "exp.test.random.wall"
+  }
+}

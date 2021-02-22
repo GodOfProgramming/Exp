@@ -20,8 +20,8 @@ namespace Exp
        &ObjectMeta::shader_id,
        "model_id",
        &ObjectMeta::model_id,
-       "texture_id",
-       &ObjectMeta::texture_id,
+       "animation_id",
+       &ObjectMeta::animation_id,
        "script_id",
        &ObjectMeta::script_id,
        "draw_desc",
@@ -80,9 +80,9 @@ namespace Exp
       return true;
     }
 
-    auto ObjectMeta::has_texture_id(const nlohmann::json& json, std::string& value) -> bool
+    auto ObjectMeta::has_animation_id(const nlohmann::json& json, std::string& value) -> bool
     {
-      auto texture_json = json[JSON::Keys::GAME_OBJECT_TEXTURE];
+      auto texture_json = json[JSON::Keys::GAME_OBJECT_ANIMATION];
       if (texture_json.is_string()) {
         value = texture_json;
       } else {

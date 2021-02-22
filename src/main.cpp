@@ -6,6 +6,7 @@
 #include "exp/io/file.hpp"
 #include "exp/render/app_window.hpp"
 #include "exp/render/renderer.hpp"
+#include "exp/resources/animations.hpp"
 #include "exp/resources/game_objects.hpp"
 #include "exp/resources/models.hpp"
 #include "exp/resources/scripts.hpp"
@@ -21,6 +22,7 @@ int main(int, char* argv[])
   using Exp::Game::Object;
   using Exp::Input::Dispatcher;
   using Exp::IO::File;
+  using Exp::R::Animations;
   using Exp::R::GameObjects;
   using Exp::R::Models;
   using Exp::R::Scripts;
@@ -74,6 +76,11 @@ int main(int, char* argv[])
     textures.load_all();
   }
 
+  auto& animations = Animations::instance();
+  {
+    animations.load_all();
+  }
+
   auto& scripts = Scripts::instance();
   {
     scripts.load_all();
@@ -96,7 +103,7 @@ int main(int, char* argv[])
   auto stats_update_timer = std::chrono::system_clock::now();
 
   std::vector<std::shared_ptr<Object>> objects;
-  auto obj = game_objects.find("exp.test.random.square");
+  auto obj = game_objects.find("exp.test.random.player");
   if (obj == game_objects.end()) {
     LOG(FATAL) << "could not even load the friggen debug object, nice job dumbass";
   }
@@ -153,6 +160,8 @@ int main(int, char* argv[])
   game_objects.release();
 
   scripts.release();
+
+  animations.release();
 
   textures.release();
 

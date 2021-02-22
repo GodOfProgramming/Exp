@@ -69,15 +69,6 @@ namespace Exp
             print_shader_info(indent, "Vertex", shader_meta.vertex);
             print_shader_info(indent, "Fragment", shader_meta.fragment);
 
-            std::string text;
-            if (shader_meta.uniforms.empty()) {
-              text = "None";
-            } else {
-              text = Util::join(shader_meta.uniforms);
-            }
-
-            ImGui::Text("Uniforms: %s", text.c_str());
-
             if (!program->is_valid()) {
               ImGui::Text("Link Error: %s", shader_meta.link_error.c_str());
             }

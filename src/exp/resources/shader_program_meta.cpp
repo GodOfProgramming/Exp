@@ -10,10 +10,6 @@ namespace Exp
     ShaderProgramMeta::ShaderProgramMeta(std::string st, json& sj)
      : type(st)
     {
-      static const std::set<std::string> KEYS_TO_SKIP = {
-        JSON::Keys::SHADER_UNIFORM,
-      };
-
       if (!sj.is_object()) {
         LOG(WARNING) << "shader is not object, skipping: " << sj.dump(2);
         return;
@@ -22,10 +18,6 @@ namespace Exp
       for (const auto& item : sj.items()) {
         auto shader_type    = item.key();
         auto filename_value = item.value();
-
-        if (KEYS_TO_SKIP.contains(shader_type)) {
-          continue;
-        }
 
         if (!filename_value.is_string()) {
           LOG(INFO) << "could not load shader: " << filename_value.dump(2);

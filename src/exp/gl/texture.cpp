@@ -18,7 +18,7 @@ namespace Exp
       return GL_CHECK();
     }
 
-    auto Texture::configure(const TextureDescriptor desc, std::shared_ptr<cimg_library::CImg<uint8_t>> img) noexcept -> bool
+    auto Texture::configure(const TextureDescriptor desc, int width, int height, std::shared_ptr<uint8_t> img) noexcept -> bool
     {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(desc.wrap_s));
       if (!GL_CHECK()) {
@@ -44,7 +44,7 @@ namespace Exp
         return false;
       }
 
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img->width(), img->height(), 0, GL_RGB, GL_UNSIGNED_BYTE, img->data());
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img.get());
       if (!GL_CHECK()) {
         LOG(WARNING) << "cannot create texture from image";
         return false;
