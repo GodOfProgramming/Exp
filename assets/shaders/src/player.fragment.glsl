@@ -8,5 +8,9 @@ uniform sampler2D tex;
 
 void main()
 {
-  o_frag_color = texture(tex, io_uv);
+  vec4 color = texture(tex, io_uv);
+  if (color.a == 0) {
+    discard;
+  }
+  o_frag_color = color;
 }
