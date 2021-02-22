@@ -22,6 +22,8 @@ namespace Exp
 
      public:
       Uniform(std::string name);
+      static auto create(std::string name) -> std::shared_ptr<Uniform>;
+
       void set_float(float f);
       void set_vec2(glm::vec2 v);
       void set_vec3(glm::vec3 v);

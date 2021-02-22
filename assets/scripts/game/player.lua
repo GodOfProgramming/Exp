@@ -8,10 +8,13 @@ self = nil;
 current_action = "run_up";
 animation_frame = 0;
 
+u_tex_coords = nil;
+
 function construct(player)
   self = player;
-  self.uniforms:set("tex_coords", gl.uniform.new("u_tex_coords"));
-  self.uniforms:set("tex_ratio", gl.uniform.new("u_tex_ratio"));
+  self.uniforms:set("tex_coords", gl.uniform.create("u_tex_coords"));
+  u_tex_coords = self.uniforms:get("tex_coords");
+  self.uniforms:set("tex_ratio", gl.uniform.create("u_tex_ratio"));
   local ratio = self.meta.animation:ratio();
   local tex_ratio = self.uniforms:get("tex_ratio");
   tex_ratio:set_vec2(ratio);
@@ -29,6 +32,5 @@ function update(_)
       end
     end
   end
-  local coords = self.uniforms:get("tex_coords");
-  coords:set_vec2(uv);
+  u_tex_coords:set_vec2(uv);
 end

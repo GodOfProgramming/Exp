@@ -41,7 +41,7 @@ namespace Exp
     {
       for (const auto& kvp : this->uniforms) {
         auto& uniform = kvp.second;
-        uniform.enable(*this->meta.shader);
+        uniform->enable(*this->meta.shader);
       }
 
       if (!this->meta.animation->texture->tex->bind()) {

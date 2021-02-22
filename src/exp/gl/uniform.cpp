@@ -11,6 +11,11 @@ namespace Exp
      : name(n)
     {}
 
+    auto Uniform::create(std::string name) -> std::shared_ptr<Uniform>
+    {
+      return std::make_shared<Uniform>(name);
+    }
+
     void Uniform::set_float(float f)
     {
       this->value = f;
@@ -120,7 +125,8 @@ namespace Exp
     {
       state.new_usertype<Uniform>(
        Lua::Usertypes::GL::UNIFORM,
-       sol::constructors<Uniform(std::string)>(),
+       "create",
+       &Uniform::create,
        "set_float",
        &Uniform::set_float,
        "set_vec2",
