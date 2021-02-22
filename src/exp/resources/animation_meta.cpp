@@ -8,8 +8,10 @@ namespace Exp
   {
     void AnimationMeta::add_usertype(sol::state_view state)
     {
-      state.new_usertype<AnimationMeta>(
-       Lua::Usertypes::R::META_ANIMATION, "ratio", &AnimationMeta::ratio, "next", &AnimationMeta::next, "uv", &AnimationMeta::uv);
+      if (state[Lua::Usertypes::R::META_ANIMATION].get_type() == sol::type::none) {
+        state.new_usertype<AnimationMeta>(
+         Lua::Usertypes::R::META_ANIMATION, "ratio", &AnimationMeta::ratio, "next", &AnimationMeta::next, "uv", &AnimationMeta::uv);
+      }
     }
 
     auto AnimationMeta::ratio() -> glm::vec2

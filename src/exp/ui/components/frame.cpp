@@ -94,7 +94,9 @@ namespace Exp
 
       void Frame::add_usertype(sol::state_view state)
       {
-        state.new_usertype<Frame>(Lua::Usertypes::Ui::FRAME);
+        if (state[Lua::Usertypes::Ui::FRAME].get_type() == sol::type::none) {
+          state.new_usertype<Frame>(Lua::Usertypes::Ui::FRAME);
+        }
       }
 
       auto Frame::width() const noexcept -> int

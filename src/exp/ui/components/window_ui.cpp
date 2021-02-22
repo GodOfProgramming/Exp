@@ -31,7 +31,9 @@ namespace Exp
 
       void WindowUi::add_usertype(sol::state_view state)
       {
-        state.new_usertype<WindowUi>(Lua::Usertypes::Ui::WINDOW_UI, "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
+        if (state[Lua::Usertypes::Ui::WINDOW_UI].get_type() == sol::type::none) {
+          state.new_usertype<WindowUi>(Lua::Usertypes::Ui::WINDOW_UI, "title", &WindowUi::title, "dim", &WindowUi::dim, "pos", &WindowUi::pos);
+        }
       }
 
       auto WindowUi::from_node(tinyxml2::XMLNode* self) -> std::shared_ptr<UiComponent>

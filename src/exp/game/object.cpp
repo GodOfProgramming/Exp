@@ -17,9 +17,6 @@ namespace Exp
         auto& scripts = Scripts::instance();
         sol::state lua;
         if (scripts.make_script(m.script_id, lua, [this](sol::state_view& state) {
-              AnimationMeta::add_usertype(state);
-              ObjectMeta::add_usertype(state);
-              Uniform::add_usertype(state);
               Object::add_usertype(state);
               Info::add_usertype(state);
               return true;
@@ -62,7 +59,11 @@ namespace Exp
 
     void Object::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Object>(Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms);
+      if (state[Lua::Usertypes::Game::OBJECT].get_type() == sol::type::none) {
+        ObjectMeta::add_usertype(state);
+        Uniform::add_usertype(state);
+        state.new_usertype<Object>(Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms);
+      }
     }
   }  // namespace Game
 }  // namespace Exp

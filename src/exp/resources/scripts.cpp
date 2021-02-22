@@ -92,8 +92,6 @@ namespace Exp
       lua.new_usertype<glm::ivec2>(
        Lua::Usertypes::glm::IVEC2, sol::constructors<glm::ivec2(), glm::ivec2(int, int)>(), "x", &glm::ivec2::x, "y", &glm::ivec2::y);
 
-      Render::DrawDescription::add_usertype(lua);
-      ObjectMeta::add_usertype(lua);
       GameObjects::add_usertype(lua);
 
       if (!callback(lua)) {

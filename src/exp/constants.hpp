@@ -1,7 +1,5 @@
 #pragma once
 
-#define LUA_FIELD(obj, field) #field, &obj::field
-
 namespace Exp
 {
   namespace Cfg

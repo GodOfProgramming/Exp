@@ -18,8 +18,11 @@ namespace Exp
 
     void GameObjects::add_usertype(sol::state_view state)
     {
-      state.new_usertype<GameObjects>(
-       Lua::Usertypes::R::GAME_OBJECTS, "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
+      if (state[Lua::Usertypes::R::GAME_OBJECTS].get_type() == sol::type::none) {
+        ObjectMeta::add_usertype(state);
+        state.new_usertype<GameObjects>(
+         Lua::Usertypes::R::GAME_OBJECTS, "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
+      }
     }
 
     void GameObjects::load_all()

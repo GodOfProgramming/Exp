@@ -8,26 +8,30 @@ namespace Exp
   {
     void ObjectMeta::add_usertype(sol::state_view state)
     {
-      state.new_usertype<ObjectMeta>(
-       Lua::Usertypes::R::META_OBJECT,
-       "id",
-       &ObjectMeta::id,
-       "construct_fn",
-       &ObjectMeta::construct_fn,
-       "update_fn",
-       &ObjectMeta::update_fn,
-       "shader_id",
-       &ObjectMeta::shader_id,
-       "model_id",
-       &ObjectMeta::model_id,
-       "animation_id",
-       &ObjectMeta::animation_id,
-       "script_id",
-       &ObjectMeta::script_id,
-       "animation",
-       &ObjectMeta::animation,
-       "draw_desc",
-       &ObjectMeta::drawdesc);
+      if (state[Lua::Usertypes::R::META_OBJECT].get_type() == sol::type::none) {
+        AnimationMeta::add_usertype(state);
+        Render::DrawDescription::add_usertype(state);
+        state.new_usertype<ObjectMeta>(
+         Lua::Usertypes::R::META_OBJECT,
+         "id",
+         &ObjectMeta::id,
+         "construct_fn",
+         &ObjectMeta::construct_fn,
+         "update_fn",
+         &ObjectMeta::update_fn,
+         "shader_id",
+         &ObjectMeta::shader_id,
+         "model_id",
+         &ObjectMeta::model_id,
+         "animation_id",
+         &ObjectMeta::animation_id,
+         "script_id",
+         &ObjectMeta::script_id,
+         "animation",
+         &ObjectMeta::animation,
+         "draw_desc",
+         &ObjectMeta::drawdesc);
+      }
     }
 
     auto ObjectMeta::has_construct_fn(const nlohmann::json& json, std::string& value) -> bool

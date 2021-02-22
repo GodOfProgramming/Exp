@@ -123,26 +123,28 @@ namespace Exp
 
     void Uniform::add_usertype(sol::state_view state)
     {
-      state.new_usertype<Uniform>(
-       Lua::Usertypes::GL::UNIFORM,
-       "create",
-       &Uniform::create,
-       "set_float",
-       &Uniform::set_float,
-       "set_vec2",
-       &Uniform::set_vec2,
-       "set_vec3",
-       &Uniform::set_vec3,
-       "set_vec4",
-       &Uniform::set_vec4,
-       "set_v_float",
-       &Uniform::set_v_float,
-       "set_v_vec2",
-       &Uniform::set_v_vec2,
-       "set_v_vec3",
-       &Uniform::set_v_vec3,
-       "set_v_vec4",
-       &Uniform::set_v_vec4);
+      if (state[Lua::Usertypes::GL::UNIFORM].get_type() == sol::type::none) {
+        state.new_usertype<Uniform>(
+         Lua::Usertypes::GL::UNIFORM,
+         "create",
+         &Uniform::create,
+         "set_float",
+         &Uniform::set_float,
+         "set_vec2",
+         &Uniform::set_vec2,
+         "set_vec3",
+         &Uniform::set_vec3,
+         "set_vec4",
+         &Uniform::set_vec4,
+         "set_v_float",
+         &Uniform::set_v_float,
+         "set_v_vec2",
+         &Uniform::set_v_vec2,
+         "set_v_vec3",
+         &Uniform::set_v_vec3,
+         "set_v_vec4",
+         &Uniform::set_v_vec4);
+      }
     }
 
     auto Uniform::type() const noexcept -> Type
