@@ -23,9 +23,9 @@ namespace Exp
      public:
       Uniform(std::string name);
       void set_float(float f);
-      void set_vec2(float x, float y);
-      void set_vec3(float x, float y, float z);
-      void set_vec4(float x, float y, float z, float w);
+      void set_vec2(glm::vec2 v);
+      void set_vec3(glm::vec3 v);
+      void set_vec4(glm::vec4 v);
 
       void set_v_float(std::vector<float> v);
       void set_v_vec2(std::vector<glm::vec2> v);

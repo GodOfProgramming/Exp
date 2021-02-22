@@ -16,19 +16,19 @@ namespace Exp
       this->value = f;
     }
 
-    void Uniform::set_vec2(float x, float y)
+    void Uniform::set_vec2(glm::vec2 v)
     {
-      this->value = glm::vec2{ x, y };
+      this->value = v;
     }
 
-    void Uniform::set_vec3(float x, float y, float z)
+    void Uniform::set_vec3(glm::vec3 v)
     {
-      this->value = glm::vec3{ x, y, z };
+      this->value = v;
     }
 
-    void Uniform::set_vec4(float x, float y, float z, float w)
+    void Uniform::set_vec4(glm::vec4 v)
     {
-      this->value = glm::vec4{ x, y, z, w };
+      this->value = v;
     }
 
     void Uniform::set_v_float(std::vector<float> v)

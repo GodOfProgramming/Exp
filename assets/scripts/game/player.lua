@@ -14,7 +14,7 @@ function construct(player)
   self.uniforms:set("tex_ratio", gl.uniform.new("u_tex_ratio"));
   local ratio = self.meta.animation:ratio();
   local tex_ratio = self.uniforms:get("tex_ratio");
-  tex_ratio:set_vec2(ratio.x, ratio.y);
+  tex_ratio:set_vec2(ratio);
 end
 
 function update(_)
@@ -30,5 +30,5 @@ function update(_)
     end
   end
   local coords = self.uniforms:get("tex_coords");
-  coords:set_vec2(uv.x, uv.y);
+  coords:set_vec2(uv);
 end
