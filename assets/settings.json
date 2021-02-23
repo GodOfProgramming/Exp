@@ -1,7 +1,7 @@
 {
   "game": {
     "far_render": 100.0,
-    "near_render": 0.10000000149011612,
+    "near_render": 0.0,
     "target_fps": 60
   },
   "window": {

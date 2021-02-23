@@ -13,8 +13,8 @@ uniform mat4 u_projection;
 
 void main()
 {
-  io_uv    = i_uv * u_tex_ratio + u_tex_coords;
-  io_color = u_color;
-  // gl_Position = u_projection * u_view * u_model * vec4(i_pos, 1.0);
-  gl_Position = u_model * vec4(i_pos, 1.0);
+  io_uv       = i_uv * u_tex_ratio + u_tex_coords;
+  io_color    = u_color;
+  gl_Position = u_projection * u_view * u_model * vec4(i_pos, 1.0);
+  // gl_Position = u_model * vec4(i_pos, 1.0);
 }

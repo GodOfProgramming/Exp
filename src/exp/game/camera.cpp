@@ -21,6 +21,8 @@ namespace Exp
          &Camera::instance,
          "set_ortho",
          &Camera::set_ortho,
+         "move",
+         &Camera::move,
          "get_projection",
          &Camera::get_projection,
          "get_view",

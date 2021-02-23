@@ -101,7 +101,9 @@ int main(int, char* argv[])
 
   auto& camera = Camera::instance();
   {
-    camera.set_ortho(0.0f, settings.window.width, 0.0f, settings.window.height, settings.game.near_render, settings.game.far_render);
+    float width_2  = settings.window.width.raw() / 2.0f;
+    float height_2 = settings.window.height.raw() / 2.0f;
+    camera.set_ortho(-width_2, width_2, -height_2, height_2, settings.game.near_render, settings.game.far_render);
   }
 
   // rendering

@@ -38,6 +38,7 @@ function construct(player)
   self.uniforms:set("model", u_transform);
 
   u_tex_ratio:set_vec2(self.meta.animation:ratio());
+  -- camera:move(geom.vec3.new(0, 0, 0));
 end
 
 function update(_)
@@ -67,7 +68,7 @@ function update(_)
 
   local transform = geom.mat4.identity();
   transform = transform:translate(geom.vec3.new(0, 0, 0));
-  transform = transform:scale(geom.vec3.new(1, 1, 0));
+  transform = transform:scale(geom.vec3.new(100, 100, 0));
   u_transform:set_mat4(transform);
   u_view:set_mat4(camera:get_view());
   u_proj:set_mat4(camera:get_projection());
