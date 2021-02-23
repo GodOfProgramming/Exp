@@ -1,4 +1,5 @@
 #include "exp/constants.hpp"
+#include "exp/game/camera.hpp"
 #include "exp/game/info.hpp"
 #include "exp/game/object.hpp"
 #include "exp/gl/error_map.hpp"
@@ -18,6 +19,7 @@
 int main(int, char* argv[])
 {
   constexpr const bool PRINT_GL_ERRORS = false;
+  using Exp::Game::Camera;
   using Exp::Game::Info;
   using Exp::Game::Object;
   using Exp::Input::Dispatcher;
@@ -97,6 +99,11 @@ int main(int, char* argv[])
     window.set_next(&ui);
   }
 
+  auto& camera = Camera::instance();
+  {
+    camera.set_ortho(0.0f, settings.window.width, 0.0f, settings.window.height, settings.game.near_render, settings.game.far_render);
+  }
+
   // rendering
   Renderer renderer{ ui };
 
@@ -151,6 +158,12 @@ int main(int, char* argv[])
     info.frames++;
 
     std::this_thread::sleep_until(resume);
+  }
+
+  {
+    File f;
+    f.data = settings.serialize();
+    f.save(Exp::Cfg::File::SETTINGS);
   }
 
   objects.clear();

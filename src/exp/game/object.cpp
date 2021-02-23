@@ -1,5 +1,6 @@
 #include "object.hpp"
 
+#include "camera.hpp"
 #include "exp/constants.hpp"
 #include "exp/resources/scripts.hpp"
 #include "info.hpp"
@@ -60,9 +61,10 @@ namespace Exp
     void Object::add_usertype(sol::state_view state)
     {
       if (state[Lua::Usertypes::Game::OBJECT].get_type() == sol::type::none) {
+        Camera::add_usertype(state);
         ObjectMeta::add_usertype(state);
         Uniform::add_usertype(state);
-        state.new_usertype<Object>(Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms);
+        state.new_usertype<Object>(Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms, "data", &Object::data);
       }
     }
   }  // namespace Game

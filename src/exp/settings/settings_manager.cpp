@@ -29,9 +29,24 @@ namespace Exp
 
     auto SettingsManager::serialize() -> std::string
     {
-      json j = { { "window",
-                   { { "title", this->window.title.raw() }, { "height", this->window.height.raw() }, { "width", this->window.width.raw() } },
-                   { "game", { "target_fps", 60 } } } };
+      json j = {
+        {
+         "window",
+         {
+          { "title", this->window.title.raw() },
+          { "height", this->window.height.raw() },
+          { "width", this->window.width.raw() },
+         },
+        },
+        {
+         "game",
+         {
+          { "target_fps", this->game.target_fps.raw() },
+          { "near_render", this->game.near_render.raw() },
+          { "far_render", this->game.far_render.raw() },
+         },
+        },
+      };
 
       return j.dump(2);
     }
@@ -53,6 +68,8 @@ namespace Exp
 
       auto game = j["game"];
       ASSIGN(game, target_fps, 60);
+      ASSIGN(game, near_render, 0.1f);
+      ASSIGN(game, far_render, 100.0f);
     }
   }  // namespace Settings
 }  // namespace Exp

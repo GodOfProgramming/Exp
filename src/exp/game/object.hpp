@@ -28,6 +28,7 @@ namespace Exp
      private:
       std::optional<sol::state> script;
       std::map<std::string, std::shared_ptr<Uniform>> uniforms;
+      sol::table data;
     };
   }  // namespace Game
 }  // namespace Exp

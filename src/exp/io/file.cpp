@@ -11,6 +11,16 @@ namespace Exp
     auto File::save(std::filesystem::path path) -> bool
     {
       std::ofstream ostr(path);
+      if (!ostr) {
+        return false;
+      }
+
+      ostr << this->data;
+
+      ostr.close();
+      if (!ostr) {
+        return false;
+      }
       return true;
     }
 

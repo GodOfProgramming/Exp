@@ -3,6 +3,7 @@ gl = require ('gl');
 geom = require('geom');
 game = require('game');
 info = game.info.instance();
+camera = game.camera.instance();
 
 self = nil;
 
@@ -12,9 +13,17 @@ animation_frame = 0;
 u_tex_coords = nil;
 u_color = nil;
 u_transform = nil;
+u_view = nil;
+u_proj = nil
 
 function construct(player)
   self = player;
+
+  u_proj = gl.uniform.create("u_projection");
+  self.uniforms:set("projection", u_proj);
+
+  u_view = gl.uniform.create("u_view");
+  self.uniforms:set("view", u_view);
 
   u_tex_coords = gl.uniform.create("u_tex_coords");
   self.uniforms:set("tex_coords", u_tex_coords);
@@ -25,8 +34,8 @@ function construct(player)
   u_color = gl.uniform.create("u_color");
   self.uniforms:set("color", u_color);
 
-  u_transform = gl.uniform.create("u_transform");
-  self.uniforms:set("transform", u_transform);
+  u_transform = gl.uniform.create("u_model");
+  self.uniforms:set("model", u_transform);
 
   u_tex_ratio:set_vec2(self.meta.animation:ratio());
 end
@@ -57,8 +66,9 @@ function update(_)
   u_color:set_vec3(color);
 
   local transform = geom.mat4.identity();
-  transform = transform:translate(geom.vec3.new(0.5, -0.5, 0.0));
-  transform = transform:rotate(math.rad(info.frames), geom.vec3.new(0, 0, 1));
-  transform = transform:scale(geom.vec3.new(0.5, 0.5, 0.5));
+  transform = transform:translate(geom.vec3.new(0, 0, 0));
+  transform = transform:scale(geom.vec3.new(1, 1, 0));
   u_transform:set_mat4(transform);
+  u_view:set_mat4(camera:get_view());
+  u_proj:set_mat4(camera:get_projection());
 end

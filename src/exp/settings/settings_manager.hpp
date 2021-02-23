@@ -37,6 +37,8 @@ namespace Exp
       struct
       {
         Setting<std::uint16_t> target_fps;
+        Setting<float> near_render;
+        Setting<float> far_render;
       } game;
 
      private:

@@ -1,5 +1,6 @@
 #include "app_window.hpp"
 
+#include "exp/game/camera.hpp"
 #include "exp/gl/error_map.hpp"
 #include "exp/input/dispatcher.hpp"
 #include "exp/input/key_event.hpp"
@@ -68,6 +69,8 @@ namespace Exp
         auto& settings         = SettingsManager::instance();
         settings.window.width  = width;
         settings.window.height = height;
+        auto& camera           = Game::Camera::instance();
+        camera.set_ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), settings.game.near_render, settings.game.far_render);
         glViewport(0, 0, settings.window.width, settings.window.height);
       });
 
