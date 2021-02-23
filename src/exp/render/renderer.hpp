@@ -16,6 +16,8 @@ namespace Exp
      public:
       Renderer(UiManager& ui);
 
+      auto init() -> bool;
+
       void render_to(Window& window, std::vector<std::shared_ptr<Game::Object>>& objects);
 
      private:

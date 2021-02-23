@@ -8,6 +8,12 @@ namespace Exp
      : ui(u)
     {}
 
+    auto Renderer::init() -> bool
+    {
+      glEnable(GL_DEPTH_TEST);
+      return GL_CHECK();
+    }
+
     void Renderer::render_to(Window& window, std::vector<std::shared_ptr<Game::Object>>& objects)
     {
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -16,7 +22,7 @@ namespace Exp
         return;
       }
 
-      glClear(GL_COLOR_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       if (!GL_CHECK()) {
         LOG(ERROR) << "could not clear color buffer bit";
         return;

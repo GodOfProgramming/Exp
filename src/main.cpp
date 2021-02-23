@@ -109,12 +109,18 @@ int main(int, char* argv[])
   // rendering
   Renderer renderer{ ui };
 
+  if (!renderer.init()) {
+    LOG(ERROR) << "could not init renderer";
+    exit = true;
+  }
+
   auto stats_update_timer = std::chrono::system_clock::now();
 
   std::vector<std::shared_ptr<Object>> objects;
   auto obj = game_objects.find("exp.test.random.player");
   if (obj == game_objects.end()) {
-    LOG(FATAL) << "could not even load the friggen debug object, nice job dumbass";
+    LOG(ERROR) << "could not even load the friggen debug object, nice job dumbass";
+    exit = true;
   }
   objects.push_back(std::make_shared<Object>(obj->second));
 
