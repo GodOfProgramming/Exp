@@ -57,7 +57,8 @@ function update(_)
   u_color:set_vec3(color);
 
   local transform = geom.mat4.identity();
-  transform = transform:rotate(math.rad(90), geom.vec3.new(0, 0, 1));
+  transform = transform:translate(geom.vec3.new(0.5, -0.5, 0.0));
+  transform = transform:rotate(math.rad(info.frames), geom.vec3.new(0, 0, 1));
   transform = transform:scale(geom.vec3.new(0.5, 0.5, 0.5));
   u_transform:set_mat4(transform);
 end
