@@ -75,7 +75,7 @@ namespace Exp
           glUniform2fv(loc, 1, glm::value_ptr(std::get<glm::vec2>(this->value)));
         } break;
         case Type::Vec3: {
-          glUniform2fv(loc, 1, glm::value_ptr(std::get<glm::vec3>(this->value)));
+          glUniform3fv(loc, 1, glm::value_ptr(std::get<glm::vec3>(this->value)));
         } break;
         case Type::Vec4: {
           glUniform4fv(loc, 1, glm::value_ptr(std::get<glm::vec4>(this->value)));

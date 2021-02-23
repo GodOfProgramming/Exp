@@ -59,14 +59,7 @@
     "thread": "cpp"
   },
   "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map,**/lib/**/upstream/**}",
-  "Lua.diagnostics.globals": [
-    "game_info",
-    "GameInfo",
-    "Uniform",
-    "GameObjects",
-    "window",
-    "self"
-  ],
+  "Lua.diagnostics.globals": [],
   "Lua.diagnostics.disable": [
     "lowercase-global"
   ]
