@@ -63,6 +63,7 @@ namespace Exp
       }  // namespace glm
       namespace Game
       {
+        constexpr const char* STATE  = "Game_State";
         constexpr const char* INFO   = "Game_Info";
         constexpr const char* OBJECT = "Game_Object";
         constexpr const char* CAMERA = "Game_Camera";

@@ -6,6 +6,12 @@ namespace Exp
 {
   namespace Game
   {
+    enum class State
+    {
+      PAUSED,
+      ACTIVE,
+    };
+
     auto Info::instance() noexcept -> Info&
     {
       static Info info;
@@ -15,6 +21,7 @@ namespace Exp
     void Info::add_usertype(sol::state_view state)
     {
       if (state[Lua::Usertypes::Game::INFO].get_type() == sol::type::none) {
+        state.new_enum(Lua::Usertypes::Game::STATE, "PAUSED", State::PAUSED, "ACTIVE", State::ACTIVE);
         state.new_usertype<Info>(Lua::Usertypes::Game::INFO, "instance", &Info::instance, "fps", &Info::fps, "frames", &Info::frames);
       }
     }
