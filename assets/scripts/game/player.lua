@@ -39,6 +39,10 @@ function construct(player)
 end
 
 function update(_)
+  if info.state ~= game.state.PLAYING then
+    return;
+  end
+
   local uv = self.meta.animation:uv(current_action, animation_frame);
   if info.frames % 15 == 0 then
     animation_frame = self.meta.animation:next(current_action, animation_frame);

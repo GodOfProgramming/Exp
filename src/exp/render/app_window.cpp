@@ -1,6 +1,7 @@
 #include "app_window.hpp"
 
 #include "exp/game/camera.hpp"
+#include "exp/game/info.hpp"
 #include "exp/gl/error_map.hpp"
 #include "exp/input/dispatcher.hpp"
 #include "exp/input/key_event.hpp"
@@ -155,7 +156,8 @@ namespace Exp
       switch (e.key) {
         case Input::Key::ESC: {
           if (e.action == Input::Action::Press) {
-            this->close();
+            auto& info = Game::Info::instance();
+            info.state = info.state == Game::State::PAUSED ? Game::State::PLAYING : Game::State::PAUSED;
           }
         } break;
         default: {
