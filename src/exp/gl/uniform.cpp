@@ -36,6 +36,11 @@ namespace Exp
       this->value = v;
     }
 
+    void Uniform::set_mat4(glm::mat4 m)
+    {
+      this->value = m;
+    }
+
     void Uniform::set_v_float(std::vector<float> v)
     {
       this->value = v;
@@ -79,6 +84,9 @@ namespace Exp
         } break;
         case Type::Vec4: {
           glUniform4fv(loc, 1, glm::value_ptr(std::get<glm::vec4>(this->value)));
+        } break;
+        case Type::Mat4: {
+          glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(std::get<glm::mat4>(this->value)));
         } break;
         case Type::FloatV: {
           auto& v = std::get<std::vector<float>>(this->value);
@@ -136,6 +144,8 @@ namespace Exp
          &Uniform::set_vec3,
          "set_vec4",
          &Uniform::set_vec4,
+         "set_mat4",
+         &Uniform::set_mat4,
          "set_v_float",
          &Uniform::set_v_float,
          "set_v_vec2",

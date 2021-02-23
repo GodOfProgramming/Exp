@@ -55,6 +55,7 @@ namespace Exp
     {
       namespace glm
       {
+        constexpr const char* MAT4  = "Geom_Mat4";
         constexpr const char* IVEC2 = "Geom_IVec2";
         constexpr const char* VEC2  = "Geom_Vec2";
         constexpr const char* VEC3  = "Geom_Vec3";

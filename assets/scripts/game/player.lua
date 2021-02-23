@@ -11,6 +11,7 @@ animation_frame = 0;
 
 u_tex_coords = nil;
 u_color = nil;
+u_transform = nil;
 
 function construct(player)
   self = player;
@@ -23,6 +24,9 @@ function construct(player)
 
   u_color = gl.uniform.create("u_color");
   self.uniforms:set("color", u_color);
+
+  u_transform = gl.uniform.create("u_transform");
+  self.uniforms:set("transform", u_transform);
 
   u_tex_ratio:set_vec2(self.meta.animation:ratio());
 end
@@ -47,5 +51,13 @@ function update(_)
   color.y = math.cos(scale * info.frames) / 2 + 0.5;
   color.z = color.x * color.y;
 
+  local foo = geom.vec3.new(1, 1, 1);
+  color = color:mul(foo);
+
   u_color:set_vec3(color);
+
+  local transform = geom.mat4.identity();
+  transform = transform:rotate(math.rad(90), geom.vec3.new(0, 0, 1));
+  transform = transform:scale(geom.vec3.new(0.5, 0.5, 0.5));
+  u_transform:set_mat4(transform);
 end

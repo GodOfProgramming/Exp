@@ -14,6 +14,7 @@ namespace Exp
         Vec2,
         Vec3,
         Vec4,
+        Mat4,
         FloatV,
         Vec2V,
         Vec3V,
@@ -28,6 +29,7 @@ namespace Exp
       void set_vec2(glm::vec2 v);
       void set_vec3(glm::vec3 v);
       void set_vec4(glm::vec4 v);
+      void set_mat4(glm::mat4 m);
 
       void set_v_float(std::vector<float> v);
       void set_v_vec2(std::vector<glm::vec2> v);
@@ -41,7 +43,9 @@ namespace Exp
       const std::string name;
 
      private:
-      std::variant<float, glm::vec2, glm::vec3, glm::vec4, std::vector<float>, std::vector<glm::vec2>, std::vector<glm::vec3>, std::vector<glm::vec4>> value;
+      std::
+       variant<float, glm::vec2, glm::vec3, glm::vec4, glm::mat4, std::vector<float>, std::vector<glm::vec2>, std::vector<glm::vec3>, std::vector<glm::vec4>>
+        value;
 
       auto type() const noexcept -> Type;
     };

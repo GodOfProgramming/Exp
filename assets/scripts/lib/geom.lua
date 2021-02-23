@@ -1,4 +1,5 @@
 local geom = {
+  mat4 = Geom_Mat4,
   vec2 = Geom_Vec2,
   vec3 = Geom_Vec3,
   vec4 = Geom_Vec4,

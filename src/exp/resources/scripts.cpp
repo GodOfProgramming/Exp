@@ -5,8 +5,67 @@
 #include "exp/io/file.hpp"
 #include "game_objects.hpp"
 
+#define NEW_UTYPE(type, name, ...)                    \
+  template <>                                         \
+  void add_usertype<type>(sol::state_view state)      \
+  {                                                   \
+    using type_t                = type;               \
+    constexpr const char* tname = name;               \
+    state.new_usertype<type_t>(tname, ##__VA_ARGS__); \
+  }
+
 namespace Exp
 {
+  namespace
+  {
+    template <typename T>
+    void add_usertype(sol::state_view);
+
+    NEW_UTYPE(
+     glm::mat4,
+     Lua::Usertypes::glm::MAT4,
+     "identity",
+     []() -> type_t { return glm::identity<type_t>(); },
+     "translate",
+     [](glm::mat4 self, glm::vec3 t) -> type_t { return glm::translate(self, t); },
+     "rotate",
+     [](type_t self, float rads, glm::vec3 quat) -> type_t { return glm::rotate(self, rads, quat); },
+     "scale",
+     [](type_t self, glm::vec3 scale) -> type_t { return glm::scale(self, scale); });
+
+    NEW_UTYPE(glm::vec2, Lua::Usertypes::glm::VEC2, sol::constructors<type_t(), type_t(float, float)>(), "x", &type_t::x, "y", &type_t::y)
+
+    NEW_UTYPE(
+     glm::vec3,
+     Lua::Usertypes::glm::VEC3,
+     sol::constructors<type_t(), type_t(float, float, float)>(),
+     "x",
+     &type_t::x,
+     "y",
+     &type_t::y,
+     "z",
+     &type_t::z,
+     "add",
+     [](type_t self, type_t other) -> type_t { return self + other; },
+     "mul",
+     [](type_t self, type_t other) -> type_t { return self * other; })
+
+    NEW_UTYPE(
+     glm::vec4,
+     Lua::Usertypes::glm::VEC4,
+     sol::constructors<type_t(), type_t(float, float, float, float)>(),
+     "x",
+     &type_t::x,
+     "y",
+     &type_t::y,
+     "z",
+     &type_t::z,
+     "w",
+     &type_t::w)
+
+    NEW_UTYPE(glm::ivec2, Lua::Usertypes::glm::IVEC2, sol::constructors<type_t(), type_t(int, int)>(), "x", &type_t::x, "y", &type_t::y)
+  }  // namespace
+
   namespace R
   {
     auto Scripts::instance() noexcept -> Scripts&
@@ -72,25 +131,11 @@ namespace Exp
       static const std::string script_lib = std::string(";") + Assets::Dir::GAME_SCRIPTS + "/lib/?.lua";
       lua["package"]["path"]              = package_path + script_lib;
 
-      lua.new_usertype<glm::vec2>(Lua::Usertypes::glm::VEC2, sol::constructors<glm::vec2(), glm::vec2(float, float)>(), "x", &glm::vec2::x, "y", &glm::vec2::y);
-
-      lua.new_usertype<glm::vec3>(
-       Lua::Usertypes::glm::VEC3, sol::constructors<glm::vec3(), glm::vec3(float, float, float)>(), "x", &glm::vec3::x, "y", &glm::vec3::y, "z", &glm::vec3::z);
-
-      lua.new_usertype<glm::vec4>(
-       Lua::Usertypes::glm::VEC4,
-       sol::constructors<glm::vec4(), glm::vec4(float, float, float, float)>(),
-       "x",
-       &glm::vec4::x,
-       "y",
-       &glm::vec4::y,
-       "z",
-       &glm::vec4::z,
-       "w",
-       &glm::vec4::w);
-
-      lua.new_usertype<glm::ivec2>(
-       Lua::Usertypes::glm::IVEC2, sol::constructors<glm::ivec2(), glm::ivec2(int, int)>(), "x", &glm::ivec2::x, "y", &glm::ivec2::y);
+      add_usertype<glm::mat4>(lua);
+      add_usertype<glm::vec2>(lua);
+      add_usertype<glm::vec3>(lua);
+      add_usertype<glm::vec4>(lua);
+      add_usertype<glm::ivec2>(lua);
 
       GameObjects::add_usertype(lua);
 
