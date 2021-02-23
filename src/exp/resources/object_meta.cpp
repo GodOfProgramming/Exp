@@ -88,15 +88,18 @@ namespace Exp
 
     auto ObjectMeta::has_animation_id(const nlohmann::json& json, std::string& value) -> bool
     {
-      auto texture_json = json[JSON::Keys::GAME_OBJECT_ANIMATION];
-      if (texture_json.is_string()) {
-        value = texture_json;
+      if (json.contains(JSON::Keys::GAME_OBJECT_ANIMATION)) {
+        auto texture_json = json[JSON::Keys::GAME_OBJECT_ANIMATION];
+        if (texture_json.is_string()) {
+          value = texture_json;
+        } else {
+          LOG(WARNING) << "object missing texture";
+          return false;
+        }
+        return true;
       } else {
-        LOG(WARNING) << "object missing texture";
         return false;
       }
-
-      return true;
     }
 
     auto ObjectMeta::has_script_id(const nlohmann::json& json, std::string& value) -> bool

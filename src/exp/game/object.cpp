@@ -42,8 +42,10 @@ namespace Exp
         uniform->enable(*this->meta.shader);
       }
 
-      if (!this->meta.animation->texture->tex->bind()) {
-        return;
+      if (this->meta.animation != nullptr) {
+        if (!this->meta.animation->texture->tex->bind()) {
+          return;
+        }
       }
     }
 

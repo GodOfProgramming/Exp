@@ -117,12 +117,23 @@ int main(int, char* argv[])
   auto stats_update_timer = std::chrono::system_clock::now();
 
   std::vector<std::shared_ptr<Object>> objects;
-  auto obj = game_objects.find("exp.test.random.player");
-  if (obj == game_objects.end()) {
-    LOG(ERROR) << "could not even load the friggen debug object, nice job dumbass";
-    exit = true;
+  {
+    auto player = game_objects.find("exp.test.random.player");
+    if (player == game_objects.end()) {
+      LOG(ERROR) << "could not even load the friggen debug player, nice job dumbass";
+      exit = true;
+    }
+    objects.push_back(std::make_shared<Object>(player->second));
   }
-  objects.push_back(std::make_shared<Object>(obj->second));
+
+  {
+    auto square = game_objects.find("exp.test.random.square");
+    if (square == game_objects.end()) {
+      LOG(ERROR) << "could not even load the friggen debug square, nice job dumbass";
+      exit = true;
+    }
+    objects.push_back(std::make_shared<Object>(square->second));
+  }
 
   auto& info = Info::instance();
 

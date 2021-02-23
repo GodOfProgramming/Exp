@@ -15,21 +15,9 @@
     "on_update": "update",
     "shader": "exp.test.random.colors",
     "model": "exp.test.random.sprite_square",
-    "animation": "exp.test.random.wall",
     "script": "exp.game.square",
     "draw_description": {
       "wireframe": false
-    }
-  },
-  "rect": {
-    "on_construct": "construct",
-    "on_update": "update",
-    "shader": "exp.test.random.colors",
-    "model": "exp.test.random.sprite_square",
-    "animation": "exp.test.random.wall",
-    "script": "exp.game.square",
-    "draw_description": {
-      "wireframe": true
     }
   }
 }

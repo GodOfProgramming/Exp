@@ -1,4 +1,4 @@
-inspect = require('inspect');
+-- player.lua
 gl = require ('gl');
 geom = require('geom');
 game = require('game');
@@ -11,29 +11,29 @@ current_action = "run_up";
 animation_frame = 0;
 
 u_tex_coords = nil;
-u_transform = nil;
+u_model = nil;
 u_view = nil;
 u_proj = nil
 
-location = geom.vec3.new();
+location = geom.vec3.new(-100, 0, 0);
 
 function construct(player)
   self = player;
 
-  u_proj = gl.uniform.create("u_projection");
-  self.uniforms:set("projection", u_proj);
+  u_tex_coords = gl.uniform.create("u_tex_coords");
+  self.uniforms:set("tex_coords", u_tex_coords);
+
+  u_model = gl.uniform.create("u_model");
+  self.uniforms:set("model", u_model);
 
   u_view = gl.uniform.create("u_view");
   self.uniforms:set("view", u_view);
 
-  u_tex_coords = gl.uniform.create("u_tex_coords");
-  self.uniforms:set("tex_coords", u_tex_coords);
+  u_proj = gl.uniform.create("u_projection");
+  self.uniforms:set("projection", u_proj);
 
   local u_tex_ratio = gl.uniform.create("u_tex_ratio");
   self.uniforms:set("tex_ratio", u_tex_ratio);
-
-  u_transform = gl.uniform.create("u_model");
-  self.uniforms:set("model", u_transform);
 
   u_tex_ratio:set_vec2(self.meta.animation:ratio());
 end
@@ -56,12 +56,15 @@ function update(_)
   end
   u_tex_coords:set_vec2(uv);
 
+
+  -- process input here
+
   camera:move_to(location);
 
   local transform = geom.mat4.identity();
   transform = transform:translate(location);
   transform = transform:scale(geom.vec3.new(100, 100, 0));
-  u_transform:set_mat4(transform);
+  u_model:set_mat4(transform);
   u_view:set_mat4(camera:get_view());
   u_proj:set_mat4(camera:get_projection());
 end

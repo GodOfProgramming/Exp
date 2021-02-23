@@ -1,14 +1,15 @@
 #import "version_directive.glsl"
 #import "vertex_layout.glsl"
 
-out vec2 io_uv;
 out vec3 io_color;
 
 uniform vec3 u_colors[4];
+uniform mat4 u_model;
+uniform mat4 u_view;
+uniform mat4 u_projection;
 
 void main()
 {
-  io_uv       = i_uv;
   io_color    = i_norm - u_colors[gl_VertexID];
-  gl_Position = vec4(i_pos.x, i_pos.y, i_pos.z, 1.0);
+  gl_Position = u_projection * u_view * u_model * vec4(i_pos, 1.0);
 }

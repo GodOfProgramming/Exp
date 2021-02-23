@@ -65,9 +65,7 @@ namespace Exp
             }
 
             std::string animation_id;
-            if (!ObjectMeta::has_animation_id(obj, animation_id)) {
-              continue;
-            }
+            ObjectMeta::has_animation_id(obj, animation_id);
 
             std::string script_id;
             if (!ObjectMeta::has_script_id(obj, script_id)) {
@@ -101,13 +99,12 @@ namespace Exp
 
             /* Animation */
 
-            auto animation_iter = animations.find(animation_id);
-            if (animation_iter == animations.end()) {
-              LOG(WARNING) << "cannot find animation " << animation_id;
-              continue;
-            }
+            std::shared_ptr<R::AnimationMeta> animation;
 
-            auto animation = animation_iter->second;
+            auto animation_iter = animations.find(animation_id);
+            if (animation_iter != animations.end()) {
+              animation = animation_iter->second;
+            }
 
             /* Draw Description */
 

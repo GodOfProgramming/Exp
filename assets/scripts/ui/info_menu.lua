@@ -1,3 +1,4 @@
+-- info_menu.lua
 game = require('game');
 info = game.info.instance();
 

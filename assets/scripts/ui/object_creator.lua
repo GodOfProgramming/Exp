@@ -1,3 +1,4 @@
+-- object_creator.lua
 r = require('r');
 objects = r.game_objects.instance();
 
