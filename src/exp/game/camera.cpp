@@ -21,8 +21,8 @@ namespace Exp
          &Camera::instance,
          "set_ortho",
          &Camera::set_ortho,
-         "move",
-         &Camera::move,
+         "move_to",
+         &Camera::move_to,
          "get_projection",
          &Camera::get_projection,
          "get_view",
@@ -35,9 +35,9 @@ namespace Exp
       this->proj = glm::ortho(left, right, bottom, top, near, far);
     }
 
-    void Camera::move(glm::vec3 dir)
+    void Camera::move_to(glm::vec3 loc)
     {
-      this->view += dir;
+      this->view = loc;
     }
 
     auto Camera::get_projection() -> glm::mat4

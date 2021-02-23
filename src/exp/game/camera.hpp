@@ -20,7 +20,7 @@ namespace Exp
 
       void set_ortho(float left, float right, float bottom, float top, float near, float far);
 
-      void move(glm::vec3 dir);
+      void move_to(glm::vec3 loc);
 
       auto get_projection() -> glm::mat4;
 

@@ -11,10 +11,11 @@ current_action = "run_up";
 animation_frame = 0;
 
 u_tex_coords = nil;
-u_color = nil;
 u_transform = nil;
 u_view = nil;
 u_proj = nil
+
+location = geom.vec3.new();
 
 function construct(player)
   self = player;
@@ -31,14 +32,10 @@ function construct(player)
   local u_tex_ratio = gl.uniform.create("u_tex_ratio");
   self.uniforms:set("tex_ratio", u_tex_ratio);
 
-  u_color = gl.uniform.create("u_color");
-  self.uniforms:set("color", u_color);
-
   u_transform = gl.uniform.create("u_model");
   self.uniforms:set("model", u_transform);
 
   u_tex_ratio:set_vec2(self.meta.animation:ratio());
-  -- camera:move(geom.vec3.new(0, 0, 0));
 end
 
 function update(_)
@@ -55,19 +52,10 @@ function update(_)
   end
   u_tex_coords:set_vec2(uv);
 
-  local scale = 0.1;
-  local color = geom.vec3.new();
-  color.x = math.sin(scale * info.frames) / 2 + 0.5;
-  color.y = math.cos(scale * info.frames) / 2 + 0.5;
-  color.z = color.x * color.y;
-
-  local foo = geom.vec3.new(1, 1, 1);
-  color = color:mul(foo);
-
-  u_color:set_vec3(color);
+  camera:move_to(location);
 
   local transform = geom.mat4.identity();
-  transform = transform:translate(geom.vec3.new(0, 0, 0));
+  transform = transform:translate(location);
   transform = transform:scale(geom.vec3.new(100, 100, 0));
   u_transform:set_mat4(transform);
   u_view:set_mat4(camera:get_view());
