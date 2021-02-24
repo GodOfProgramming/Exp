@@ -152,7 +152,7 @@ namespace Exp
       using Input::Key;
       switch (e.key) {
         case Key::F4: {
-          if (e.action == Input::Action::Press) {
+          if (e.action == Input::Action::PRESS) {
             this->show_menu_bar = !this->show_menu_bar;
           }
         } break;

@@ -1,4 +1,7 @@
 #include "dispatcher.hpp"
+#include "gamepad.hpp"
+#include "keyboard.hpp"
+#include "mouse.hpp"
 
 namespace Exp
 {
@@ -16,10 +19,12 @@ namespace Exp
 
     void Dispatcher::process(KeyEvent event)
     {
-      auto* curr = this->root_handler;
+      static auto& keyboard = Keyboard::instance();
+      auto* curr            = this->root_handler;
       do {
         curr = curr->handle(event);
       } while (curr != nullptr);
+      keyboard.on_event(event);
     }
 
     void Dispatcher::process(MouseButtonEvent event)

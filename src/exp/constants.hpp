@@ -68,6 +68,17 @@ namespace Exp
         constexpr const char* OBJECT = "Game_Object";
         constexpr const char* CAMERA = "Game_Camera";
       }  // namespace Game
+      namespace Input
+      {
+        constexpr const char* KEY            = "Input_Key";
+        constexpr const char* MOUSE_BUTTON   = "Input_MouseButton";
+        constexpr const char* GAMEPAD_BUTTON = "Input_GamepadButton";
+        constexpr const char* GAMEPAD_AXIS   = "Input_GamepadAxis";
+        constexpr const char* ACTION         = "Input_Action";
+        constexpr const char* KEYBOARD       = "Input_Keyboard";
+        constexpr const char* MOUSE          = "Input_Mouse";
+        constexpr const char* GAMEPAD        = "Input_Gamepad";
+      }  // namespace Input
       namespace GL
       {
         constexpr const char* PROGRAM = "GL_Program";

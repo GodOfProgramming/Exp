@@ -1,4 +1,3 @@
-local inspect = require "assets.scripts.lib.inspect"
 -- object_creator.lua
 insepct = require('inspect');
 r = require('r');

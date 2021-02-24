@@ -37,7 +37,7 @@ namespace Exp
 
     void Camera::move_to(glm::vec3 loc)
     {
-      this->view = loc;
+      this->view = glm::lookAt(loc - glm::vec3(0, 0, -1), loc, glm::vec3(0, 1, 0));
     }
 
     auto Camera::get_projection() -> glm::mat4
@@ -47,7 +47,7 @@ namespace Exp
 
     auto Camera::get_view() -> glm::mat4
     {
-      return glm::translate(glm::identity<glm::mat4>(), this->view);
+      return this->view;
     }
   }  // namespace Game
 }  // namespace Exp

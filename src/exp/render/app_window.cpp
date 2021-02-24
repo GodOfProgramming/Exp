@@ -155,7 +155,7 @@ namespace Exp
     {
       switch (e.key) {
         case Input::Key::ESC: {
-          if (e.action == Input::Action::Press) {
+          if (e.action == Input::Action::PRESS) {
             auto& info = Game::Info::instance();
             info.state = info.state == Game::State::PAUSED ? Game::State::PLAYING : Game::State::PAUSED;
           }
