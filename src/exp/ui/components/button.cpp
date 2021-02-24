@@ -6,8 +6,8 @@ namespace Exp
   {
     namespace Components
     {
-      Button::Button(std::optional<sol::state_view> s)
-       : UiComponent(s)
+      Button::Button(std::optional<sol::environment> env)
+       : UiComponent(env)
       {
         this->enable(true);
       }
@@ -17,10 +17,10 @@ namespace Exp
         UiComponent::release();
       }
 
-      auto Button::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
+      auto Button::from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>
       {
-        return UiComponent::unwrap_node(self, [script](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
-          std::shared_ptr<Button> button(new Button(script));
+        return UiComponent::unwrap_node(self, [env](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+          std::shared_ptr<Button> button(new Button(env));
 
           if (!UiComponent::from_node(self, button)) {
             return nullptr;
@@ -42,9 +42,9 @@ namespace Exp
 
       void Button::render()
       {
-        if (this->script.has_value() && !this->fn.empty()) {
+        if (this->env.has_value() && !this->fn.empty()) {
           if (ImGui::Button(this->text.c_str())) {
-            auto& lua = this->script.value();
+            auto& lua = this->env.value();
             auto fn   = lua[this->fn];
             if (fn.get_type() == sol::type::function) {
               fn.call(this);

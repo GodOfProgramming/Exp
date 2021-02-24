@@ -13,8 +13,8 @@ namespace Exp
   {
     namespace Components
     {
-      RepeatComponent::RepeatComponent(std::optional<sol::state_view> script)
-       : UiComponent(script)
+      RepeatComponent::RepeatComponent(std::optional<sol::environment> env)
+       : UiComponent(env)
       {}
 
       RepeatComponent::~RepeatComponent()
@@ -22,15 +22,15 @@ namespace Exp
         UiComponent::release();
       }
 
-      auto RepeatComponent::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
+      auto RepeatComponent::from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>
       {
-        return UiComponent::unwrap_node(self, [script](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
-          if (!script.has_value()) {
+        return UiComponent::unwrap_node(self, [env](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+          if (!env.has_value()) {
             LOG(WARNING) << "repeat element window missing script";
             return nullptr;
           }
 
-          std::shared_ptr<RepeatComponent> repeat(new RepeatComponent(script));
+          std::shared_ptr<RepeatComponent> repeat(new RepeatComponent(env));
 
           if (!UiComponent::from_node(self, repeat)) {
             return nullptr;
@@ -47,28 +47,28 @@ namespace Exp
             std::string type = child->Value();
 
             if (type == El::TEXT_BOX) {
-              auto el = TextBox::from_node(child, repeat->script);
+              auto el = TextBox::from_node(child, repeat->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::REPEAT) {
-              auto el = RepeatComponent::from_node(child, repeat->script);
+              auto el = RepeatComponent::from_node(child, repeat->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::SAMELINE) {
-              auto el = Sameline::from_node(child, repeat->script);
+              auto el = Sameline::from_node(child, repeat->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::BUTTON) {
-              auto el = Button::from_node(child, repeat->script);
+              auto el = Button::from_node(child, repeat->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
@@ -93,12 +93,12 @@ namespace Exp
 
       void RepeatComponent::render()
       {
-        if (this->script.has_value() && !this->eval_if(this->script.value())) {
+        if (this->env.has_value() && !this->eval_if(this->env.value())) {
           return;
         }
 
-        if (this->script.has_value()) {
-          auto& lua = this->script.value();
+        if (this->env.has_value()) {
+          auto& lua = this->env.value();
           auto fn   = lua[this->while_fn];
 
           if (fn.get_type() == sol::type::function) {

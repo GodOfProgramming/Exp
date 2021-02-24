@@ -11,10 +11,10 @@ namespace Exp
       class Sameline: public UiComponent
       {
        public:
-        Sameline(std::optional<sol::state_view> script);
+        Sameline(std::optional<sol::environment> script);
         ~Sameline();
 
-        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>;
 
         void render() final;
 

@@ -83,14 +83,14 @@ int main(int, char* argv[])
     animations.load_all();
   }
 
-  auto& scripts = Scripts::instance();
-  {
-    scripts.load_all();
-  }
-
   auto& game_objects = GameObjects::instance();
   {
     game_objects.load_all();
+  }
+
+  auto& scripts = Scripts::instance();
+  {
+    scripts.load_all();
   }
 
   auto& ui = UiManager::instance();
@@ -189,9 +189,9 @@ int main(int, char* argv[])
 
   ui.release();
 
-  game_objects.release();
-
   scripts.release();
+
+  game_objects.release();
 
   animations.release();
 

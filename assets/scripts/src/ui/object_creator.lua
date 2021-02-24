@@ -1,4 +1,6 @@
+local inspect = require "assets.scripts.lib.inspect"
 -- object_creator.lua
+insepct = require('inspect');
 r = require('r');
 objects = r.game_objects.instance();
 
@@ -21,7 +23,6 @@ function get_next_object(index)
     meta = objects:get(id);
     return true;
   else
-    index = 0;
     return false
   end
 end

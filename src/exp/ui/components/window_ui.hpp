@@ -27,8 +27,6 @@ namespace Exp
         auto display_text() noexcept -> std::string final;
 
        private:
-        std::optional<sol::state> doc_script;
-
         std::string title;
         bool initial_render = false;
         bool is_collapsed   = false;

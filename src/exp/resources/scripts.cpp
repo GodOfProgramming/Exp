@@ -1,8 +1,24 @@
 #include "scripts.hpp"
 
 #include "exp/constants.hpp"
+#include "exp/game/camera.hpp"
+#include "exp/game/info.hpp"
+#include "exp/game/object.hpp"
+#include "exp/gl/uniform.hpp"
 #include "exp/io.hpp"
 #include "exp/io/file.hpp"
+#include "exp/render/draw_description.hpp"
+#include "exp/resources/animation_meta.hpp"
+#include "exp/resources/animations.hpp"
+#include "exp/resources/game_objects.hpp"
+#include "exp/resources/model_meta.hpp"
+#include "exp/resources/models.hpp"
+#include "exp/resources/object_meta.hpp"
+#include "exp/resources/shader_meta.hpp"
+#include "exp/resources/shaders.hpp"
+#include "exp/ui/components/frame.hpp"
+#include "exp/ui/components/text_box.hpp"
+#include "exp/ui/components/window_ui.hpp"
 #include "game_objects.hpp"
 
 #define NEW_UTYPE(type, name, ...)                    \
@@ -77,74 +93,68 @@ namespace Exp
     void Scripts::load_all()
     {
       LOG(INFO) << "loading scripts";
-      const static std::string libdir = std::string(Assets::Dir::GAME_SCRIPTS) + "/lib";
-      IO::iterate_dir_with_namespace(Assets::Dir::GAME_SCRIPTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
-        LOG(INFO) << "loading script " << nspace;
-        bool loaded = false;
+      IO::iterate_dir_with_namespace(
+       std::string(Assets::Dir::GAME_SCRIPTS) + "/src", std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
+         LOG(INFO) << "loading script " << nspace;
+         bool loaded = false;
 
-        this->load_src_file(path, [&](const std::string_view& src) {
-          ScriptMeta meta;
-          meta.src = src;
+         this->load_src_file(path, [&](const std::string_view& src) {
+           std::string source(src);
+           this->sources.emplace(nspace, std::move(source));
+           loaded = true;
+         });
 
-          this->scripts.emplace(nspace, std::move(meta));
-          loaded = true;
-        });
+         if (!loaded) {
+           LOG(WARNING) << "unable to load script source";
+           return;
+         }
 
-        if (!loaded) {
-          LOG(WARNING) << "unable to load script";
-        }
-      });
+         if (!this->initialize_state(nspace)) {
+           LOG(WARNING) << "could not initialize state";
+           return;
+         }
+       });
     }
 
     void Scripts::release()
     {
-      this->scripts.clear();
+      this->states.clear();
+      this->sources.clear();
     }
 
-    auto Scripts::find(std::string id) const noexcept -> ScriptMap::const_iterator
+    auto Scripts::initialize_state(std::string id) -> bool
     {
-      return this->scripts.find(id);
-    }
-
-    auto Scripts::begin() const noexcept -> ScriptMap::const_iterator
-    {
-      return this->scripts.begin();
-    }
-
-    auto Scripts::end() const noexcept -> ScriptMap::const_iterator
-    {
-      return this->scripts.end();
-    }
-
-    auto Scripts::make_script(std::string id, sol::state& state, std::function<bool(sol::state_view&)> callback) -> bool
-    {
-      auto iter = this->find(id);
-      if (iter == this->end()) {
-        LOG(WARNING) << "could not find script " << id;
+      auto source_iter = this->sources.find(id);
+      if (source_iter == this->sources.end()) {
+        LOG(WARNING) << "could not find script source for " << id;
         return false;
       }
 
-      sol::state lua;
-      lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math, sol::lib::table, sol::lib::package);
+      sol::state state;
+      state.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math, sol::lib::table, sol::lib::package);
 
-      const std::string package_path      = lua["package"]["path"];
-      static const std::string script_lib = std::string(";") + Assets::Dir::GAME_SCRIPTS + "/lib/?.lua";
-      lua["package"]["path"]              = package_path + script_lib;
+      const static std::string libdir = std::string(";") + Assets::Dir::GAME_SCRIPTS + "/lib/?.lua";
+      const std::string package_path  = state["package"]["path"];
+      state["package"]["path"]        = package_path + libdir;
 
-      add_usertype<glm::mat4>(lua);
-      add_usertype<glm::vec2>(lua);
-      add_usertype<glm::vec3>(lua);
-      add_usertype<glm::vec4>(lua);
-      add_usertype<glm::ivec2>(lua);
+      add_usertype<glm::mat4>(state);
+      add_usertype<glm::vec2>(state);
+      add_usertype<glm::vec3>(state);
+      add_usertype<glm::vec4>(state);
+      add_usertype<glm::ivec2>(state);
+      GL::Uniform::add_usertype(state);
+      Game::Camera::add_usertype(state);
+      Game::Info::add_usertype(state);
+      Game::Object::add_usertype(state);
+      R::AnimationMeta::add_usertype(state);
+      R::GameObjects::add_usertype(state);
+      R::ObjectMeta::add_usertype(state);
+      Render::DrawDescription::add_usertype(state);
+      Ui::Components::Frame::add_usertype(state);
+      Ui::Components::TextBox::add_usertype(state);
+      Ui::Components::WindowUi::add_usertype(state);
 
-      GameObjects::add_usertype(lua);
-
-      if (!callback(lua)) {
-        LOG(WARNING) << "make script callback returned false";
-        return false;
-      }
-
-      auto res = lua.load(iter->second.src);
+      auto res = state.load(source_iter->second);
       if (!res.valid()) {
         sol::error err = res;
         LOG(WARNING) << "bad script load result:\n" << err.what();
@@ -159,7 +169,21 @@ namespace Exp
         return false;
       }
 
-      state = std::move(lua);
+      this->states[id] = std::move(state);
+      return true;
+    }
+
+    auto Scripts::create_env(std::string id, sol::environment& env) -> bool
+    {
+      auto iter = this->states.find(id);
+      if (iter == this->states.end()) {
+        LOG(WARNING) << "unable to find script " << id;
+        return false;
+      }
+
+      auto& state = iter->second;
+
+      env = std::move(sol::environment(state, sol::create, state.globals()));
       return true;
     }
   }  // namespace R

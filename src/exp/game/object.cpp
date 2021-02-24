@@ -16,17 +16,13 @@ namespace Exp
         using R::Scripts;
 
         auto& scripts = Scripts::instance();
-        sol::state lua;
-        if (scripts.make_script(m.script_id, lua, [this](sol::state_view& state) {
-              Object::add_usertype(state);
-              Info::add_usertype(state);
-              return true;
-            })) {
-          this->script = std::move(lua);
+        sol::environment lua;
+        if (scripts.create_env(m.script_id, lua)) {
+          this->env = std::move(lua);
         }
 
-        if (this->script.has_value()) {
-          auto& lua = this->script.value();
+        if (this->env.has_value()) {
+          auto& lua = this->env.value();
           auto fn   = lua[this->meta.construct_fn];
           if (fn.get_type() == sol::type::function) {
             fn.call(this);
@@ -51,8 +47,8 @@ namespace Exp
 
     void Object::update()
     {
-      if (this->script.has_value()) {
-        auto& lua = this->script.value();
+      if (this->env.has_value()) {
+        auto& lua = this->env.value();
         auto fn   = lua[this->meta.update_fn];
         if (fn.get_type() == sol::type::function) {
           fn.call(this);

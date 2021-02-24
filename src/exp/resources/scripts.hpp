@@ -1,7 +1,6 @@
 #pragma once
 
 #include "iresource.hpp"
-#include "script_meta.hpp"
 
 namespace Exp
 {
@@ -11,7 +10,8 @@ namespace Exp
     {
       Scripts() = default;
 
-      using ScriptMap = std::map<std::string, ScriptMeta>;
+      using StateMap  = std::map<std::string, sol::state>;
+      using SourceMap = std::map<std::string, std::string>;
 
      public:
       Scripts(const Scripts&) = delete;
@@ -24,14 +24,12 @@ namespace Exp
       void load_all() final;
       void release() final;
 
-      auto find(std::string id) const noexcept -> ScriptMap::const_iterator;
-      auto begin() const noexcept -> ScriptMap::const_iterator;
-      auto end() const noexcept -> ScriptMap::const_iterator;
-
-      auto make_script(std::string id, sol::state& state, std::function<bool(sol::state_view&)> callback) -> bool;
+      auto initialize_state(std::string id) -> bool;
+      auto create_env(std::string id, sol::environment& e) -> bool;
 
      private:
-      ScriptMap scripts;
+      StateMap states;
+      SourceMap sources;
     };
   }  // namespace R
 }  // namespace Exp

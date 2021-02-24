@@ -15,8 +15,8 @@ namespace Exp
   {
     namespace Components
     {
-      Frame::Frame(std::optional<sol::state_view> script, const Container& c)
-       : Container(script)
+      Frame::Frame(std::optional<sol::environment> env, const Container& c)
+       : Container(env)
        , container(c)
       {
         auto& producer = R::ID<ImGuiID>::producer_t::instance();
@@ -29,13 +29,13 @@ namespace Exp
         this->imgui_id.release();
       }
 
-      auto Frame::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script, const Container& container) -> std::shared_ptr<UiComponent>
+      auto Frame::from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env, const Container& container) -> std::shared_ptr<UiComponent>
       {
-        return UiComponent::unwrap_node(self, [script, &container](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+        return UiComponent::unwrap_node(self, [env, &container](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
           using Game::Info;
           using R::Scripts;
 
-          std::shared_ptr<Frame> frame(new Frame(script, container));
+          std::shared_ptr<Frame> frame(new Frame(env, container));
           glm::ivec2 size = { frame->container.width(), frame->container.height() };
 
           if (!Container::from_node(self, frame, size)) {
@@ -48,28 +48,28 @@ namespace Exp
             std::string type = child->Value();
 
             if (type == El::TEXT_BOX) {
-              auto el = TextBox::from_node(child, frame->script);
+              auto el = TextBox::from_node(child, frame->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::REPEAT) {
-              auto el = RepeatComponent::from_node(child, frame->script);
+              auto el = RepeatComponent::from_node(child, frame->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::SAMELINE) {
-              auto el = Sameline::from_node(child, frame->script);
+              auto el = Sameline::from_node(child, frame->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::BUTTON) {
-              auto el = Button::from_node(child, frame->script);
+              auto el = Button::from_node(child, frame->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
@@ -111,7 +111,7 @@ namespace Exp
 
       void Frame::render()
       {
-        if (this->script.has_value() && !this->eval_if(this->script.value())) {
+        if (this->env.has_value() && !this->eval_if(this->env.value())) {
           return;
         }
 

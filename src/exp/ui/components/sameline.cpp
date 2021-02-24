@@ -11,8 +11,8 @@ namespace Exp
   {
     namespace Components
     {
-      Sameline::Sameline(std::optional<sol::state_view> s)
-       : UiComponent(s)
+      Sameline::Sameline(std::optional<sol::environment> e)
+       : UiComponent(e)
       {
         this->enable(true);
       }
@@ -22,12 +22,12 @@ namespace Exp
         UiComponent::release();
       }
 
-      auto Sameline::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
+      auto Sameline::from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>
       {
-        return UiComponent::unwrap_node(self, [script](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+        return UiComponent::unwrap_node(self, [env](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
           std::vector<std::shared_ptr<UiComponent>> potential_elements;
 
-          std::shared_ptr<Sameline> sameline(new Sameline(script));
+          std::shared_ptr<Sameline> sameline(new Sameline(env));
 
           if (!UiComponent::from_node(self, sameline)) {
             return nullptr;
@@ -37,28 +37,28 @@ namespace Exp
             std::string type = child->Value();
 
             if (type == El::TEXT_BOX) {
-              auto el = TextBox::from_node(child, sameline->script);
+              auto el = TextBox::from_node(child, sameline->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::REPEAT) {
-              auto el = RepeatComponent::from_node(child, sameline->script);
+              auto el = RepeatComponent::from_node(child, sameline->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::SAMELINE) {
-              auto el = Sameline::from_node(child, sameline->script);
+              auto el = Sameline::from_node(child, sameline->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::BUTTON) {
-              auto el = Button::from_node(child, sameline->script);
+              auto el = Button::from_node(child, sameline->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {

@@ -6,8 +6,8 @@ namespace Exp
   {
     namespace Components
     {
-      Container::Container(std::optional<sol::state_view> script)
-       : UiComponent(script)
+      Container::Container(std::optional<sol::environment> env)
+       : UiComponent(env)
       {}
 
       Container::~Container() {}

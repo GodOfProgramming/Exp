@@ -72,19 +72,13 @@ namespace Exp
           if (UiComponent::has_attr_script(self, script_key)) {
             auto& scripts = Scripts::instance();
 
-            sol::state lua;
-            if (!scripts.make_script(script_key, lua, [window](sol::state_view& state) {
-                  WindowUi::add_usertype(state);
-                  TextBox::add_usertype(state);
-                  Info::add_usertype(state);
-                  return true;
-                })) {
+            sol::environment env;
+            if (!scripts.create_env(script_key, env)) {
               LOG(WARNING) << "unable to load script " << script_key;
               return nullptr;
             }
 
-            window->doc_script = std::move(lua);
-            window->script     = window->doc_script.value();
+            window->env = std::move(env);
           }
 
           std::vector<std::shared_ptr<UiComponent>> potential_elements;
@@ -93,35 +87,35 @@ namespace Exp
             std::string type = child->Value();
 
             if (type == El::TEXT_BOX) {
-              auto el = TextBox::from_node(child, window->script);
+              auto el = TextBox::from_node(child, window->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::REPEAT) {
-              auto el = RepeatComponent::from_node(child, window->script);
+              auto el = RepeatComponent::from_node(child, window->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::FRAME) {
-              auto el = Frame::from_node(child, window->script, *window);
+              auto el = Frame::from_node(child, window->env, *window);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::SAMELINE) {
-              auto el = Sameline::from_node(child, window->script);
+              auto el = Sameline::from_node(child, window->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
                 return nullptr;
               }
             } else if (type == El::BUTTON) {
-              auto el = Button::from_node(child, window->script);
+              auto el = Button::from_node(child, window->env);
               if (el) {
                 potential_elements.push_back(el);
               } else {
@@ -140,10 +134,10 @@ namespace Exp
             }
           }
 
-          if (window->script.has_value() && onparse_fn.has_value()) {
-            auto& script = window->script.value();
-            auto& func   = onparse_fn.value();
-            auto fn      = script[func];
+          if (window->env.has_value() && onparse_fn.has_value()) {
+            auto& env  = window->env.value();
+            auto& func = onparse_fn.value();
+            auto fn    = env[func];
             if (fn.get_type() == sol::type::function) {
               fn.call(window);
             }
@@ -165,7 +159,7 @@ namespace Exp
 
       void WindowUi::render()
       {
-        if (this->script.has_value() && !this->eval_if(this->script.value())) {
+        if (this->env.has_value() && !this->eval_if(this->env.value())) {
           return;
         }
 
@@ -193,10 +187,10 @@ namespace Exp
         }
         ImGui::End();
 
-        if (!is_open && this->script.has_value()) {
+        if (!is_open && this->env.has_value()) {
           this->enable(false);
-          auto& script = this->script.value();
-          auto fn      = script["OnClose"];
+          auto& lua = this->env.value();
+          auto fn   = lua["OnClose"];
           if (fn.get_type() == sol::type::function) {
             fn.call(this);
           }

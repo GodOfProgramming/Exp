@@ -11,10 +11,10 @@ namespace Exp
       class Button: public UiComponent
       {
        public:
-        Button(std::optional<sol::state_view> script);
+        Button(std::optional<sol::environment> env);
         ~Button();
 
-        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>;
 
         void render() final;
 

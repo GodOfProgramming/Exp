@@ -11,10 +11,10 @@ namespace Exp
       class RepeatComponent: public UiComponent
       {
        public:
-        RepeatComponent(std::optional<sol::state_view> script);
+        RepeatComponent(std::optional<sol::environment> script);
         ~RepeatComponent() final;
 
-        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>;
 
         void render() final;
 

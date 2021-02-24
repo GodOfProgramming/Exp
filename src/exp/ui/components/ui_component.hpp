@@ -35,7 +35,7 @@ namespace Exp
       auto end() -> ElementList::iterator;
 
      protected:
-      UiComponent(std::optional<sol::state_view> script);
+      UiComponent(std::optional<sol::environment> script);
       void release();
 
       static auto unwrap_node(tinyxml2::XMLNode* node, std::function<std::shared_ptr<UiComponent>(tinyxml2::XMLElement*)> callback)
@@ -55,11 +55,11 @@ namespace Exp
       static auto has_attr_x(tinyxml2::XMLElement* self, float& x) -> bool;
       static auto has_attr_y(tinyxml2::XMLElement* self, float& y) -> bool;
 
-      auto eval_if(sol::state_view scriptopt) const -> bool;
+      auto eval_if(sol::environment env) const -> bool;
 
       void render_children();
 
-      std::optional<sol::state_view> script;
+      std::optional<sol::environment> env;
 
       std::optional<std::string> if_fn;
 

@@ -8,8 +8,8 @@ namespace Exp
   {
     namespace Components
     {
-      TextBox::TextBox(std::optional<sol::state_view> s)
-       : UiComponent(s)
+      TextBox::TextBox(std::optional<sol::environment> e)
+       : UiComponent(e)
       {
         this->enable(true);
       }
@@ -19,10 +19,10 @@ namespace Exp
         UiComponent::release();
       }
 
-      auto TextBox::from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script) -> std::shared_ptr<UiComponent>
+      auto TextBox::from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env) -> std::shared_ptr<UiComponent>
       {
-        return UiComponent::unwrap_node(self, [script](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
-          std::shared_ptr<TextBox> text_box(new TextBox(script));
+        return UiComponent::unwrap_node(self, [env](tinyxml2::XMLElement* self) -> std::shared_ptr<UiComponent> {
+          std::shared_ptr<TextBox> text_box(new TextBox(env));
 
           if (!UiComponent::from_node(self, text_box)) {
             return nullptr;
@@ -51,12 +51,12 @@ namespace Exp
 
       void TextBox::render()
       {
-        if (this->script.has_value() && !this->eval_if(this->script.value())) {
+        if (this->env.has_value() && !this->eval_if(this->env.value())) {
           return;
         }
 
-        if (this->script.has_value() && this->text_fn.has_value()) {
-          auto& lua       = this->script.value();
+        if (this->env.has_value() && this->text_fn.has_value()) {
+          auto& lua       = this->env.value();
           auto& text_func = this->text_fn.value();
           auto fn         = lua[text_func];
           if (fn.get_type() == sol::type::function) {

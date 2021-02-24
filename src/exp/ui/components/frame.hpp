@@ -12,10 +12,10 @@ namespace Exp
       class Frame: public Container
       {
        public:
-        Frame(std::optional<sol::state_view> script, const Container& container);
+        Frame(std::optional<sol::environment> env, const Container& container);
         ~Frame() final;
 
-        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::state_view> script, const Container& container) -> std::shared_ptr<UiComponent>;
+        static auto from_node(tinyxml2::XMLNode* self, std::optional<sol::environment> env, const Container& container) -> std::shared_ptr<UiComponent>;
 
         static void add_usertype(sol::state_view state);
 

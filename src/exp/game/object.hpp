@@ -26,7 +26,7 @@ namespace Exp
       static void add_usertype(sol::state_view state);
 
      private:
-      std::optional<sol::state> script;
+      std::optional<sol::environment> env;
       std::map<std::string, std::shared_ptr<Uniform>> uniforms;
       sol::table data;
     };

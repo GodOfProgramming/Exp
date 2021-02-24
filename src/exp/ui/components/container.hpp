@@ -11,7 +11,7 @@ namespace Exp
       class Container: public UiComponent
       {
        public:
-        Container(std::optional<sol::state_view> script);
+        Container(std::optional<sol::environment> script);
         virtual ~Container();
 
         static auto from_node(tinyxml2::XMLElement* self, std::shared_ptr<Container> cmp, glm::ivec2 parent_dim) -> bool;

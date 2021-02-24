@@ -6,8 +6,8 @@ namespace Exp
 {
   namespace Ui
   {
-    UiComponent::UiComponent(std::optional<sol::state_view> s)
-     : script(s)
+    UiComponent::UiComponent(std::optional<sol::environment> e)
+     : env(e)
     {
       this->secret_id = R::ID<std::size_t>::producer_t::instance().produce();
     }
@@ -19,7 +19,7 @@ namespace Exp
 
     void UiComponent::release()
     {
-      this->script = std::nullopt;
+      this->env = std::nullopt;
       this->elements.clear();
       this->element_map.clear();
     }
@@ -278,11 +278,11 @@ namespace Exp
       return false;
     }
 
-    auto UiComponent::eval_if(sol::state_view lua) const -> bool
+    auto UiComponent::eval_if(sol::environment env) const -> bool
     {
       if (this->if_fn.has_value()) {
         auto& if_fn = this->if_fn.value();
-        auto fn     = lua[if_fn];
+        auto fn     = env[if_fn];
         if (fn.get_type() == sol::type::function) {
           return fn.call();
         }
