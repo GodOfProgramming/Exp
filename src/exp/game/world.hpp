@@ -32,6 +32,8 @@ namespace Exp
 
       void finalize_spawns();
 
+      auto lookup(std::size_t id) -> std::shared_ptr<Object>;
+
       void release();
 
      private:

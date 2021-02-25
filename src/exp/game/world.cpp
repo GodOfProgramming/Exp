@@ -17,7 +17,7 @@ namespace Exp
     void World::add_usertype(sol::state_view state)
     {
       if (state[Lua::Usertypes::Game::WORLD].get_type() == sol::type::none) {
-        state.new_usertype<World>(Lua::Usertypes::Game::WORLD, "instance", &World::instance, "spawn", &World::spawn);
+        state.new_usertype<World>(Lua::Usertypes::Game::WORLD, "instance", &World::instance, "spawn", &World::spawn, "lookup", &World::lookup);
       }
     }
 
@@ -55,6 +55,15 @@ namespace Exp
         }
         this->pending_objs.clear();
       }
+    }
+
+    auto World::lookup(std::size_t id) -> std::shared_ptr<Object>
+    {
+      auto iter = this->obj_map.find(id);
+      if (iter == this->obj_map.end()) {
+        return nullptr;
+      }
+      return iter->second;
     }
 
     void World::release()

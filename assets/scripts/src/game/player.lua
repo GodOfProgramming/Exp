@@ -9,6 +9,7 @@ world = game.world.instance();
 keyboard = input.keyboard.instance();
 
 function construct(player)
+  info.player_id = player:id();
   u_tex_coords = gl.uniform.create("u_tex_coords");
   player.uniforms:set("tex_coords", u_tex_coords);
 

@@ -4,7 +4,7 @@
     "near_render": 0.0,
     "player_location": [
       0.0,
-      0.0,
+      135.0,
       0.0
     ],
     "player_object": "exp.characters.main.player",

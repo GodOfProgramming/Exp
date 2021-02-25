@@ -47,7 +47,7 @@ namespace Exp
         ObjectMeta::add_usertype(state);
         Uniform::add_usertype(state);
         state.new_usertype<Object>(
-         Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms, "pos", &Object::pos, "data", &Object::data);
+         Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms, "pos", &Object::pos, "id", &Object::id, "data", &Object::data);
       }
     }
 
@@ -79,6 +79,11 @@ namespace Exp
     auto Object::id() const noexcept -> std::size_t
     {
       return this->obj_id.value();
+    }
+
+    auto Object::location() const noexcept -> glm::vec3
+    {
+      return this->pos;
     }
   }  // namespace Game
 }  // namespace Exp

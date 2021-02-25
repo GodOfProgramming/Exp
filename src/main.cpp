@@ -170,6 +170,16 @@ int main(int, char* argv[])
   }
 
   {
+    auto player = world.lookup(info.player_id);
+
+    if (player == nullptr) {
+      LOG(WARNING) << "player character no longer exists, can't save";
+    } else {
+      settings.game.player_location = player->location();
+    }
+  }
+
+  {
     File f;
     f.data = settings.serialize();
     f.save(Exp::Cfg::File::SETTINGS);

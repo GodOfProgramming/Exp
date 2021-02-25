@@ -16,9 +16,10 @@ namespace Exp
     {
       static auto instance() noexcept -> Info&;
 
-      std::size_t fps    = 0;
-      std::size_t frames = 0;
-      State state        = State::PLAYING;
+      std::size_t player_id = 0;
+      std::size_t fps       = 0;
+      std::size_t frames    = 0;
+      State state           = State::PLAYING;
 
       static void add_usertype(sol::state_view state);
     };

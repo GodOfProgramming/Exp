@@ -27,6 +27,8 @@ namespace Exp
 
       auto id() const noexcept -> std::size_t;
 
+      auto location() const noexcept -> glm::vec3;
+
       const ObjectMeta meta;
 
      private:

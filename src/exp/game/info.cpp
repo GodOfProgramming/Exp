@@ -20,7 +20,18 @@ namespace Exp
       }
 
       if (state[Lua::Usertypes::Game::INFO].get_type() == sol::type::none) {
-        state.new_usertype<Info>(Lua::Usertypes::Game::INFO, "instance", &Info::instance, "fps", &Info::fps, "frames", &Info::frames, "state", &Info::state);
+        state.new_usertype<Info>(
+         Lua::Usertypes::Game::INFO,
+         "instance",
+         &Info::instance,
+         "player_id",
+         &Info::player_id,
+         "fps",
+         &Info::fps,
+         "frames",
+         &Info::frames,
+         "state",
+         &Info::state);
       }
     }
   }  // namespace Game
