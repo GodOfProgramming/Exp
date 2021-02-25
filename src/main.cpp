@@ -2,6 +2,7 @@
 #include "exp/game/camera.hpp"
 #include "exp/game/info.hpp"
 #include "exp/game/object.hpp"
+#include "exp/game/world.hpp"
 #include "exp/gl/error_map.hpp"
 #include "exp/input/dispatcher.hpp"
 #include "exp/io/file.hpp"
@@ -22,6 +23,7 @@ int main(int, char* argv[])
   using Exp::Game::Camera;
   using Exp::Game::Info;
   using Exp::Game::Object;
+  using Exp::Game::World;
   using Exp::Input::Dispatcher;
   using Exp::IO::File;
   using Exp::R::Animations;
@@ -101,8 +103,8 @@ int main(int, char* argv[])
 
   auto& camera = Camera::instance();
   {
-    float width_2  = settings.window.width.raw() / 2.0f;
-    float height_2 = settings.window.height.raw() / 2.0f;
+    float width_2  = settings.window.width / 2.0f;
+    float height_2 = settings.window.height / 2.0f;
     camera.set_ortho(-width_2, width_2, -height_2, height_2, settings.game.near_render, settings.game.far_render);
   }
 
@@ -114,46 +116,34 @@ int main(int, char* argv[])
     exit = true;
   }
 
-  auto stats_update_timer = std::chrono::system_clock::now();
+  auto& world = World::instance();
 
-  std::vector<std::shared_ptr<Object>> objects;
-  {
-    auto player = game_objects.find("exp.test.random.player");
-    if (player == game_objects.end()) {
-      LOG(ERROR) << "could not even load the friggen debug player, nice job dumbass";
-      exit = true;
-    }
-    objects.push_back(std::make_shared<Object>(player->second));
-  }
-
-  {
-    auto square = game_objects.find("exp.test.random.square");
-    if (square == game_objects.end()) {
-      LOG(ERROR) << "could not even load the friggen debug square, nice job dumbass";
-      exit = true;
-    }
-    objects.push_back(std::make_shared<Object>(square->second));
+  if (!world.spawn(settings.game.player_object, settings.game.player_location)) {
+    LOG(WARNING) << "could not load player object";
   }
 
   auto& info = Info::instance();
 
+  auto stats_update_timer = std::chrono::system_clock::now();
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
 
   window.show();
 
   while (!exit) {
-    std::uint16_t fps = settings.game.target_fps;
-
     auto start = std::chrono::system_clock::now();
+
+    std::uint16_t fps = settings.game.target_fps;
 
     auto resume = start + (one_milli * 1000.0 / fps);
 
+    world.finalize_spawns();
+
     window.poll_events();
 
-    for (auto& object : objects) { object->update(); }
+    world.update();
 
-    renderer.render_to(window, objects);
+    world.render(renderer);
 
     auto update_check_time = std::chrono::system_clock::now();
     if (update_check_time > stats_update_timer) {
@@ -185,7 +175,7 @@ int main(int, char* argv[])
     f.save(Exp::Cfg::File::SETTINGS);
   }
 
-  objects.clear();
+  world.release();
 
   ui.release();
 

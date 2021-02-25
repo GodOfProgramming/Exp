@@ -2,6 +2,7 @@
 
 #include "camera.hpp"
 #include "exp/constants.hpp"
+#include "exp/resources/producer.hpp"
 #include "exp/resources/scripts.hpp"
 #include "info.hpp"
 
@@ -9,9 +10,12 @@ namespace Exp
 {
   namespace Game
   {
-    Object::Object(const ObjectMeta m)
+    Object::Object(const ObjectMeta m, glm::vec3 p)
      : meta(m)
+     , pos(p)
     {
+      this->obj_id = R::ID<std::size_t>::producer_t::instance().produce();
+
       if (!m.script_id.empty()) {
         using R::Scripts;
 
@@ -28,6 +32,22 @@ namespace Exp
             fn.call(this);
           }
         }
+      }
+    }
+
+    Object::~Object()
+    {
+      this->obj_id.release();
+    }
+
+    void Object::add_usertype(sol::state_view state)
+    {
+      if (state[Lua::Usertypes::Game::OBJECT].get_type() == sol::type::none) {
+        Camera::add_usertype(state);
+        ObjectMeta::add_usertype(state);
+        Uniform::add_usertype(state);
+        state.new_usertype<Object>(
+         Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms, "pos", &Object::pos, "data", &Object::data);
       }
     }
 
@@ -56,14 +76,9 @@ namespace Exp
       }
     }
 
-    void Object::add_usertype(sol::state_view state)
+    auto Object::id() const noexcept -> std::size_t
     {
-      if (state[Lua::Usertypes::Game::OBJECT].get_type() == sol::type::none) {
-        Camera::add_usertype(state);
-        ObjectMeta::add_usertype(state);
-        Uniform::add_usertype(state);
-        state.new_usertype<Object>(Lua::Usertypes::Game::OBJECT, "meta", &Object::meta, "uniforms", &Object::uniforms, "data", &Object::data);
-      }
+      return this->obj_id.value();
     }
   }  // namespace Game
 }  // namespace Exp

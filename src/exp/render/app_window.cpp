@@ -43,7 +43,7 @@ namespace Exp
 
       auto& settings = SettingsManager::instance();
 
-      this->window = glfwCreateWindow(settings.window.width, settings.window.height, settings.window.title.raw().c_str(), nullptr, nullptr);
+      this->window = glfwCreateWindow(settings.window.width, settings.window.height, settings.window.title.c_str(), nullptr, nullptr);
       if (window == nullptr) {
         LOG(FATAL) << "failed to create glfw window";
       }
@@ -55,16 +55,6 @@ namespace Exp
       }
 
       glViewport(0, 0, settings.window.width, settings.window.height);
-
-      settings.window.width.on_change([this](auto, auto width) {
-        auto& settings = SettingsManager::instance();
-        glfwSetWindowSize(this->window, width, settings.window.height);
-      });
-
-      settings.window.height.on_change([this](auto, auto height) {
-        auto& settings = SettingsManager::instance();
-        glfwSetWindowSize(this->window, settings.window.width, height);
-      });
 
       glfwSetFramebufferSizeCallback(this->window, [](GLFWwindow*, int width, int height) {
         auto& settings         = SettingsManager::instance();

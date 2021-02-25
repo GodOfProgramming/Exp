@@ -25,8 +25,10 @@ namespace Exp
 
       auto check(Key k) -> Action;
 
+      auto changed(Key k) -> bool;
+
      private:
-      std::map<Key, Action> key_map;
+      std::map<Key, std::pair<Action, Action>> key_map;
     };
   }  // namespace Input
 }  // namespace Exp

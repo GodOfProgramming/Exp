@@ -1,7 +1,5 @@
 #pragma once
 
-#include "setting.hpp"
-
 namespace Exp
 {
   namespace Settings
@@ -29,19 +27,19 @@ namespace Exp
 
       struct
       {
-        Setting<std::string> title;
-        Setting<int> height;
-        Setting<int> width;
+        std::string title;
+        int height;
+        int width;
       } window;
 
       struct
       {
-        Setting<std::uint16_t> target_fps;
-        Setting<float> near_render;
-        Setting<float> far_render;
+        std::uint16_t target_fps;
+        float near_render;
+        float far_render;
+        std::string player_object;
+        glm::vec3 player_location;
       } game;
-
-     private:
     };
   }  // namespace Settings
 }  // namespace Exp

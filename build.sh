@@ -78,20 +78,32 @@ if [ $build -eq 1 ]; then
 	cur_dir=$(pwd)
 	cd "${build_dir}"
 	if [ $slow_build -eq 0 ]; then
-		make -j$(($(nproc) - 1)) || exit $?
+		make -j$(($(nproc) - 1)) ${EXE} || exit $?
 	else
-		make || exit $?
+		make ${EXE} || exit $?
 	fi
 	cd "${cur_dir}"
 fi
 
 if [ $run_tests -eq 1 ]; then
-	cmd="${build_dir}/${EXE_TEST}"
+	cur_dir=$(pwd)
+	cd "${build_dir}"
+
+	if [ $slow_build -eq 0 ]; then
+		make -j$(($(nproc) - 1)) ${EXE_TEST} || exit $?
+	else
+		make ${EXE_TEST} || exit $?
+	fi
+
+	cmd="${EXE_TEST}"
+
 	if [ ! -z "$1" ]; then
 		${cmd} --gtest_filter="$1" || exit $?
 	else
 		${cmd} || exit $?
 	fi
+
+	cd "${cur_dir}"
 fi
 
 if [ $gen_coverage -eq 1 ]; then

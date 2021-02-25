@@ -67,6 +67,7 @@ namespace Exp
         constexpr const char* INFO   = "Game_Info";
         constexpr const char* OBJECT = "Game_Object";
         constexpr const char* CAMERA = "Game_Camera";
+        constexpr const char* WORLD  = "Game_World";
       }  // namespace Game
       namespace Input
       {

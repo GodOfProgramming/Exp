@@ -2,6 +2,12 @@
   "game": {
     "far_render": 100.0,
     "near_render": 0.0,
+    "player_location": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "player_object": "exp.characters.main.player",
     "target_fps": 60
   },
   "window": {

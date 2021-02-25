@@ -1,10 +1,11 @@
 {
-  "square": {
+  "player": {
     "on_construct": "construct",
     "on_update": "update",
-    "shader": "exp.test.random.colors",
+    "shader": "exp.test.random.player",
     "model": "exp.test.random.sprite_square",
-    "script": "exp.game.square",
+    "animation": "exp.test.random.player",
+    "script": "exp.game.player",
     "draw_description": {
       "wireframe": false
     }

@@ -4,6 +4,7 @@
 #include "exp/game/camera.hpp"
 #include "exp/game/info.hpp"
 #include "exp/game/object.hpp"
+#include "exp/game/world.hpp"
 #include "exp/gl/uniform.hpp"
 #include "exp/input/enums.hpp"
 #include "exp/input/gamepad.hpp"
@@ -150,6 +151,7 @@ namespace Exp
       Game::Camera::add_usertype(state);
       Game::Info::add_usertype(state);
       Game::Object::add_usertype(state);
+      Game::World::add_usertype(state);
       Input::Gamepad::add_usertype(state);
       Input::Keyboard::add_usertype(state);
       Input::Mouse::add_usertype(state);

@@ -53,7 +53,7 @@ function update(obj)
   local size = 400;
 
   local transform = geom.mat4.identity();
-  transform = transform:translate(geom.vec3.new(size, size / 2, 0));
+  transform = transform:translate(obj.pos);
   transform = transform:scale(geom.vec3.new(size, size, 0));
   uniforms.model:set_mat4(transform);
   uniforms.view:set_mat4(camera:get_view());
