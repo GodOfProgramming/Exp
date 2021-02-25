@@ -34,6 +34,8 @@ namespace Exp
 
       auto lookup(std::size_t id) -> std::shared_ptr<Object>;
 
+      auto count() -> std::size_t;
+
       void release();
 
      private:

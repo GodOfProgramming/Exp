@@ -5,6 +5,7 @@
 #include "exp/game/world.hpp"
 #include "exp/gl/error_map.hpp"
 #include "exp/input/dispatcher.hpp"
+#include "exp/input/keyboard.hpp"
 #include "exp/io/file.hpp"
 #include "exp/render/app_window.hpp"
 #include "exp/render/renderer.hpp"
@@ -25,6 +26,7 @@ int main(int, char* argv[])
   using Exp::Game::Object;
   using Exp::Game::World;
   using Exp::Input::Dispatcher;
+  using Exp::Input::Keyboard;
   using Exp::IO::File;
   using Exp::R::Animations;
   using Exp::R::GameObjects;
@@ -124,6 +126,8 @@ int main(int, char* argv[])
 
   auto& info = Info::instance();
 
+  auto& keyboard = Keyboard::instance();
+
   auto stats_update_timer = std::chrono::system_clock::now();
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
@@ -140,6 +144,8 @@ int main(int, char* argv[])
     world.finalize_spawns();
 
     window.poll_events();
+
+    keyboard.update();
 
     world.update();
 

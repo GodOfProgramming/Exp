@@ -3,8 +3,8 @@
     "far_render": 100.0,
     "near_render": 0.0,
     "player_location": [
-      0.0,
-      135.0,
+      -1326.0,
+      480.0,
       0.0
     ],
     "player_object": "exp.characters.main.player",

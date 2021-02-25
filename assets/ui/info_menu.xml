@@ -2,4 +2,5 @@
   <text fn="fps_text"></text>
   <text fn="frame_count_text"></text>
   <text fn="player_location"></text>
+  <text fn="world_count"></text>
 </window>

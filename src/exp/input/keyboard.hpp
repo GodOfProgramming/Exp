@@ -11,6 +11,13 @@ namespace Exp
     {
       Keyboard() = default;
 
+      struct KeyState
+      {
+        Action curr                  = Action::RELEASE;
+        Action last                  = Action::RELEASE;
+        bool was_presssed_this_frame = false;
+      };
+
      public:
       Keyboard(const Keyboard&) = delete;
       Keyboard(Keyboard&&)      = delete;
@@ -21,6 +28,8 @@ namespace Exp
 
       static void add_usertype(sol::state_view state);
 
+      void update();
+
       void on_event(KeyEvent e);
 
       auto check(Key k) -> Action;
@@ -28,7 +37,7 @@ namespace Exp
       auto changed(Key k) -> bool;
 
      private:
-      std::map<Key, std::pair<Action, Action>> key_map;
+      std::map<Key, KeyState> key_map;
     };
   }  // namespace Input
 }  // namespace Exp
