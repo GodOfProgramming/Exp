@@ -27,6 +27,27 @@ namespace Exp
       for (auto obj : this->objects) { obj->update(); }
     }
 
+    void World::update(Util::ThreadPool& tp)
+    {
+      std::mutex m;
+      std::condition_variable cv;
+      std::atomic<std::size_t> completed   = 0;
+      const std::size_t updates_to_be_made = this->objects.size();
+
+      for (auto obj : this->objects) {
+        tp.enqueue(Util::ThreadPriority::TOP, [obj, updates_to_be_made, &completed, &cv] {
+          obj->update();
+          completed++;
+          if (completed == updates_to_be_made) {
+            cv.notify_one();
+          }
+        });
+      }
+
+      std::unique_lock<std::mutex> lk(m);
+      cv.wait(lk);
+    }
+
     void World::render(Render::Renderer& renderer)
     {
       renderer.render_to(Render::AppWindow::instance(), this->objects);

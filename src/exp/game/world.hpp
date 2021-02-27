@@ -1,6 +1,7 @@
 #pragma once
 
 #include "exp/render/renderer.hpp"
+#include "exp/util/thread_pool.hpp"
 #include "object.hpp"
 
 namespace Exp
@@ -25,6 +26,8 @@ namespace Exp
       static void add_usertype(sol::state_view state);
 
       void update();
+
+      void update(Util::ThreadPool& tp);
 
       void render(Render::Renderer& renderer);
 

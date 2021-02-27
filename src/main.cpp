@@ -128,6 +128,8 @@ int main(int, char* argv[])
 
   auto& keyboard = Keyboard::instance();
 
+  Exp::Util::ThreadPool tp(1);
+
   auto stats_update_timer = std::chrono::system_clock::now();
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
@@ -147,7 +149,7 @@ int main(int, char* argv[])
 
     keyboard.update();
 
-    world.update();
+    world.update(tp);
 
     world.render(renderer);
 
