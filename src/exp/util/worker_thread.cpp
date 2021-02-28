@@ -22,6 +22,7 @@ namespace Exp
     {
       std::lock_guard<std::mutex> lk(this->m);
       this->fn = std::move(f);
+      this->cv.notify_one();
     }
 
     auto WorkerThread::done() const noexcept -> bool
@@ -32,6 +33,7 @@ namespace Exp
     void WorkerThread::rerun()
     {
       std::lock_guard<std::mutex> lk(this->m);
+      this->is_done = false;
       this->cv.notify_one();
     }
 
@@ -41,6 +43,7 @@ namespace Exp
       lk.lock();
       if (this->worker.joinable()) {
         this->running = false;
+        this->is_done = true;
         lk.unlock();
         this->cv.notify_one();
         this->worker.join();
@@ -52,7 +55,6 @@ namespace Exp
       while (running) {
         std::unique_lock<std::mutex> lk(this->m);
         cv.wait(lk);
-        lk.lock();
         if (!this->is_done || running) {
           this->is_done = false;
           this->fn();

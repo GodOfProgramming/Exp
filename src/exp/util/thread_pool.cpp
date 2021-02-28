@@ -35,6 +35,7 @@ namespace Exp
 
     void ThreadPool::enqueue(ThreadPriority tp, std::function<void(void)>&& fn)
     {
+      std::lock_guard<std::mutex> lk(this->m);
       this->priority_queue[tp].push(std::move(fn));
       this->dispatcher->rerun();
     }
@@ -48,6 +49,7 @@ namespace Exp
     void ThreadPool::dispatch()
     {
       for (ThreadPriority pri = ThreadPriority::NON; pri <= ThreadPriority::TOP; pri++) {
+        std::lock_guard<std::mutex> lk(this->m);
         auto& queue = this->priority_queue[pri];
         if (!queue.empty()) {
           this->try_assign(queue);
