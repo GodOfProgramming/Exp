@@ -30,11 +30,16 @@ namespace Exp
     void World::update(Util::ThreadPool& tp)
     {
       std::mutex m;
+      std::unique_lock<std::mutex> lk(m);
       std::condition_variable cv;
       std::atomic<std::size_t> completed   = 0;
       const std::size_t updates_to_be_made = this->objects.size();
+
+      std::size_t id = 0;
+
       for (auto obj : this->objects) {
-        tp.enqueue(Util::ThreadPriority::TOP, [obj, updates_to_be_made, &completed, &cv] {
+        id++;
+        tp.enqueue(Util::ThreadPriority::TOP, [id, obj, updates_to_be_made, &completed, &m, &cv] {
           obj->update();
           completed++;
           if (completed == updates_to_be_made) {
@@ -43,7 +48,6 @@ namespace Exp
         });
       }
 
-      std::unique_lock<std::mutex> lk(m);
       cv.wait(lk, [updates_to_be_made, &completed] { return completed == updates_to_be_made; });
     }
 
@@ -60,6 +64,8 @@ namespace Exp
         LOG(WARNING) << "unable to spawn object " << id;
         return false;
       }
+
+      std::lock_guard<std::mutex> lk(this->pending_obj_lock);
       this->pending_objs.push_back(std::make_shared<Object>(iter->second, pos));
       return true;
     }

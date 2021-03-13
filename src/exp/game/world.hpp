@@ -42,6 +42,7 @@ namespace Exp
       void release();
 
      private:
+      std::mutex pending_obj_lock;
       ObjectList pending_objs;
       ObjectList objects;
       ObjectMap obj_map;

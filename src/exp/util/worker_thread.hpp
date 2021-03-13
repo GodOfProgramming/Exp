@@ -12,7 +12,7 @@ namespace Exp
 
       ~WorkerThread();
 
-      void exec(std::function<void(void)>&& f);
+      void exec(std::function<void(void)> f);
 
       auto done() const noexcept -> bool;
 

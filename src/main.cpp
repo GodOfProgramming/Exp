@@ -20,7 +20,10 @@
 
 int main(int, char* argv[])
 {
+  google::InitGoogleLogging(argv[0]);
+
   constexpr const bool PRINT_GL_ERRORS = false;
+
   using Exp::Game::Camera;
   using Exp::Game::Info;
   using Exp::Game::Object;
@@ -39,8 +42,6 @@ int main(int, char* argv[])
   using Exp::Settings::SettingsManager;
   using Exp::Ui::UiManager;
   using nlohmann::json;
-
-  google::InitGoogleLogging(argv[0]);
 
   bool exit = false;
 
@@ -128,6 +129,8 @@ int main(int, char* argv[])
 
   auto& keyboard = Keyboard::instance();
 
+  Exp::Util::ThreadPool tp(1);
+
   auto stats_update_timer = std::chrono::system_clock::now();
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
@@ -147,7 +150,7 @@ int main(int, char* argv[])
 
     keyboard.update();
 
-    world.update();
+    world.update(tp);
 
     world.render(renderer);
 

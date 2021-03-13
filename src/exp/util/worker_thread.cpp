@@ -18,10 +18,12 @@ namespace Exp
       this->stop();
     }
 
-    void WorkerThread::exec(std::function<void(void)>&& f)
+    void WorkerThread::exec(std::function<void(void)> f)
     {
-      std::lock_guard<std::mutex> lk(this->m);
-      this->fn = std::move(f);
+      std::unique_lock<std::mutex> lk(this->m);
+      this->fn      = f;
+      this->is_done = false;
+      lk.unlock();
       this->cv.notify_one();
     }
 
@@ -32,18 +34,17 @@ namespace Exp
 
     void WorkerThread::rerun()
     {
-      std::lock_guard<std::mutex> lk(this->m);
+      std::unique_lock<std::mutex> lk(this->m);
       this->is_done = false;
+      lk.unlock();
       this->cv.notify_one();
     }
 
     void WorkerThread::stop()
     {
       std::unique_lock<std::mutex> lk(this->m);
-      lk.lock();
       if (this->worker.joinable()) {
         this->running = false;
-        this->is_done = true;
         lk.unlock();
         this->cv.notify_one();
         this->worker.join();
@@ -52,18 +53,18 @@ namespace Exp
 
     void WorkerThread::run_loop()
     {
-      while (running) {
+      do {
         std::unique_lock<std::mutex> lk(this->m);
-        cv.wait(lk);
-        if (!this->is_done || running) {
-          this->is_done = false;
+        cv.wait(lk, [this] { return !this->is_done || !this->running; });
+        if (running) {
           this->fn();
           this->is_done = true;
+          lk.unlock();
           if (this->handler) {
             this->handler->rerun();
           }
         }
-      }
+      } while (running);
     }
   }  // namespace Util
 }  // namespace Exp

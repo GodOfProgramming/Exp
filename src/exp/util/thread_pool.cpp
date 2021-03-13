@@ -17,11 +17,13 @@ namespace Exp
     }
 
     ThreadPool::ThreadPool(std::size_t tc)
+     : priority_queue([](const PrioritizedFn& left, const PrioritizedFn& right) { return left.first > right.first; })
+     , dispatcher(std::make_shared<WorkerThread>())
     {
       if (tc == 0) {
         LOG(FATAL) << "Cannot use a thread pool with 0 workers";
       }
-      dispatcher = std::make_shared<WorkerThread>();
+
       dispatcher->exec(std::bind(&ThreadPool::dispatch, this));
 
       this->workers.resize(tc);
@@ -33,10 +35,11 @@ namespace Exp
       this->stop();
     }
 
-    void ThreadPool::enqueue(ThreadPriority tp, std::function<void(void)>&& fn)
+    void ThreadPool::enqueue(ThreadPriority tp, std::function<void(void)> fn)
     {
-      std::lock_guard<std::mutex> lk(this->m);
-      this->priority_queue[tp].push(std::move(fn));
+      std::unique_lock<std::mutex> lk(this->m);
+      this->priority_queue.push(std::make_pair(tp, fn));
+      lk.unlock();
       this->dispatcher->rerun();
     }
 
@@ -48,25 +51,17 @@ namespace Exp
 
     void ThreadPool::dispatch()
     {
-      for (ThreadPriority pri = ThreadPriority::NON; pri <= ThreadPriority::TOP; pri++) {
-        std::lock_guard<std::mutex> lk(this->m);
-        auto& queue = this->priority_queue[pri];
-        if (!queue.empty()) {
-          this->try_assign(queue);
-        }
-      }
-    }
-
-    void ThreadPool::try_assign(FnQueue& queue)
-    {
-      for (auto& worker : this->workers) {
-        if (worker->done()) {
-          auto fn = std::move(queue.back());
-          queue.pop();
-          worker->exec(std::move(fn));
-        }
-        if (queue.empty()) {
-          break;
+      std::lock_guard<std::mutex> lk(this->m);
+      if (!this->priority_queue.empty()) {
+        for (auto& worker : this->workers) {
+          if (worker->done()) {
+            auto fn = this->priority_queue.top();
+            this->priority_queue.pop();
+            worker->exec(fn.second);
+          }
+          if (this->priority_queue.empty()) {
+            break;
+          }
         }
       }
     }
