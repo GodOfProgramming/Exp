@@ -39,6 +39,7 @@ namespace Exp
         float far_render;
         std::string player_object;
         glm::vec3 player_location;
+        std::size_t thread_count;
       } game;
     };
   }  // namespace Settings

@@ -44,6 +44,7 @@ namespace Exp
           { "far_render", this->game.far_render },
           { "player_object", this->game.player_object },
           { "player_location", { this->game.player_location.x, this->game.player_location.y, this->game.player_location.z } },
+          { "thread_count", this->game.thread_count },
          },
         },
       };
@@ -80,6 +81,7 @@ namespace Exp
         }
         return ret;
       });
+      default_if_null<std::size_t>(this->game.thread_count, 3, game, "thread_count", [](json& j) { return j; });
     }
   }  // namespace Settings
 }  // namespace Exp

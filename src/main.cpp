@@ -57,6 +57,8 @@ int main(int, char* argv[])
     }
   }
 
+  Exp::Util::ThreadPool tp(settings.game.thread_count);
+
   auto& window = AppWindow::instance();
   {
     window.create();
@@ -193,6 +195,8 @@ int main(int, char* argv[])
     f.data = settings.serialize();
     f.save(Exp::Cfg::File::SETTINGS);
   }
+
+  tp.stop();
 
   world.release();
 
