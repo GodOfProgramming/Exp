@@ -14,6 +14,12 @@ namespace Exp
       t.back();
     };
 
+    template <typename T>
+    auto enumerate(T&& container)
+    {
+      return std::tuple{ std::begin(container), std::end(container), 0 };
+    }
+
     struct Void
     {};
 
