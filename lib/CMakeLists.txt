@@ -11,6 +11,7 @@ add_subdirectory(sol)
 add_subdirectory(assimp)
 add_subdirectory(stb)
 add_subdirectory(json)
+add_subdirectory(toml)
 add_subdirectory(xml)
 
 set(LIBS
@@ -25,6 +26,7 @@ set(LIBS
   sol2::sol2
   nlohmann_json
   tinyxml2
+  tomlplusplus_tomlplusplus
   assimp
 )
 

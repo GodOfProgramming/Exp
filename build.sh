@@ -65,6 +65,8 @@ fi
 
 if [ $setup -eq 1 ]; then
   git submodule update --init --recursive
+  sudo apt install libxrandr-dev libxrandr2 libxinerama1 libxinerama-dev libxcursor1 libxcursor-dev libxi6 libxi-dev mesa-common-dev
+  echo "Make sure ltt is installed and \$RUBYLIB is set to the lib dir"
 fi
 
 if [ $clean -eq 1 ]; then
