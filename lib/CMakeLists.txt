@@ -26,7 +26,7 @@ set(LIBS
   sol2::sol2
   nlohmann_json
   tinyxml2
-  tomlplusplus_tomlplusplus
+  tomlplusplus
   assimp
 )
 

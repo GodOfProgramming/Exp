@@ -150,7 +150,7 @@ int main(int, char* argv[])
 
     keyboard.update();
 
-    world.update(tp);
+    world.update();
 
     world.render(renderer);
 

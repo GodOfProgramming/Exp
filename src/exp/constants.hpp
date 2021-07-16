@@ -2,6 +2,8 @@
 
 namespace Exp
 {
+  using namespace std::string_literals;
+
   namespace Cfg
   {
     namespace Dir

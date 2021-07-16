@@ -3,12 +3,13 @@
     "far_render": 100.0,
     "near_render": 0.0,
     "player_location": [
-      -1838.0,
-      426.0,
+      -1700.0,
+      656.0,
       0.0
     ],
     "player_object": "exp.characters.main.player",
-    "target_fps": 60
+    "target_fps": 60,
+    "thread_count": 3
   },
   "window": {
     "height": 720,
