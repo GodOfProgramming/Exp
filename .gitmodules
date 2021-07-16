@@ -40,3 +40,6 @@
 [submodule "lib/stb/upstream"]
 	path = lib/stb/upstream
 	url = git@github.com:nothings/stb.git
+[submodule "lib/toml/upstream"]
+	path = lib/toml/upstream
+	url = git@github.com:marzer/tomlplusplus.git
