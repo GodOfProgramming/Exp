@@ -22,8 +22,6 @@ add_executable(${EXE} "${SRC}/main.cpp")
 
 add_executable(${EXE_TEST} "${SRC}/main.test.cpp")
 
-set_property(TARGET ${EXE} PROPERTY CXX_STANDARD 20)
-
 target_compile_options(${EXE} PUBLIC ${SHARED_COMPILE_OPTS} -O3)
 
 target_compile_options(${EXE_TEST} PUBLIC ${SHARED_COMPILE_OPTS} -g -O0 --coverage -fprofile-arcs -ftest-coverage)

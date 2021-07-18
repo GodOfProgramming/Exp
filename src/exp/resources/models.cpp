@@ -9,13 +9,7 @@ namespace Exp
 {
   namespace R
   {
-    auto Models::instance() noexcept -> Models&
-    {
-      static Models models;
-      return models;
-    }
-
-    void Models::load_all()
+    void Models::load_all(World& world)
     {
       LOG(INFO) << "loading models";
       IO::iterate_dir_with_namespace(Cfg::Dir::GAME_MODELS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {

@@ -9,17 +9,14 @@ namespace Exp
   {
     class UiManager: public Input::IHandler
     {
-      UiManager();
-
      public:
+      UiManager();
       UiManager(const UiManager&) = delete;
-      UiManager(UiManager&&)      = delete;
+      UiManager(UiManager&&)      = default;
       auto operator=(const UiManager&) -> UiManager& = delete;
-      auto operator=(UiManager&&) -> UiManager& = delete;
+      auto operator=(UiManager&&) -> UiManager& = default;
 
       ~UiManager() = default;
-
-      static auto instance() -> UiManager&;
 
       void load_all();
 

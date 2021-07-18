@@ -4,9 +4,7 @@ namespace Exp
 {
   namespace Render
   {
-    Renderer::Renderer(UiManager& u)
-     : ui(u)
-    {}
+    Renderer::Renderer() {}
 
     auto Renderer::init() -> bool
     {
@@ -14,7 +12,7 @@ namespace Exp
       return GL_CHECK();
     }
 
-    void Renderer::render_to(Window& window, std::vector<std::shared_ptr<Game::Object>>& objects)
+    void Renderer::render(World& world)
     {
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       if (!GL_CHECK()) {
@@ -28,7 +26,7 @@ namespace Exp
         return;
       }
 
-      for (const auto object : objects) {
+      for (const auto object : world.entities()) {
         if (!object->meta.shader->use()) {
           LOG(WARNING) << "unable to draw game object, shader could not be used";
           continue;
@@ -42,9 +40,13 @@ namespace Exp
         }
       }
 
-      this->ui.render();
+      auto* ui = world.get_resource<UiManager>();
 
-      window.swap_buffers();
+      ui->render();
+
+      auto* window = world.get_resource<AppWindow>();
+
+      window->swap_buffers();
     }
   }  // namespace Render
 }  // namespace Exp

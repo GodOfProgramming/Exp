@@ -18,12 +18,6 @@ namespace Exp
     using Input::MouseMoveEvent;
     using Settings::SettingsManager;
 
-    auto AppWindow::instance() -> AppWindow&
-    {
-      static AppWindow window;
-      return window;
-    }
-
     AppWindow::AppWindow()
     {
       if (glfwInit() != GLFW_TRUE) {
@@ -48,6 +42,8 @@ namespace Exp
         LOG(FATAL) << "failed to create glfw window";
       }
 
+      glfwSetWindowUserPointer(this->window, this);
+
       glfwMakeContextCurrent(this->window);
 
       if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
@@ -65,9 +61,9 @@ namespace Exp
         glViewport(0, 0, settings.window.width, settings.window.height);
       });
 
-      glfwSetWindowCloseCallback(this->window, [](GLFWwindow*) {
-        auto& window = AppWindow::instance();
-        window.close();
+      glfwSetWindowCloseCallback(this->window, [](GLFWwindow* glfw_window) {
+        auto* window = (AppWindow*)glfwGetWindowUserPointer(glfw_window);
+        window->close();
       });
 
       glfwSetKeyCallback(this->window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {

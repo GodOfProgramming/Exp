@@ -8,15 +8,9 @@ namespace Exp
 {
   namespace R
   {
-    auto Animations::instance() noexcept -> Animations&
+    void Animations::load_all(World& world)
     {
-      static Animations animations;
-      return animations;
-    }
-
-    void Animations::load_all()
-    {
-      auto& textures = Textures::instance();
+      auto* textures = world.get_resource<Textures>();
       IO::iterate_dir_with_namespace(Cfg::Dir::ANIMATIONS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         IResource::load_json_file(path, [&](const nlohmann::json& objects) {
           if (!objects.is_object()) {
@@ -61,8 +55,8 @@ namespace Exp
 
             /* Texture */
 
-            auto texture_iter = textures.find(texture_id);
-            if (texture_iter == textures.end()) {
+            auto texture_iter = textures->find(texture_id);
+            if (texture_iter == textures->end()) {
               LOG(WARNING) << "cannot find texture with id " << texture_id;
               continue;
             }

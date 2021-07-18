@@ -9,19 +9,16 @@ namespace Exp
   {
     class Textures: public IResource
     {
-      Textures() = default;
-
       using TextureMap = std::map<std::string, std::shared_ptr<TextureMeta>>;
 
      public:
+      Textures()                = default;
       Textures(const Textures&) = delete;
-      Textures(Textures&&)      = delete;
+      Textures(Textures&&)      = default;
       auto operator=(const Textures&) -> Textures& = delete;
-      auto operator=(Textures&&) -> Textures& = delete;
+      auto operator=(Textures&&) -> Textures& = default;
 
-      static auto instance() noexcept -> Textures&;
-
-      void load_all() final;
+      void load_all(World& world) final;
       void release() final;
 
       auto find(std::string id) const noexcept -> TextureMap::const_iterator;

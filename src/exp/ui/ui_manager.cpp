@@ -12,12 +12,6 @@ namespace Exp
 {
   namespace Ui
   {
-    auto UiManager::instance() -> UiManager&
-    {
-      static UiManager manager;
-      return manager;
-    }
-
     UiManager::UiManager()
      : show_demo_window(false)
      , show_menu_bar(false)

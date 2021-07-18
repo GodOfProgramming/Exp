@@ -17,10 +17,14 @@ namespace Exp
       }
     }
 
-    auto SettingsManager::instance() -> SettingsManager&
+    SettingsManager::SettingsManager(const SettingsManager&)
     {
-      static SettingsManager manager;
-      return manager;
+      throw DoNotUseException(__FUNCTION__);
+    }
+
+    auto SettingsManager::operator=(const SettingsManager&) -> SettingsManager&
+    {
+      throw DoNotUseException(__FUNCTION__);
     }
 
     SettingsManager::~SettingsManager() {}

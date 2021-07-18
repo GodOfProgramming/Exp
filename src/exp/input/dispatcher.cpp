@@ -1,4 +1,5 @@
 #include "dispatcher.hpp"
+
 #include "gamepad.hpp"
 #include "keyboard.hpp"
 #include "mouse.hpp"
@@ -7,12 +8,6 @@ namespace Exp
 {
   namespace Input
   {
-    auto Dispatcher::instance() -> Dispatcher&
-    {
-      static Dispatcher input;
-      return input;
-    }
-
     Dispatcher::Dispatcher()
      : root_handler(nullptr)
     {}

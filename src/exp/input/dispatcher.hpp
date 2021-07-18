@@ -11,15 +11,12 @@ namespace Exp
   {
     class Dispatcher
     {
-      Dispatcher();
-
      public:
+      Dispatcher();
       Dispatcher(const Dispatcher&) = delete;
-      Dispatcher(Dispatcher&&)      = delete;
+      Dispatcher(Dispatcher&&)      = default;
       auto operator=(const Dispatcher&) -> Dispatcher& = delete;
-      auto operator=(Dispatcher&&) -> Dispatcher& = delete;
-
-      static auto instance() -> Dispatcher&;
+      auto operator=(Dispatcher&&) -> Dispatcher& = default;
 
       void set_root_handler(IHandler* handler);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "app_window.hpp"
-#include "exp/game/object.hpp"
+#include "exp/game/world.hpp"
 #include "exp/ui/ui_manager.hpp"
 
 namespace Exp
@@ -12,16 +12,16 @@ namespace Exp
     {
       using UiManager = Ui::UiManager;
       using Window    = AppWindow;
+      using World     = Game::World;
 
      public:
-      Renderer(UiManager& ui);
+      Renderer() = default;
 
       auto init() -> bool;
 
-      void render_to(Window& window, std::vector<std::shared_ptr<Game::Object>>& objects);
+      void render(World& world);
 
      private:
-      UiManager& ui;
     };
   }  // namespace Render
 }  // namespace Exp

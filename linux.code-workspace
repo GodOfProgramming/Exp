@@ -72,7 +72,8 @@
       "unordered_set": "cpp",
       "regex": "cpp",
       "stop_token": "cpp",
-      "mutex": "cpp"
+      "mutex": "cpp",
+      "any": "cpp"
     },
     "exclude": "{**/node_modules/**,**/bower_components/**,**/dist/**,**/build/**,**/.vscode/**,**/_output/**,**/vendor/**,**/*.min.*,**/*.map}",
     "files.exclude": {

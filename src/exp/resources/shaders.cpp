@@ -7,13 +7,7 @@ namespace Exp
 {
   namespace R
   {
-    auto Shaders::instance() -> Shaders&
-    {
-      static Shaders shaders;
-      return shaders;
-    }
-
-    void Shaders::load_all()
+    void Shaders::load_all(World& world)
     {
       LOG(INFO) << "loading shaders";
 

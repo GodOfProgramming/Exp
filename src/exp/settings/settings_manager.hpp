@@ -1,22 +1,23 @@
 #pragma once
 
+#include "exp/util/exceptions.hpp"
+
 namespace Exp
 {
   namespace Settings
   {
     class SettingsManager
     {
-      SettingsManager() = default;
+      using DoNotUseException = Util::DoNotUseException;
 
      public:
-      SettingsManager(const SettingsManager&) = delete;
-      SettingsManager(SettingsManager&&)      = delete;
-      auto operator=(const SettingsManager&) -> SettingsManager& = delete;
-      auto operator=(SettingsManager&&) -> SettingsManager& = delete;
+      SettingsManager() noexcept = default;
+      SettingsManager(const SettingsManager&);
+      SettingsManager(SettingsManager&&) noexcept = default;
+      auto operator                               =(const SettingsManager&) -> SettingsManager&;
+      auto operator=(SettingsManager&&) noexcept -> SettingsManager& = default;
 
       ~SettingsManager();
-
-      static auto instance() -> SettingsManager&;
 
       auto serialize() -> std::string;
 

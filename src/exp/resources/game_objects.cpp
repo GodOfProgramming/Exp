@@ -10,27 +10,21 @@ namespace Exp
 {
   namespace R
   {
-    auto GameObjects::instance() noexcept -> GameObjects&
-    {
-      static GameObjects objs;
-      return objs;
-    }
-
     void GameObjects::add_usertype(sol::state_view state)
     {
       if (state[Lua::Usertypes::R::GAME_OBJECTS].get_type() == sol::type::none) {
         ObjectMeta::add_usertype(state);
-        state.new_usertype<GameObjects>(
-         Lua::Usertypes::R::GAME_OBJECTS, "instance", &GameObjects::instance, "keys", &GameObjects::keys, "get", &GameObjects::get);
+        state.new_usertype<GameObjects>(Lua::Usertypes::R::GAME_OBJECTS, "keys", &GameObjects::keys, "get", &GameObjects::get);
       }
     }
 
-    void GameObjects::load_all()
+    void GameObjects::load_all(World& world)
     {
       LOG(INFO) << "loading game objects";
-      auto& shaders    = Shaders::instance();
-      auto& models     = Models::instance();
-      auto& animations = Animations::instance();
+      auto* shaders    = world.get_resource<Shaders>();
+      auto* models     = world.get_resource<Models>();
+      auto* animations = world.get_resource<Animations>();
+
       IO::iterate_dir_with_namespace(Cfg::Dir::GAME_OBJECTS, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {
         IResource::load_json_file(path, [&](const json& objects) {
           if (!objects.is_object()) {
@@ -74,8 +68,8 @@ namespace Exp
 
             /* Shader */
 
-            auto shader_iter = shaders.find_program(shader_id);
-            if (shader_iter == shaders.program_end()) {
+            auto shader_iter = shaders->find_program(shader_id);
+            if (shader_iter == shaders->program_end()) {
               LOG(WARNING) << "cannot find shader with id " << shader_id;
               continue;
             }
@@ -89,8 +83,8 @@ namespace Exp
 
             /* Model */
 
-            auto model_iter = models.find(model_id);
-            if (model_iter == models.end()) {
+            auto model_iter = models->find(model_id);
+            if (model_iter == models->end()) {
               LOG(WARNING) << "cannot find model with id " << model_id;
               continue;
             }
@@ -101,8 +95,8 @@ namespace Exp
 
             std::shared_ptr<R::AnimationMeta> animation;
 
-            auto animation_iter = animations.find(animation_id);
-            if (animation_iter != animations.end()) {
+            auto animation_iter = animations->find(animation_id);
+            if (animation_iter != animations->end()) {
               animation = animation_iter->second;
             }
 

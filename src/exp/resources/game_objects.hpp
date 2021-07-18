@@ -10,22 +10,19 @@ namespace Exp
   {
     class GameObjects: public IResource
     {
-      GameObjects() = default;
-
       using ObjectMap = std::map<std::string, ObjectMeta>;
       using json      = nlohmann::json;
 
      public:
+      GameObjects()                   = default;
       GameObjects(const GameObjects&) = delete;
-      GameObjects(GameObjects&&)      = delete;
+      GameObjects(GameObjects&&)      = default;
       auto operator=(const GameObjects&) -> GameObjects& = delete;
-      auto operator=(GameObjects&&) -> GameObjects& = delete;
-
-      static auto instance() noexcept -> GameObjects&;
+      auto operator=(GameObjects&&) -> GameObjects& = default;
 
       static void add_usertype(sol::state_view state);
 
-      void load_all() final;
+      void load_all(World& world) final;
 
       void release() final;
 

@@ -7,16 +7,16 @@ namespace Exp
   namespace R
   {
     template <typename T, typename V>
-    struct IDFieldSelector
+    struct IDAccessor
     {
-      using field_t = V;
+      using Type = V;
 
-      static void set(T& t, const field_t& f)
+      static void set(T& t, const Type& f)
       {
         t.emplace(f);
       }
 
-      static auto get(const T& t) -> const field_t
+      static auto get(const T& t) -> const Type
       {
         return t.value();
       }
@@ -25,39 +25,44 @@ namespace Exp
     template <typename T>
     class ID
     {
-     public:
-      using value_type = T;
+      static_assert(std::is_integral_v<T>, "T is not integral type");
 
-      using producer_t = Producer<ID, IDFieldSelector<ID, value_type>>;
+     public:
+      using ValueType  = T;
+      using IDProducer = Producer<ID<T>, IDAccessor<ID<T>, ValueType>>;
 
       ID() = default;
-      ID(value_type v)
+      explicit ID(IDProducer* p)
+       : producer{ p }
+      {}
+
+      explicit ID(ValueType v)
        : internal(v)
       {}
 
-      auto value() const noexcept -> value_type
+      auto value() const noexcept -> ValueType
       {
         return this->internal;
       }
 
-      void emplace(const value_type& v)
+      void emplace(const ValueType& v)
       {
         this->internal = v;
       }
 
       void release() noexcept
       {
-        if (!this->released) {
-          auto& producer = producer_t::instance();
-          producer.reclaim(*this);
+        if (!this->released && this->producer) {
+          this->producer->reclaim(*this);
           this->released = true;
           this->internal = 0;
         }
       }
 
      private:
-      bool released       = false;
-      value_type internal = 0;
+      bool released        = false;
+      IDProducer* producer = nullptr;
+      ValueType internal   = 0;
     };
   }  // namespace R
 }  // namespace Exp

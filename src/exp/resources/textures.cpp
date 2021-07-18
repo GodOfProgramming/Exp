@@ -11,13 +11,7 @@ namespace Exp
 {
   namespace R
   {
-    auto Textures::instance() noexcept -> Textures&
-    {
-      static Textures textures;
-      return textures;
-    }
-
-    void Textures::load_all()
+    void Textures::load_all(World& world)
     {
       LOG(INFO) << "loading textures";
       IO::iterate_dir_with_namespace(Cfg::Dir::TEXTURES, std::string{ "exp" }, [&](const std::filesystem::path path, const std::string& nspace) {

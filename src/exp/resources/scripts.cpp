@@ -89,13 +89,7 @@ namespace Exp
 
   namespace R
   {
-    auto Scripts::instance() noexcept -> Scripts&
-    {
-      static Scripts scripts;
-      return scripts;
-    }
-
-    void Scripts::load_all()
+    void Scripts::load_all(World& world)
     {
       LOG(INFO) << "loading scripts";
       IO::iterate_dir_with_namespace(

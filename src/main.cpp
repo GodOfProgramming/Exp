@@ -43,10 +43,12 @@ int main(int, char* argv[])
   using Exp::Ui::UiManager;
   using nlohmann::json;
 
+  World world;
+
   bool exit = false;
 
-  auto& settings = SettingsManager::instance();
   {
+    SettingsManager settings;
     bool loaded = false;
     File::load(Exp::Cfg::File::SETTINGS, [&](const std::string_view src) {
       settings.deserialize(src);
@@ -55,75 +57,103 @@ int main(int, char* argv[])
     if (!loaded) {
       LOG(FATAL) << "unable to load settings";
     }
+
+    world.add_resource(std::move(settings));
   }
 
-  Exp::Util::ThreadPool tp(settings.game.thread_count);
+  auto* settings = world.get_resource<SettingsManager>();
 
-  auto& window = AppWindow::instance();
+  Exp::Util::ThreadPool tp(settings->game.thread_count);
+
   {
+    AppWindow window;
     window.create();
     window.on_close([&] { exit = true; });
+    world.add_resource(std::move(window));
   }
 
-  auto& input = Dispatcher::instance();
+  auto* window = world.get_resource<AppWindow>();
+
   {
-    input.set_root_handler(&window);
+    Dispatcher input;
+    input.set_root_handler(window);
+    world.add_resource(std::move(input));
   }
 
-  auto& shaders = Shaders::instance();
   {
-    shaders.load_all();
+    Shaders shaders;
+    shaders.load_all(world);
+    world.add_resource(std::move(shaders));
   }
 
-  auto& models = Models::instance();
+  auto* shaders = world.get_resource<Shaders>();
+
   {
-    models.load_all();
+    Models models;
+    models.load_all(world);
+    world.add_resource(std::move(models));
   }
 
-  auto& textures = Textures::instance();
+  auto* models = world.get_resource<Models>();
+
   {
-    textures.load_all();
+    Textures textures;
+    textures.load_all(world);
+    world.add_resource(std::move(textures));
   }
 
-  auto& animations = Animations::instance();
+  auto* textures = world.get_resource<Textures>();
+
   {
-    animations.load_all();
+    Animations animations;
+    animations.load_all(world);
+    world.add_resource(std::move(animations));
   }
 
-  auto& game_objects = GameObjects::instance();
+  auto* animations = world.get_resource<Animations>();
+
   {
-    game_objects.load_all();
+    GameObjects game_objects;
+    game_objects.load_all(world);
+    world.add_resource(std::move(game_objects));
   }
 
-  auto& scripts = Scripts::instance();
+  auto* game_objects = world.get_resource<GameObjects>();
+
   {
-    scripts.load_all();
+    Scripts scripts;
+    scripts.load_all(world);
+    world.add_resource(std::move(scripts));
   }
 
-  auto& ui = UiManager::instance();
+  auto* scripts = world.get_resource<Scripts>();
+
   {
+    UiManager ui;
     ui.load_all();
-    window.set_next(&ui);
+    world.add_resource(std::move(ui));
   }
+
+  auto* ui = world.get_resource<UiManager>();
 
   auto& camera = Camera::instance();
   {
-    float width_2  = settings.window.width / 2.0f;
-    float height_2 = settings.window.height / 2.0f;
-    camera.set_ortho(-width_2, width_2, -height_2, height_2, settings.game.near_render, settings.game.far_render);
+    float width_2  = settings->window.width / 2.0f;
+    float height_2 = settings->window.height / 2.0f;
+    camera.set_ortho(-width_2, width_2, -height_2, height_2, settings->game.near_render, settings->game.far_render);
   }
 
   // rendering
-  Renderer renderer{ ui };
+  Renderer renderer;
+
+  window->set_next(ui);
 
   if (!renderer.init()) {
     LOG(ERROR) << "could not init renderer";
     exit = true;
   }
 
-  auto& world = World::instance();
-
-  if (!world.spawn(settings.game.player_object, settings.game.player_location)) {
+  if (!world.spawn(settings->game.player_object, settings->game.player_location)) {
     LOG(WARNING) << "could not load player object";
   }
 
@@ -135,24 +165,24 @@ int main(int, char* argv[])
   const std::chrono::duration<long, std::milli> one_milli(1);
   const std::chrono::duration<long, std::ratio<1>> one_second(1);
 
-  window.show();
+  window->show();
 
   while (!exit) {
     auto start = std::chrono::system_clock::now();
 
-    std::uint16_t fps = settings.game.target_fps;
+    std::uint16_t fps = settings->game.target_fps;
 
     auto resume = start + (one_milli * 1000.0 / fps);
 
     world.finalize_spawns();
 
-    window.poll_events();
+    window->poll_events();
 
     keyboard.update();
 
     world.update();
 
-    world.render(renderer);
+    renderer.render(world);
 
     auto update_check_time = std::chrono::system_clock::now();
     if (update_check_time > stats_update_timer) {
@@ -184,13 +214,13 @@ int main(int, char* argv[])
     if (player == nullptr) {
       LOG(WARNING) << "player character no longer exists, can't save";
     } else {
-      settings.game.player_location = player->location();
+      settings->game.player_location = player->location();
     }
   }
 
   {
     File f;
-    f.data = settings.serialize();
+    f.data = settings->serialize();
     f.save(Exp::Cfg::File::SETTINGS);
   }
 
@@ -198,21 +228,21 @@ int main(int, char* argv[])
 
   world.release();
 
-  ui.release();
+  ui->release();
 
-  scripts.release();
+  scripts->release();
 
-  game_objects.release();
+  game_objects->release();
 
-  animations.release();
+  animations->release();
 
-  textures.release();
+  textures->release();
 
-  models.release();
+  models->release();
 
-  shaders.release();
+  shaders->release();
 
-  window.destroy();
+  window->destroy();
 
   return 0;
 }

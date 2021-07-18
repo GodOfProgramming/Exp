@@ -8,20 +8,17 @@ namespace Exp
   {
     class Scripts: public IResource
     {
-      Scripts() = default;
-
       using StateMap  = std::map<std::string, sol::state>;
       using SourceMap = std::map<std::string, std::string>;
 
      public:
+      Scripts()               = default;
       Scripts(const Scripts&) = delete;
-      Scripts(Scripts&&)      = delete;
+      Scripts(Scripts&&)      = default;
       auto operator=(const Scripts&) -> Scripts& = delete;
-      auto operator=(Scripts&&) -> Scripts& = delete;
+      auto operator=(Scripts&&) -> Scripts& = default;
 
-      static auto instance() noexcept -> Scripts&;
-
-      void load_all() final;
+      void load_all(World& world) final;
       void release() final;
 
       auto initialize_state(std::string id) -> bool;

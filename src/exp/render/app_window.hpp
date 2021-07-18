@@ -12,17 +12,14 @@ namespace Exp
     {
       using WindowHandle = GLFWwindow*;
 
-      AppWindow();
-
      public:
+      AppWindow();
       AppWindow(const AppWindow&) = delete;
-      AppWindow(AppWindow&&)      = delete;
+      AppWindow(AppWindow&&)      = default;
       auto operator=(const AppWindow&) -> AppWindow& = delete;
-      auto operator=(AppWindow&&) -> AppWindow& = delete;
+      auto operator=(AppWindow&&) -> AppWindow& = default;
 
       virtual ~AppWindow() = default;
-
-      static auto instance() -> AppWindow&;
 
       /**
        * @brief Creates a window. If it cannot be crated the program terminates.

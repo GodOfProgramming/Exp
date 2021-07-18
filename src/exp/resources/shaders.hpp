@@ -15,21 +15,18 @@ namespace Exp
   {
     class Shaders: public IResource
     {
-      Shaders() = default;
-
       using ShaderMap   = std::map<std::string, std::shared_ptr<GL::Shader>>;
       using ProgramMap  = std::map<std::string, std::shared_ptr<GL::Program>>;
       using ConfigCache = std::map<std::string, ShaderProgramMeta>;
 
      public:
+      Shaders()               = default;
       Shaders(const Shaders&) = delete;
-      Shaders(Shaders&&)      = delete;
+      Shaders(Shaders&&)      = default;
       auto operator=(const Shaders&) -> Shaders& = delete;
-      auto operator=(Shaders&&) -> Shaders& = delete;
+      auto operator=(Shaders&&) -> Shaders& = default;
 
-      static auto instance() -> Shaders&;
-
-      void load_all() final;
+      void load_all(World& world) final;
 
       void release() final;
 

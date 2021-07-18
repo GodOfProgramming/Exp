@@ -8,17 +8,10 @@ namespace Exp
 {
   namespace Game
   {
-    auto World::instance() noexcept -> World&
-    {
-      static World world;
-      return world;
-    }
-
     void World::add_usertype(sol::state_view state)
     {
       if (state[Lua::Usertypes::Game::WORLD].get_type() == sol::type::none) {
-        state.new_usertype<World>(
-         Lua::Usertypes::Game::WORLD, "instance", &World::instance, "spawn", &World::spawn, "lookup", &World::lookup, "count", &World::count);
+        state.new_usertype<World>(Lua::Usertypes::Game::WORLD, "spawn", &World::spawn, "lookup", &World::lookup, "count", &World::count);
       }
     }
 
@@ -51,16 +44,11 @@ namespace Exp
       cv.wait(lk, [updates_to_be_made, &completed] { return completed == updates_to_be_made; });
     }
 
-    void World::render(Render::Renderer& renderer)
-    {
-      renderer.render_to(Render::AppWindow::instance(), this->objects);
-    }
-
     auto World::spawn(std::string id, glm::vec3 pos) -> bool
     {
-      auto& objects = R::GameObjects::instance();
-      auto iter     = objects.find(id);
-      if (iter == objects.end()) {
+      auto* objects = this->get_resource<R::GameObjects>();
+      auto iter     = objects->find(id);
+      if (iter == objects->end()) {
         LOG(WARNING) << "unable to spawn object " << id;
         return false;
       }
@@ -93,9 +81,14 @@ namespace Exp
       return iter->second;
     }
 
-    auto World::count() -> std::size_t
+    auto World::count() const noexcept -> std::size_t
     {
       return this->pending_objs.size() + this->objects.size();
+    }
+
+    auto World::entities() const noexcept -> const ObjectList&
+    {
+      return this->objects;
     }
 
     void World::release()

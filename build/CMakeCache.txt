@@ -93,6 +93,9 @@ Assimp_BINARY_DIR:STATIC=/home/jon/workspace/extra/Exp/build/lib/assimp/upstream
 //Value Computed by CMake
 Assimp_SOURCE_DIR:STATIC=/home/jon/workspace/extra/Exp/lib/assimp/upstream
 
+//Request addition of package configuration tests.
+BUILD_CONFIG_TESTS:BOOL=OFF
+
 //Build documentation using Doxygen.
 BUILD_DOCS:BOOL=OFF
 
@@ -104,6 +107,9 @@ BUILD_GMOCK:BOOL=ON
 
 //Build Lua as a DLL
 BUILD_LUA_AS_DLL:BOOL=ON
+
+//Request addition of negative compilation tests.
+BUILD_NC_TESTS:BOOL=OFF
 
 //build as shared library
 BUILD_SHARED_LIBS:BOOL=OFF
@@ -1039,6 +1045,10 @@ tomlplusplus_SOURCE_DIR:STATIC=/home/jon/workspace/extra/Exp/lib/toml/upstream
 ASSIMP_BUILD_ARCHITECTURE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ASSIMP_BUILD_COMPILER
 ASSIMP_BUILD_COMPILER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: BUILD_CONFIG_TESTS
+BUILD_CONFIG_TESTS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: BUILD_NC_TESTS
+BUILD_NC_TESTS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BZRCOMMAND
 BZRCOMMAND-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_ADDR2LINE
@@ -1191,7 +1201,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=51
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=52
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
